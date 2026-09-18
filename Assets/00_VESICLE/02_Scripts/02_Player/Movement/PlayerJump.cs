@@ -1,4 +1,5 @@
-//**플레이어 점프**
+//**플레이어 2단 점프**
+//추가 점프 1로 설정해서 플랫폼에서 그냥 떨어져도 1회 점프가 가능하도록 구성
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody2D))] //리지드바디 필수
@@ -9,12 +10,15 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] private LayerMask groundLayer;                     //바닥으로 인정할 레이어 지정
     [SerializeField, Min(0f)] private float groundCheckRadius = 0.15f;  //체크용 원 반지름
     [SerializeField, Min(0f)] private float jumpSpeed = 10f;            //점프 속도
+    [SerializeField, Min(0)] private int extraJumpCount = 1;            //추가 점프 횟수
     private Rigidbody2D rb;                                             //리지드바디
+    private int remainingExtraJumps;                                    //현재 남은 추가 점프 횟수
     private bool jumpRequested;                                         //점프 입력 기억 변수
 
     private void Awake()
     {
         rb = GetComponent<Rigidbody2D>();
+        remainingExtraJumps = extraJumpCount;
     }
 
     private void Update()
@@ -27,10 +31,21 @@ public class PlayerJump : MonoBehaviour
 
     private void FixedUpdate()
     {
+        bool isGrounded = IsGrounded();
+        if (isGrounded && rb.linearVelocity.y <= 0.01f)
+        {
+            remainingExtraJumps = extraJumpCount;
+        }
         if (!jumpRequested) return;
-        if (IsGrounded())
+        if (isGrounded && rb.linearVelocity.y <= 0.01f)
         {
             Jump();                 //점프
+        }
+        else if (remainingExtraJumps > 0)
+        {
+            Jump();                 //2단 점프
+
+            remainingExtraJumps--;  //공중점프 횟수 감소
         }
         jumpRequested = false;      //이번 점프 요청 끝났으니 false로 돌려놓기
     }
