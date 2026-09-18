@@ -4,7 +4,7 @@ using UnityEngine;
 [RequireComponent(typeof(Rigidbody2D))] //리지드바디 필수
 public class PlayerMovement : MonoBehaviour
 {
-    [SerializeField] private PlayerInputReader inputReader;     //PlayerInputReader 연결(입력담당)
+    [SerializeField] private PlayerInputReader inputReader;     //PlayerInputReader 연결
     [SerializeField] private SpriteRenderer playerSprite;       //플레이어 Sprite
     [SerializeField, Min(0f)] private float moveSpeed = 7f;     //플레이어 이동속도
     private Rigidbody2D rb;                                     //리지드바디
@@ -22,14 +22,14 @@ public class PlayerMovement : MonoBehaviour
         UpdateFacing();
     }
 
-    //플레이어 이동 처리
+    //*플레이어 이동 처리*
     private void Move()
     {
         float moveX = inputReader.MoveInput.x;  //횡스크롤 게임이므로 x값만 사용
         rb.linearVelocity = new Vector2(moveX * moveSpeed, rb.linearVelocity.y);
     }
 
-    //현재 이동 방향 확인 
+    //*현재 이동 방향 확인*
     private void UpdateFacing()
     {
         float moveX = inputReader.MoveInput.x;          //현재 이동 입력 x값 가져오기

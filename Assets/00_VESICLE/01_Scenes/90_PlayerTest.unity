@@ -132,6 +132,7 @@ GameObject:
   - component: {fileID: 827351908}
   - component: {fileID: 827351910}
   - component: {fileID: 827351909}
+  - component: {fileID: 827351911}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -248,6 +249,26 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputReader
   moveAction: {fileID: 6184728787130581236, guid: 781831a611d3758438136cf989d9d834, type: 3}
+  jumpAction: {fileID: -2765234084031741858, guid: 781831a611d3758438136cf989d9d834, type: 3}
+--- !u!114 &827351911
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827351905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e0a645afa200a70419aae74486fe495c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerJump
+  inputReader: {fileID: 827351910}
+  groundCheck: {fileID: 1199494469}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheckRadius: 0.15
+  jumpSpeed: 10
 --- !u!1 &1008686456
 GameObject:
   m_ObjectHideFlags: 0
@@ -259,7 +280,7 @@ GameObject:
   - component: {fileID: 1008686458}
   - component: {fileID: 1008686457}
   - component: {fileID: 1008686459}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
