@@ -16,7 +16,8 @@ public class PlayerJump : MonoBehaviour
     private int remainingExtraJumps;                                    //현재 남은 추가 점프 횟수
     private bool jumpRequested;                                         //점프 입력 기억 변수
 
-    public bool CanJump { get; private set; } = true;                   //점프 가능한지 판단
+    public bool CanJump { get; private set; } = true;                   //점프 가능한지 판단 외부 제공
+    public bool IsGrounded { get; private set; }                        //바닥에 있는지 판단 외부 제공
 
     private void Awake()
     {
@@ -35,13 +36,13 @@ public class PlayerJump : MonoBehaviour
 
     private void FixedUpdate()
     {
-        bool isGrounded = IsGrounded();
-        if (isGrounded && rb.linearVelocity.y <= 0.01f)
+        IsGrounded = CheckGrounded();
+        if (IsGrounded && rb.linearVelocity.y <= 0.01f)
         {
             remainingExtraJumps = extraJumpCount;
         }
         if (!jumpRequested) return;
-        if (isGrounded && rb.linearVelocity.y <= 0.01f)
+        if (IsGrounded && rb.linearVelocity.y <= 0.01f)
         {
             Jump();                 //점프
         }
@@ -61,7 +62,7 @@ public class PlayerJump : MonoBehaviour
     }
 
     //*플레이어가 바닥에 서 있는지 반환*
-    private bool IsGrounded()
+    private bool CheckGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
     }

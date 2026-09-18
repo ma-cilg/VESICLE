@@ -304,6 +304,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
   animator: {fileID: 1709673034}
+  playerJump: {fileID: 827351911}
 --- !u!1 &1008686456
 GameObject:
   m_ObjectHideFlags: 0
