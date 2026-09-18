@@ -133,6 +133,7 @@ GameObject:
   - component: {fileID: 827351910}
   - component: {fileID: 827351909}
   - component: {fileID: 827351911}
+  - component: {fileID: 827351912}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -250,6 +251,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputReader
   moveAction: {fileID: 6184728787130581236, guid: 781831a611d3758438136cf989d9d834, type: 3}
   jumpAction: {fileID: -2765234084031741858, guid: 781831a611d3758438136cf989d9d834, type: 3}
+  dashAction: {fileID: -7154976329558016642, guid: 781831a611d3758438136cf989d9d834, type: 3}
 --- !u!114 &827351911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -269,6 +271,25 @@ MonoBehaviour:
     m_Bits: 64
   groundCheckRadius: 0.15
   jumpSpeed: 10
+  extraJumpCount: 1
+--- !u!114 &827351912
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827351905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cfc0e900f9fe0d3449662dcd609871b4, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
+  inputReader: {fileID: 827351910}
+  playerMovement: {fileID: 827351909}
+  playerJump: {fileID: 827351911}
+  dashSpeed: 18
+  dashDuration: 0.15
+  dashCooldown: 0.35
 --- !u!1 &1008686456
 GameObject:
   m_ObjectHideFlags: 0

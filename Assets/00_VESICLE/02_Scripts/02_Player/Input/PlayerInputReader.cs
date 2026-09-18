@@ -7,6 +7,7 @@ public class PlayerInputReader : MonoBehaviour
 {
     [SerializeField] private InputActionReference moveAction;   //이동
     [SerializeField] private InputActionReference jumpAction;   //점프
+    [SerializeField] private InputActionReference dashAction;   //대시
 
     //프로퍼티
     public Vector2 MoveInput => moveAction.action.ReadValue<Vector2>();
@@ -16,17 +17,25 @@ public class PlayerInputReader : MonoBehaviour
     {
         moveAction.action.Enable();
         jumpAction.action.Enable();
+        dashAction.action.Enable();
     }
 
     private void OnDisable()
     {
         moveAction.action.Disable();
         jumpAction.action.Disable();
+        dashAction.action.Disable();
     }
 
     //*점프버튼이 새롭게 눌렸는지 반환(이번 프레임에)*
     public bool IsJumpPressed()
     {
         return jumpAction.action.WasPressedThisFrame();
+    }
+
+    //*대시버튼이 새롭게 눌렸는지 반환(이번 프레임에)*
+    public bool IsDashPressed()
+    {
+        return dashAction.action.WasPressedThisFrame();
     }
 }

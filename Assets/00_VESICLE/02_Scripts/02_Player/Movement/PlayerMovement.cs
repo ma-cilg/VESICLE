@@ -7,9 +7,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] private PlayerInputReader inputReader;     //PlayerInputReader 연결
     [SerializeField] private SpriteRenderer playerSprite;       //플레이어 Sprite
     [SerializeField, Min(0f)] private float moveSpeed = 7f;     //플레이어 이동속도
-    private Rigidbody2D rb;                                     //리지드바디
 
-    public bool IsFacingRight { get; private set; } = true;     //공격 방향, 패링 방향 판단할 때 사용
+    private Rigidbody2D rb;                                     //리지드바디
+    public bool IsFacingRight { get; private set; } = true;     //방향 판단
+    public bool CanMove { get; private set; } = true;           //일반 이동을 현재 사용할 수 있는지 판단
 
     private void Awake()
     {
@@ -18,6 +19,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void FixedUpdate()
     {
+        if (!CanMove) return;
         Move();
         UpdateFacing();
     }
@@ -38,5 +40,11 @@ public class PlayerMovement : MonoBehaviour
         if (shouldFaceRight == IsFacingRight) return;   //이동 방향 같으면 스프라이트 그대로
         IsFacingRight = shouldFaceRight;                //새로운 방향 저장
         playerSprite.flipX = !IsFacingRight;            //이미지 반전
+    }
+
+    //*일반 이동을 켜거나 끌 때 사용*
+    public void SetMovementEnabled(bool enabled)
+    {
+        CanMove = enabled;
     }
 }

@@ -9,11 +9,14 @@ public class PlayerJump : MonoBehaviour
     [SerializeField] private Transform groundCheck;                     //Player 안의 groundCheck 연결
     [SerializeField] private LayerMask groundLayer;                     //바닥으로 인정할 레이어 지정
     [SerializeField, Min(0f)] private float groundCheckRadius = 0.15f;  //체크용 원 반지름
-    [SerializeField, Min(0f)] private float jumpSpeed = 10f;            //점프 속도
+    [SerializeField, Min(0f)] private float jumpSpeed = 10f;            //점프속도
     [SerializeField, Min(0)] private int extraJumpCount = 1;            //추가 점프 횟수
+
     private Rigidbody2D rb;                                             //리지드바디
     private int remainingExtraJumps;                                    //현재 남은 추가 점프 횟수
     private bool jumpRequested;                                         //점프 입력 기억 변수
+
+    public bool CanJump { get; private set; } = true;                   //점프 가능한지 판단
 
     private void Awake()
     {
@@ -23,6 +26,7 @@ public class PlayerJump : MonoBehaviour
 
     private void Update()
     {
+        if (!CanJump) return;
         if (inputReader.IsJumpPressed())
         {
             jumpRequested = true;   //이번 프레임에 점프가 눌렸으면 점프 요청 저장
@@ -60,5 +64,15 @@ public class PlayerJump : MonoBehaviour
     private bool IsGrounded()
     {
         return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
+    }
+
+    //*점프를 켜거나 끌 때 사용*
+    public void SetJumpEnabled(bool enabled)
+    {
+        CanJump = enabled;
+        if (!enabled)
+        {
+            jumpRequested = false;  //점프 막는 순간 기존에 남아있던 점프 입력도 제거
+        }
     }
 }
