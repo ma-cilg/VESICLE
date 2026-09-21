@@ -119,6 +119,37 @@ NavMeshSettings:
     debug:
       m_Flags: 0
   m_NavMeshData: {fileID: 0}
+--- !u!1 &606972811
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 606972812}
+  m_Layer: 0
+  m_Name: FXPoolRoot
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &606972812
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 606972811}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &827351905
 GameObject:
   m_ObjectHideFlags: 0
@@ -135,6 +166,8 @@ GameObject:
   - component: {fileID: 827351911}
   - component: {fileID: 827351912}
   - component: {fileID: 827351913}
+  - component: {fileID: 827351914}
+  - component: {fileID: 827351915}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -305,6 +338,47 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
   animator: {fileID: 1709673034}
   playerJump: {fileID: 827351911}
+--- !u!114 &827351914
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827351905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1838c694998570647a7e640b17c3d415, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerJumpFeedback
+  playerJump: {fileID: 827351911}
+  groundCheck: {fileID: 1199494469}
+  poolRoot: {fileID: 606972812}
+  jumpDustPrefab: {fileID: 1767609841909914876, guid: 4a5536076116038478707fd36f09d508, type: 3}
+  doubleJumpPrefab: {fileID: 3808528921188124785, guid: 479ec7d04a64241438cf30a6f182f0f2, type: 3}
+  landPrefab: {fileID: 7551553731366836854, guid: 7e43f433a7fecb14fae4cb9246ede5e6, type: 3}
+  initialPoolSize: 2
+--- !u!114 &827351915
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827351905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8dfa4cbf5eec0b14680c53913debce93, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRunFeedback
+  playerJump: {fileID: 827351911}
+  playerDash: {fileID: 827351912}
+  playerMovement: {fileID: 827351909}
+  groundCheck: {fileID: 1199494469}
+  poolRoot: {fileID: 606972812}
+  backContactPrefab: {fileID: 1330245643635321602, guid: 7c9ad95f068096947a1561ab6fedf725, type: 3}
+  backReleasePrefab: {fileID: 8738537932512758973, guid: 710eb681cdd3c284ca7eebac835ec9ad, type: 3}
+  frontContactPrefab: {fileID: 8319324196108873632, guid: 88f2ab675c0d4f74799719523005e49c, type: 3}
+  frontReleasePrefab: {fileID: -2885966744464544620, guid: a26ca8afb797b4549a90f568fcf74439, type: 3}
+  initialPoolSize: 2
 --- !u!1 &1008686456
 GameObject:
   m_ObjectHideFlags: 0
@@ -485,6 +559,7 @@ GameObject:
   - component: {fileID: 1709673032}
   - component: {fileID: 1709673033}
   - component: {fileID: 1709673034}
+  - component: {fileID: 1709673035}
   m_Layer: 0
   m_Name: Visual
   m_TagString: Untagged
@@ -588,6 +663,19 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &1709673035
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1709673031}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c578c36cb78b7e74a94fdc3c5b72e24f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationEventRelay
+  runFeedback: {fileID: 827351915}
 --- !u!1 &2000062261
 GameObject:
   m_ObjectHideFlags: 0
@@ -732,3 +820,4 @@ SceneRoots:
   - {fileID: 2000062264}
   - {fileID: 827351907}
   - {fileID: 1008686458}
+  - {fileID: 606972812}

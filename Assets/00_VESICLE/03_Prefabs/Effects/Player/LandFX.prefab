@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 424391409898163318}
   - component: {fileID: 1394359604693302747}
   - component: {fileID: 2806765043581833211}
+  - component: {fileID: 7551553731366836854}
   m_Layer: 0
   m_Name: LandFX
   m_TagString: Untagged
@@ -114,3 +115,18 @@ Animator:
   m_AllowConstantClipSamplingOptimization: 1
   m_KeepAnimatorStateOnDisable: 0
   m_WriteDefaultValuesOnDisable: 0
+--- !u!114 &7551553731366836854
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1852489459320241184}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3bbb8bc446053ad4fb726d74dc522341, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PooledFX
+  animator: {fileID: 2806765043581833211}
+  animationClip: {fileID: 7400000, guid: ca110b1ecad213644953d4f1b2f009a7, type: 2}
+  stateName: Player_LandFX

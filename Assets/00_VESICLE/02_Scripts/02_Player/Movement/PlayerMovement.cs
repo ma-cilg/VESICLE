@@ -11,6 +11,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;                                     //리지드바디
     public bool IsFacingRight { get; private set; } = true;     //방향 판단
     public bool CanMove { get; private set; } = true;           //일반 이동을 현재 사용할 수 있는지 판단
+    public float HorizontalSpeed => Mathf.Abs(rb.linearVelocity.x); //현재 실제 좌우 이동 속도
 
     private void Awake()
     {
