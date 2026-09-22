@@ -1,4 +1,5 @@
 //**플레이어 대시 이동, 지속시간, 쿨타임 처리**
+using System;               //Action 이벤트 사용
 using System.Collections;   //IEnumerator, Coroutine 사용
 using UnityEngine;
 
@@ -8,6 +9,7 @@ public class PlayerDash : MonoBehaviour
     [SerializeField] private PlayerInputReader inputReader;             //PlayerInputReader 연결
     [SerializeField] private PlayerMovement playerMovement;             //일반 이동 제어
     [SerializeField] private PlayerJump playerJump;                     //점프 제어
+    [SerializeField] private PlayerInvincibility playerInvincibility;   //대시 중 무적 처리
 
     [SerializeField, Min(0f)] private float dashSpeed = 18f;            //대시속도
     [SerializeField, Min(0f)] private float dashDuration = 0.15f;       //대시 유지 시간
@@ -17,6 +19,9 @@ public class PlayerDash : MonoBehaviour
     private float originalGravityScale;                                 //기본중력값
     private bool isOnCooldown;                                          //쿨타임중인지 판단
     public bool IsDashing { get; private set; }                         //현재 대시 중인지 판단
+    public bool CanDash { get; private set; } = true;                   //외부 시스템에서 대시 사용 가능 여부 제어
+
+    public event Action OnDashStarted;                                  //대시 시작 시점 알리는 이벤트
 
     private void Awake()
     {
@@ -26,6 +31,7 @@ public class PlayerDash : MonoBehaviour
 
     private void Update()
     {
+        if (!CanDash) return;
         if (!inputReader.IsDashPressed()) return;
         if (IsDashing || isOnCooldown) return;
         StartCoroutine(DashRoutine());
@@ -36,6 +42,10 @@ public class PlayerDash : MonoBehaviour
     {
         IsDashing = true;                                               //대시 중 기록
         isOnCooldown = true;                                            //쿨타임 시작
+        playerInvincibility.AddInvincibility();                         //대시 무적 시작
+
+        OnDashStarted?.Invoke();                                        //대시 이벤트 외부에 알림
+
         playerMovement.SetMovementEnabled(false);                       //대시 속도 못 덮도록 일반 이동 막기
         playerJump.SetJumpEnabled(false);                               //대시 중 점프 막기
         float dashDirection = playerMovement.IsFacingRight ? 1f : -1f;  //대시 방향 결정 (오른쪽이면 1f : 왼쪽이면 -1f)
@@ -45,8 +55,17 @@ public class PlayerDash : MonoBehaviour
         rb.gravityScale = originalGravityScale;                         //중력 복구
         playerMovement.SetMovementEnabled(true);                        //일반 이동 켜기
         playerJump.SetJumpEnabled(true);                                //점프도 다시 켜기
+        playerInvincibility.RemoveInvincibility();                      //대시 무적 종료
         IsDashing = false;                                              //대시 상태 종료
         yield return new WaitForSeconds(dashCooldown);                  //남은 쿨타임 동안 기다리기
         isOnCooldown = false;                                           //다시 대시 가능
+    }
+
+    //*외부에서 대시 사용 가능 여부 변경*
+    public void SetDashEnabled(bool isEnabled)
+    {
+        //true면 대시 가능
+        //false면 대시 입력 차단
+        CanDash = isEnabled;
     }
 }
