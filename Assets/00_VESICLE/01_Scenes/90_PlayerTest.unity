@@ -286,6 +286,8 @@ GameObject:
   - component: {fileID: 827351919}
   - component: {fileID: 827351921}
   - component: {fileID: 827351922}
+  - component: {fileID: 827351923}
+  - component: {fileID: 827351924}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -406,6 +408,7 @@ MonoBehaviour:
   moveAction: {fileID: 6184728787130581236, guid: 781831a611d3758438136cf989d9d834, type: 3}
   jumpAction: {fileID: -2765234084031741858, guid: 781831a611d3758438136cf989d9d834, type: 3}
   dashAction: {fileID: -7154976329558016642, guid: 781831a611d3758438136cf989d9d834, type: 3}
+  attackAction: {fileID: -796378960186498395, guid: 781831a611d3758438136cf989d9d834, type: 3}
 --- !u!114 &827351911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -440,7 +443,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
   inputReader: {fileID: 827351910}
   playerMovement: {fileID: 827351909}
-  playerJump: {fileID: 827351911}
+  controlLock: {fileID: 827351923}
   playerInvincibility: {fileID: 827351917}
   dashSpeed: 18
   dashDuration: 0.15
@@ -459,6 +462,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
   animator: {fileID: 1709673034}
   playerJump: {fileID: 827351911}
+  playerAttack: {fileID: 827351924}
 --- !u!114 &827351914
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -593,9 +597,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHitReaction
   playerHealth: {fileID: 827351918}
-  playerMovement: {fileID: 827351909}
-  playerJump: {fileID: 827351911}
-  playerDash: {fileID: 827351912}
+  controlLock: {fileID: 827351923}
   knockbackSpeedX: 4.5
   knockbackSpeedY: 6
   controlLockDuration: 0.18
@@ -617,6 +619,40 @@ MonoBehaviour:
   hitPoseDuration: 0.15
   flashDuration: 0.1
   hitColor: {r: 1, g: 0.35, b: 0.35, a: 1}
+--- !u!114 &827351923
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827351905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 960d5711ac359f0459bc0470fa6a9985, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerControlLock
+  playerMovement: {fileID: 827351909}
+  playerJump: {fileID: 827351911}
+  playerDash: {fileID: 827351912}
+--- !u!114 &827351924
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827351905}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 01adbcf0121919c46b884988dcf4b735, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
+  inputReader: {fileID: 827351910}
+  playerMovement: {fileID: 827351909}
+  playerJump: {fileID: 827351911}
+  playerDash: {fileID: 827351912}
+  controlLock: {fileID: 827351923}
+  stationaryAdvanceSpeed: 15
+  stationaryAdvanceDuration: 0.1
 --- !u!1 &909625330
 GameObject:
   m_ObjectHideFlags: 0
@@ -1155,6 +1191,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationEventRelay
   runFeedback: {fileID: 827351915}
+  playerAttack: {fileID: 827351924}
 --- !u!1 &1774700042
 GameObject:
   m_ObjectHideFlags: 0
@@ -1219,7 +1256,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CameraFollow
   target: {fileID: 827351907}
-  offset: {x: 0, y: 2}
+  framingOffset: {x: 0, y: 0}
   smoothTime: 0.12
 --- !u!1 &1809769577
 GameObject:

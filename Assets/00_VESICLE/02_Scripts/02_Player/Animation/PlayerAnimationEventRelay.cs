@@ -5,6 +5,7 @@ using UnityEngine;
 public class PlayerAnimationEventRelay : MonoBehaviour
 {
     [SerializeField] private PlayerRunFeedback runFeedback;
+    [SerializeField] private PlayerAttack playerAttack;
 
     //*Run 0 - 첫 번째 발 착지*
     public void OnRunBackContact()
@@ -28,5 +29,18 @@ public class PlayerAnimationEventRelay : MonoBehaviour
     public void OnRunFrontRelease()
     {
         runFeedback.PlayFrontRelease();
+    }
+
+    //*공격 타격 프레임*
+    public void OnAttackHit()
+    {
+        playerAttack.HandleAttackHitAnimationEvent();
+    }
+
+
+    //*공격 애니메이션 마지막 프레임*
+    public void OnAttackEnd()
+    {
+        playerAttack.HandleAttackEndAnimationEvent();
     }
 }

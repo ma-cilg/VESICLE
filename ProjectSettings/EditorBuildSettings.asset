@@ -17,6 +17,9 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/00_VESICLE/01_Scenes/03_Stage03.unity
     guid: 45898ae5dfa1f9945a3c3dc28946cc08
+  - enabled: 0
+    path: Assets/00_VESICLE/01_Scenes/90_PlayerTest.unity
+    guid: 1ead9222e1d722743924741f5b279f5f
   m_configObjects:
     com.unity.input.settings.actions: {fileID: -944628639613478452, guid: 2bcd2660ca9b64942af0de543d8d7100, type: 3}
   m_UseUCBPForAssetBundles: 0
