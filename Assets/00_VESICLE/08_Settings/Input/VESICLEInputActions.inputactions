@@ -25,6 +25,15 @@
                     "initialStateCheck": false
                 },
                 {
+                    "name": "JumpW",
+                    "type": "Button",
+                    "id": "5f99d77b-9726-4e7f-8e70-8c704751d197",
+                    "expectedControlType": "",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
+                },
+                {
                     "name": "Attack",
                     "type": "Button",
                     "id": "7b48c893-5726-4fce-99eb-914ab777ce89",
@@ -34,18 +43,18 @@
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Dash",
+                    "name": "Throw",
                     "type": "Button",
-                    "id": "af0cb18d-407b-4d16-9dcb-6c0a3daf3c36",
+                    "id": "e3857ba9-5aa0-4a53-9bd4-af407512453e",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
                 },
                 {
-                    "name": "Detonate",
+                    "name": "Dash",
                     "type": "Button",
-                    "id": "365fa61e-b15c-4dbd-9d43-92701dfcbea7",
+                    "id": "af0cb18d-407b-4d16-9dcb-6c0a3daf3c36",
                     "expectedControlType": "",
                     "processors": "",
                     "interactions": "",
@@ -67,7 +76,7 @@
                 {
                     "name": "up",
                     "id": "8c126850-a7d7-4df1-856d-50dfadabbb35",
-                    "path": "<Keyboard>/upArrow",
+                    "path": "<Keyboard>/w",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -78,7 +87,7 @@
                 {
                     "name": "down",
                     "id": "c16cdd90-8def-40a5-81fc-f01822771aa3",
-                    "path": "<Keyboard>/downArrow",
+                    "path": "<Keyboard>/s",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -89,7 +98,7 @@
                 {
                     "name": "left",
                     "id": "4c243885-3674-4865-8a28-515b7bf46791",
-                    "path": "<Keyboard>/leftArrow",
+                    "path": "<Keyboard>/a",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -100,7 +109,7 @@
                 {
                     "name": "right",
                     "id": "efb9d0fb-a3b0-41cc-8ef1-e951fc22f11a",
-                    "path": "<Keyboard>/rightArrow",
+                    "path": "<Keyboard>/d",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -111,7 +120,7 @@
                 {
                     "name": "",
                     "id": "b50683a1-1bc8-47e4-b296-2f0883912ca6",
-                    "path": "<Keyboard>/z",
+                    "path": "<Keyboard>/space",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -133,7 +142,7 @@
                 {
                     "name": "",
                     "id": "e2874e5b-fea1-4276-8f64-42c098fe65da",
-                    "path": "<Keyboard>/x",
+                    "path": "<Mouse>/leftButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
@@ -143,12 +152,23 @@
                 },
                 {
                     "name": "",
-                    "id": "03f67ff5-dfdf-463c-b5ce-892a1c072af0",
-                    "path": "<Keyboard>/space",
+                    "id": "6e0dc813-c77c-421a-b4cc-f3bea6315220",
+                    "path": "<Mouse>/rightButton",
                     "interactions": "",
                     "processors": "",
                     "groups": "",
-                    "action": "Detonate",
+                    "action": "Throw",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "3cb0e541-e78f-4035-96ea-b341cb7ddab0",
+                    "path": "<Keyboard>/w",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "JumpW",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

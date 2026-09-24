@@ -7,6 +7,7 @@ public class PlayerHitReaction : MonoBehaviour
 {
     [SerializeField] private PlayerHealth playerHealth;                     //PlayerHealth.cs 이벤트 구독용
     [SerializeField] private PlayerControlLock controlLock;                 //여러 시스템의 조작 잠금을 겹치지 않게 통합 관리
+    [SerializeField] private PlayerWeaponThrow playerWeaponThrow;           //투척 중 피격 반응 예외 확인
 
     [SerializeField, Min(0f)] private float knockbackSpeedX = 4.5f;         //피격 시 좌우로 밀려나는 속도
     [SerializeField, Min(0f)] private float knockbackSpeedY = 6f;           //피격 시 위쪽으로 튀어 오르는 속도
@@ -47,6 +48,8 @@ public class PlayerHitReaction : MonoBehaviour
     //*피격 반응 시작*
     private void StartHitReaction(Vector2 hitDirection)
     {
+        if (playerWeaponThrow.IsThrowing) return;
+
         isReacting = true;                              //현재 피격 반응 중이라고 기록
         remainingLockTime = controlLockDuration;        //조작 제한 시간을 처음 값으로 설정
 

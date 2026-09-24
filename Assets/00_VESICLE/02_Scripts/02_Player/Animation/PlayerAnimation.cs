@@ -14,8 +14,9 @@ public class PlayerAnimation : MonoBehaviour
     private static readonly int VerticalSpeedHash = Animator.StringToHash("VerticalSpeed");
     private static readonly int IsGroundedHash = Animator.StringToHash("IsGrounded");
     private static readonly int IsAttackingHash = Animator.StringToHash("IsAttacking");
-    private static readonly int GroundAttackHash = Animator.StringToHash("GroundAttack");
-    private static readonly int AirAttackHash = Animator.StringToHash("AirAttack");
+    private static readonly int ChargeAttackHash = Animator.StringToHash("ChargeAttack");
+    private static readonly int SlashAttackHash = Animator.StringToHash("SlashAttack");
+    private static readonly int FinishAttackHash = Animator.StringToHash("FinishAttack");
 
     private void Awake()
     {
@@ -25,8 +26,9 @@ public class PlayerAnimation : MonoBehaviour
     private void OnEnable()
     {
         //이벤트 구독
-        playerAttack.OnGroundAttackStarted += PlayGroundAttack;
-        playerAttack.OnAirAttackStarted += PlayAirAttack;
+        playerAttack.OnChargeStarted += PlayCharge;
+        playerAttack.OnSlashStarted += PlaySlash;
+        playerAttack.OnFinishStarted += PlayFinish;
         playerAttack.OnAttackCancelled += StopAttack;
         playerAttack.OnAttackEnded += StopAttack;
     }
@@ -34,8 +36,9 @@ public class PlayerAnimation : MonoBehaviour
     private void OnDisable()
     {
         //등록했던 이벤트 구독 해제
-        playerAttack.OnGroundAttackStarted -= PlayGroundAttack;
-        playerAttack.OnAirAttackStarted -= PlayAirAttack;
+        playerAttack.OnChargeStarted -= PlayCharge;
+        playerAttack.OnSlashStarted -= PlaySlash;
+        playerAttack.OnFinishStarted -= PlayFinish;
         playerAttack.OnAttackCancelled -= StopAttack;
         playerAttack.OnAttackEnded -= StopAttack;
     }
@@ -57,30 +60,42 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(IsGroundedHash, playerJump.IsGrounded);    //지상 / 공중 판단
     }
 
-    //*지상 공격 애니메이션 시작*
-    private void PlayGroundAttack()
+    //*차징 시작*
+    private void PlayCharge()
     {
-        animator.SetBool(IsAttackingHash, true);                    //현재 공격 상태임을 Animator에 전달
-        animator.ResetTrigger(AirAttackHash);                       //혹시 이전 AirAttack Trigger가 남아있다면 초기화
-        animator.SetTrigger(GroundAttackHash);                      //지상 공격 시작
+        animator.SetBool(IsAttackingHash, true);    //공격 시작 상태
+        ResetAttackTriggers();                      //이전 Trigger 초기화
+        animator.SetTrigger(ChargeAttackHash);      //Charge State 진입
     }
 
-    //*공중 공격 애니메이션 시작*
-    private void PlayAirAttack()
+    //*실제 이동 공격 시작*
+    private void PlaySlash(float chargeDistance)
     {
-        animator.SetBool(IsAttackingHash, true);                    //현재 공격 상태 전달
-        animator.ResetTrigger(GroundAttackHash);                    //이전 GroundAttack Trigger 초기화
-        animator.SetTrigger(AirAttackHash);                         //공중 공격 시작
+        animator.SetBool(IsAttackingHash, true);    //공격 상태는 계속 유지
+        ResetAttackTriggers();                      //이전 Trigger 초기화
+        animator.SetTrigger(SlashAttackHash);       //Slash State 진입
     }
 
-    //*공격 애니메이션 종료 / 취소*
+    //*이동 완료 후 마무리 애니메이션 시작*
+    private void PlayFinish()
+    {
+        animator.SetBool(IsAttackingHash, true);    //마무리 중(공격 끝X)
+        ResetAttackTriggers();                      //이전 Trigger 초기화
+        animator.SetTrigger(FinishAttackHash);      //Finish State 진입
+    }
+
+    //*공격 취소 / 정상 종료*
     private void StopAttack()
     {
-        //공격 상태 종료
-        animator.SetBool(IsAttackingHash, false);                   //공격 상태 종료
+        animator.SetBool(IsAttackingHash, false);   //공격 상태 종료
+        ResetAttackTriggers();                      //남아있는 공격 Trigger 정리
+    }
 
-        //혹시 아직 소비되지 않은 Trigger가 있다면 초기화
-        animator.ResetTrigger(GroundAttackHash);
-        animator.ResetTrigger(AirAttackHash);
+    //*공격 Trigger 전체 초기화*
+    private void ResetAttackTriggers()
+    {
+        animator.ResetTrigger(ChargeAttackHash);
+        animator.ResetTrigger(SlashAttackHash);
+        animator.ResetTrigger(FinishAttackHash);
     }
 }

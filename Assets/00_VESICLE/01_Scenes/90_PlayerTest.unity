@@ -449,6 +449,7 @@ GameObject:
   - component: {fileID: 827351923}
   - component: {fileID: 827351924}
   - component: {fileID: 827351925}
+  - component: {fileID: 827351926}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -568,8 +569,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerInputReader
   moveAction: {fileID: 6184728787130581236, guid: 781831a611d3758438136cf989d9d834, type: 3}
   jumpAction: {fileID: -2765234084031741858, guid: 781831a611d3758438136cf989d9d834, type: 3}
+  jumpWAction: {fileID: -6007580417048253652, guid: 781831a611d3758438136cf989d9d834, type: 3}
   dashAction: {fileID: -7154976329558016642, guid: 781831a611d3758438136cf989d9d834, type: 3}
   attackAction: {fileID: -796378960186498395, guid: 781831a611d3758438136cf989d9d834, type: 3}
+  throwAction: {fileID: 9005221493944540298, guid: 781831a611d3758438136cf989d9d834, type: 3}
 --- !u!114 &827351911
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -759,6 +762,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHitReaction
   playerHealth: {fileID: 827351918}
   controlLock: {fileID: 827351923}
+  playerWeaponThrow: {fileID: 0}
   knockbackSpeedX: 4.5
   knockbackSpeedY: 6
   controlLockDuration: 0.18
@@ -775,6 +779,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHitFeedback
   playerHealth: {fileID: 827351918}
+  playerWeaponThrow: {fileID: 827351926}
   playerSprite: {fileID: 1709673033}
   hitSprite: {fileID: 909625332}
   hitPoseDuration: 0.15
@@ -810,10 +815,12 @@ MonoBehaviour:
   inputReader: {fileID: 827351910}
   playerMovement: {fileID: 827351909}
   playerJump: {fileID: 827351911}
-  playerDash: {fileID: 827351912}
   controlLock: {fileID: 827351923}
-  stationaryAdvanceSpeed: 15
-  stationaryAdvanceDuration: 0.1
+  playerHealth: {fileID: 827351918}
+  minSlashDistance: 1.5
+  maxSlashDistance: 5
+  maxChargeDuration: 0.8
+  slashSpeed: 22
 --- !u!114 &827351925
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -835,6 +842,20 @@ MonoBehaviour:
   enemyLayer:
     serializedVersion: 2
     m_Bits: 1152
+--- !u!114 &827351926
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 827351905}
+  m_Enabled: 0
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eb040ae40a043c549999d99671aa7618, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerWeaponThrow
+  inputReader: {fileID: 827351910}
+  controlLock: {fileID: 827351923}
 --- !u!1 &909625330
 GameObject:
   m_ObjectHideFlags: 0
