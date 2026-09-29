@@ -25,19 +25,33 @@ public class PlayerHealth : MonoBehaviour
     //*데미지 처리*
     public void TakeDamage(float damage, Vector2 hitDirection)
     {
-        if (damage <= 0f) return;                                       //잘못된 데미지 무시
-        if (IsDead) return;                                             //사망 후 추가 데미지 무시
-        if (playerInvincibility.IsInvincible) return;                   //무적 중 데미지 무시
+        if (damage <= 0f) return;                       //잘못된 데미지 무시
+        if (IsDead) return;                             //사망 후 추가 데미지 무시
+        if (playerInvincibility.IsInvincible) return;   //일반 공격은 무적 중 무시
 
-        CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);          //0 아래로 내려가지 않게 제한
+        ApplyDamage(damage, hitDirection);              //실제 데미지 적용
+    }
 
-        OnDamaged?.Invoke(damage);                                      //피격 발생 알림
-        OnHitReceived?.Invoke(hitDirection.normalized);                 //공격이 어느 방향으로 들어왔는지 알림
-        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);              //체력 변경 알림
+    //*무적을 무시하는 강제 데미지 처리*
+    public void TakeForcedDamage(float damage, Vector2 hitDirection)
+    {
+        if (damage <= 0f) return;       //잘못된 데미지 무시
+        if (IsDead) return;             //사망 후 추가 데미지 무시
 
+        //PlayerInvincibility 상태와 관계없이 실제 데미지 적용
+        ApplyDamage(damage, hitDirection);
+    }
+
+    //*실제 체력 감소와 피격 이벤트 처리*
+    private void ApplyDamage(float damage, Vector2 hitDirection)
+    {
+        CurrentHealth = Mathf.Max(0f, CurrentHealth - damage);  //체력이 0 아래로 내려가지 않도록 제한
+        OnDamaged?.Invoke(damage);                              //피격 관련 시스템에 알림
+        OnHitReceived?.Invoke(hitDirection.normalized);         //넉백 방향 등 피격 반응에 사용할 방향 전달
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);      //UI와 회복 시스템 등에 현재 체력 전달
         if (CurrentHealth <= 0f)
         {
-            Die();
+            Die();                                              //체력이 모두 소진됐다면 사망 처리
         }
     }
 

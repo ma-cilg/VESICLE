@@ -5,15 +5,16 @@ using UnityEngine.InputSystem;  //InputActionReference, Input System 사용
 
 public class PlayerInputReader : MonoBehaviour
 {
-    [SerializeField] private InputActionReference moveAction;   //이동
-    [SerializeField] private InputActionReference jumpAction;   //Space키 점프
-    [SerializeField] private InputActionReference jumpWAction;  //W키 점프
-    [SerializeField] private InputActionReference dashAction;   //대시
-    [SerializeField] private InputActionReference attackAction; //기본 공격
-    [SerializeField] private InputActionReference throwAction;  //검 투척
+    [SerializeField] private InputActionReference moveAction;           //이동
+    [SerializeField] private InputActionReference jumpAction;           //Space키 점프
+    [SerializeField] private InputActionReference jumpWAction;          //W키 점프
+    [SerializeField] private InputActionReference attackAction;         //기본 공격
+    [SerializeField] private InputActionReference aimPositionAction;    //마우스 화면 위치
+    [SerializeField] private InputActionReference throwAction;          //검 투척
 
     //프로퍼티
     public Vector2 MoveInput => moveAction.action.ReadValue<Vector2>();
+    public Vector2 AimPosition => aimPositionAction.action.ReadValue<Vector2>();
 
     //*컴포넌트 활성화 중일때만 입력 가능*
     private void OnEnable()
@@ -21,8 +22,8 @@ public class PlayerInputReader : MonoBehaviour
         moveAction.action.Enable();
         jumpAction.action.Enable();
         jumpWAction.action.Enable();
-        dashAction.action.Enable();
         attackAction.action.Enable();
+        aimPositionAction.action.Enable();
         throwAction.action.Enable();
     }
 
@@ -31,8 +32,8 @@ public class PlayerInputReader : MonoBehaviour
         moveAction.action.Disable();
         jumpAction.action.Disable();
         jumpWAction.action.Disable();
-        dashAction.action.Disable();
         attackAction.action.Disable();
+        aimPositionAction.action.Disable();
         throwAction.action.Disable();
     }
 
@@ -42,33 +43,19 @@ public class PlayerInputReader : MonoBehaviour
         return jumpAction.action.WasPressedThisFrame() || jumpWAction.action.WasPressedThisFrame();
     }
 
-    //*대시버튼이 새롭게 눌렸는지 반환*
-    public bool IsDashPressed()
-    {
-        return dashAction.action.WasPressedThisFrame();
-    }
-
-    //*공격버튼이 새롭게 눌렸는지 반환*
+    //*좌클릭 공격 입력 확인*
     public bool IsAttackPressed()
     {
         return attackAction.action.WasPressedThisFrame();
-    }
-
-    //*공격 버튼을 현재 계속 누르고 있는지 확인*
-    public bool IsAttackHeld()
-    {
-        return attackAction.action.IsPressed();
-    }
-
-    //*공격 버튼을 이번 프레임에 뗐는지 확인*
-    public bool IsAttackReleased()
-    {
-        return attackAction.action.WasReleasedThisFrame();
     }
 
     //*투척 버튼이 새롭게 눌렸는지 반환*
     public bool IsThrowPressed()
     {
         return throwAction.action.WasPressedThisFrame();
+    }
+    public bool IsDashPressed()
+    {
+        return false;
     }
 }

@@ -26,7 +26,7 @@ public class PlayerAnimation : MonoBehaviour
     private void OnEnable()
     {
         //이벤트 구독
-        playerAttack.OnChargeStarted += PlayCharge;
+        playerAttack.OnPreSlashStarted += PlayPreSlash;
         playerAttack.OnSlashStarted += PlaySlash;
         playerAttack.OnFinishStarted += PlayFinish;
         playerAttack.OnAttackCancelled += StopAttack;
@@ -36,7 +36,7 @@ public class PlayerAnimation : MonoBehaviour
     private void OnDisable()
     {
         //등록했던 이벤트 구독 해제
-        playerAttack.OnChargeStarted -= PlayCharge;
+        playerAttack.OnPreSlashStarted -= PlayPreSlash;
         playerAttack.OnSlashStarted -= PlaySlash;
         playerAttack.OnFinishStarted -= PlayFinish;
         playerAttack.OnAttackCancelled -= StopAttack;
@@ -60,8 +60,8 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(IsGroundedHash, playerJump.IsGrounded);    //지상 / 공중 판단
     }
 
-    //*차징 시작*
-    private void PlayCharge()
+    //*이동 공격 직전 모션 시작*
+    private void PlayPreSlash()
     {
         animator.SetBool(IsAttackingHash, true);    //공격 시작 상태
         ResetAttackTriggers();                      //이전 Trigger 초기화

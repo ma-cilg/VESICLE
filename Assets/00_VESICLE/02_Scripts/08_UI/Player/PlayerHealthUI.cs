@@ -10,12 +10,20 @@ public class PlayerHealthUI : MonoBehaviour
     [SerializeField] private CanvasGroup canvasGroup;                   //캔버스 그룹(HP바 알파값 조절용)
     [SerializeField, Min(0f)] private float fadeDuration = 0.5f;        //풀피시 HP바가 사라지는 데 걸리는 시간
 
+    [SerializeField] private RectTransform barRoot;                     //피격 시 흔들 체력바 전체 Root
+    [SerializeField, Min(0f)] private float shakeDuration = 0.12f;      //흔들리는 시간
+    [SerializeField, Min(0f)] private float shakeStrength = 0.6f;       //흔들림 강도
+
     private float fullWidth;                                            //체력이 100%일 때 Fill
     private Tween fadeTween;                                            //현재 실행 중인 Fade Tween을 저장
+
+    private Tween shakeTween;                                           //현재 실행 중인 체력바 흔들림
+    private Vector2 originalAnchoredPosition;                           //체력바 원래 위치
 
     private void Awake()
     {
         fullWidth = fillRect.rect.width;                                //게임 시작 시 Fill의 현재 Width를 저장
+        originalAnchoredPosition = barRoot.anchoredPosition;            //흔들림 후 돌아올 원래 위치 저장
     }
 
     private void OnEnable()
@@ -46,12 +54,41 @@ public class PlayerHealthUI : MonoBehaviour
 
         fadeTween?.Kill();              //Fade가 실행 중이었으면 중단
         fadeTween = null;               //기존 Tween 참조도 제거
+
+        shakeTween?.Kill();             //흔들림 Tween도 중단
+        shakeTween = null;              //참조 제거
+
+        if (barRoot != null)
+        {
+            barRoot.anchoredPosition = originalAnchoredPosition;
+        }
     }
 
     //*실제로 데미지를 받았을 때 호출*
     private void HandleDamaged(float damage)
     {
-        ShowImmediately();
+        ShowImmediately();              //피격 순간 체력바 표시
+        PlayDamageShake();              //체력바 흔들림
+    }
+
+    //*피격 시 체력바 흔들림*
+    private void PlayDamageShake()
+    {
+        //이전 흔들림이 아직 진행 중이면 중단
+        shakeTween?.Kill();
+
+        //중간에 Tween을 끊었을 때 위치가 어긋나지 않도록 원위치 복구
+        barRoot.anchoredPosition = originalAnchoredPosition;
+
+        //체력바 전체 흔들기
+        shakeTween = barRoot
+            .DOShakeAnchorPos(shakeDuration, shakeStrength, 12, 90f, false, true)
+            .OnComplete(() =>
+            {
+                //원래 위치로 복구
+                barRoot.anchoredPosition = originalAnchoredPosition;
+                shakeTween = null;
+            });
     }
 
     //*현재 체력이 변경될 때마다 호출*

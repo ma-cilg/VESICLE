@@ -31,12 +31,17 @@ public class PlayerAnimationEventRelay : MonoBehaviour
         runFeedback.PlayFrontRelease();
     }
 
+    //*이동 공격 직전 1프레임이 끝났을 때 호출*
+    public void OnPreSlashEnd()
+    {
+        playerAttack.HandlePreSlashEndAnimationEvent();
+    }
+
     //*공격 타격 프레임*
     public void OnAttackHit()
     {
         playerAttack.HandleAttackHitAnimationEvent();
     }
-
 
     //*공격 애니메이션 마지막 프레임*
     public void OnAttackEnd()

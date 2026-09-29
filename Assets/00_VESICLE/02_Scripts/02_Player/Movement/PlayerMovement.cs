@@ -64,6 +64,14 @@ public class PlayerMovement : MonoBehaviour
         playerSprite.flipX = !IsFacingRight;            //이미지 반전
     }
 
+    //*외부 시스템에서 바라보는 방향 강제 설정*
+    public void SetFacingDirection(bool faceRight)
+    {
+        if (IsFacingRight == faceRight) return;         //이미 같은 방향이면 아무것도 안함
+        IsFacingRight = faceRight;                      //새 방향 저장
+        playerSprite.flipX = !IsFacingRight;            //스프라이트 좌우 반전
+    }
+
     //*짧은 보조 이동 적용*
     public void ApplyTemporaryMove(float horizontalSpeed, float duration)
     {
