@@ -56,7 +56,6 @@ public class PlayerHitReaction : MonoBehaviour
         //피격 중 통합 잠금
         controlLock.LockMovement();
         controlLock.LockJump();
-        controlLock.LockDash();
         controlLock.LockAttack();
         controlLock.LockThrow();
         controlLock.LockDetonate();
@@ -79,7 +78,6 @@ public class PlayerHitReaction : MonoBehaviour
         //피격 종료시 통합 잠금 해제
         controlLock.UnlockMovement();
         controlLock.UnlockJump();
-        controlLock.UnlockDash();
         controlLock.UnlockAttack();
         controlLock.UnlockThrow();
         controlLock.UnlockDetonate();

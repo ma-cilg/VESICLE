@@ -6,7 +6,6 @@ public class PlayerRunFeedback : MonoBehaviour
 {
     [Header("References")]
     [SerializeField] private PlayerJump playerJump;             //지상 여부 확인
-    [SerializeField] private PlayerDash playerDash;             //대시 여부 확인
     [SerializeField] private PlayerMovement playerMovement;     //플레이어 방향 확인
     [SerializeField] private Transform groundCheck;             //FX 생성 위치
     [SerializeField] private Transform poolRoot;                //사용하지 않는 FX 보관 위치
@@ -68,7 +67,6 @@ public class PlayerRunFeedback : MonoBehaviour
     private bool CanPlayRunDust()
     {
         if (!playerJump.IsGrounded) return false;   //공중에서 새 먼지 생성 X
-        if (playerDash.IsDashing) return false;     //대시 중 먼지 생성 X
 
         //나중에 벽 조건 추가
 

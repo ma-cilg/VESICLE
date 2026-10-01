@@ -35,7 +35,6 @@ public class PlayerWeaponThrow : MonoBehaviour
         //투척 시작 후 플레이어 조작 잠금
         controlLock.LockMovement();
         controlLock.LockJump();
-        controlLock.LockDash();
         controlLock.LockAttack();
         controlLock.LockThrow();
         controlLock.LockDetonate();
@@ -60,7 +59,6 @@ public class PlayerWeaponThrow : MonoBehaviour
         //조작 잠금 해제
         controlLock.UnlockMovement();
         controlLock.UnlockJump();
-        controlLock.UnlockDash();
         controlLock.UnlockAttack();
         controlLock.UnlockThrow();
         controlLock.UnlockDetonate();
@@ -77,7 +75,6 @@ public class PlayerWeaponThrow : MonoBehaviour
 
         controlLock.UnlockMovement();
         controlLock.UnlockJump();
-        controlLock.UnlockDash();
         controlLock.UnlockAttack();
         controlLock.UnlockThrow();
         controlLock.UnlockDetonate();

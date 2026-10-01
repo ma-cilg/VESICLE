@@ -54,8 +54,4 @@ public class PlayerInputReader : MonoBehaviour
     {
         return throwAction.action.WasPressedThisFrame();
     }
-    public bool IsDashPressed()
-    {
-        return false;
-    }
 }

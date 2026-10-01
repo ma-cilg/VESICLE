@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: 1620048535287628599}
   - component: {fileID: 8738537932512758973}
   m_Layer: 0
-  m_Name: RunDustBackReleaseFX_Temp
+  m_Name: RunDustBackReleaseFX
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0

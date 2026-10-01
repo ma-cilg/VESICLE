@@ -6,11 +6,9 @@ public class PlayerControlLock : MonoBehaviour
 {
     [SerializeField] private PlayerMovement playerMovement;         //이동 제어
     [SerializeField] private PlayerJump playerJump;                 //점프 제어
-    [SerializeField] private PlayerDash playerDash;                 //대시 제어
 
     private int movementLockCount;                                  //현재 이동을 잠그는 시스템 개수
     private int jumpLockCount;                                      //현재 점프를 잠그는 시스템 개수
-    private int dashLockCount;                                      //현재 대시를 잠그는 시스템 개수
 
     private int attackLockCount;                                    //현재 기본 공격을 잠그는 시스템 개수
     private int throwLockCount;                                     //현재 투척 공격을 잠그는 시스템 개수
@@ -48,21 +46,6 @@ public class PlayerControlLock : MonoBehaviour
         jumpLockCount = Mathf.Max(0, jumpLockCount - 1);            //점프 Lock 개수 감소 (음수 안되도록 제한)
         if (jumpLockCount > 0) return;                              //다른 점프 Lock이 남아있으면 종료
         playerJump.SetJumpEnabled(true);                            //다시 PlayerJump 활성화
-    }
-
-    //*대시 잠금 추가*
-    public void LockDash()
-    {
-        dashLockCount++;                                            //대시 Lock 개수 증가
-        playerDash.SetDashEnabled(false);                           //playerDash 비활성화
-    }
-
-    //*대시 잠금 해제*
-    public void UnlockDash()
-    {
-        dashLockCount = Mathf.Max(0, dashLockCount - 1);            //대시 Lock 개수 감소 (음수 안되도록 제한)
-        if (dashLockCount > 0) return;                              //다른 대시 Lock이 남아있으면 종료
-        playerDash.SetDashEnabled(true);                            //다시 PlayerDash 활성화
     }
 
     //*기본 공격 잠금 추가*

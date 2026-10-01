@@ -580,11 +580,9 @@ GameObject:
   - component: {fileID: 827351910}
   - component: {fileID: 827351909}
   - component: {fileID: 827351911}
-  - component: {fileID: 827351912}
   - component: {fileID: 827351913}
   - component: {fileID: 827351914}
   - component: {fileID: 827351915}
-  - component: {fileID: 827351916}
   - component: {fileID: 827351917}
   - component: {fileID: 827351918}
   - component: {fileID: 827351920}
@@ -740,25 +738,6 @@ MonoBehaviour:
   groundCheckRadius: 0.15
   jumpSpeed: 10
   extraJumpCount: 1
---- !u!114 &827351912
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 827351905}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: cfc0e900f9fe0d3449662dcd609871b4, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerDash
-  inputReader: {fileID: 827351910}
-  playerMovement: {fileID: 827351909}
-  controlLock: {fileID: 827351923}
-  playerInvincibility: {fileID: 827351917}
-  dashSpeed: 18
-  dashDuration: 0.15
-  dashCooldown: 0.35
 --- !u!114 &827351913
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -806,7 +785,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerRunFeedback
   playerJump: {fileID: 827351911}
-  playerDash: {fileID: 827351912}
   playerMovement: {fileID: 827351909}
   groundCheck: {fileID: 1199494469}
   poolRoot: {fileID: 606972812}
@@ -815,31 +793,6 @@ MonoBehaviour:
   frontContactPrefab: {fileID: 8319324196108873632, guid: 88f2ab675c0d4f74799719523005e49c, type: 3}
   frontReleasePrefab: {fileID: -2885966744464544620, guid: a26ca8afb797b4549a90f568fcf74439, type: 3}
   initialPoolSize: 2
---- !u!114 &827351916
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 827351905}
-  m_Enabled: 0
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 06c6bad5ef8a7984fb59c8b3ae26fa8a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerDashFeedback
-  playerDash: {fileID: 827351912}
-  playerJump: {fileID: 827351911}
-  playerMovement: {fileID: 827351909}
-  playerSprite: {fileID: 1709673033}
-  groundCheck: {fileID: 1199494469}
-  poolRoot: {fileID: 606972812}
-  dashDustPrefab: {fileID: 7253824467178630427, guid: 978df8ad80a186c44888a33032d4c902, type: 3}
-  dashDustPoolSize: 2
-  afterImagePrefab: {fileID: 8859570095480409560, guid: 5521b63c25299a94b8a1f8178f70ffb8, type: 3}
-  afterImagePoolSize: 5
-  afterImageInterval: 0.04
-  afterImageFadeDuration: 0.15
-  afterImageColor: {r: 1, g: 1, b: 1, a: 0.45}
 --- !u!114 &827351917
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -946,7 +899,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerControlLock
   playerMovement: {fileID: 827351909}
   playerJump: {fileID: 827351911}
-  playerDash: {fileID: 827351912}
 --- !u!114 &827351924
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -961,7 +913,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
   inputReader: {fileID: 827351910}
   playerMovement: {fileID: 827351909}
-  playerJump: {fileID: 827351911}
   controlLock: {fileID: 827351923}
   playerInvincibility: {fileID: 827351917}
   attackGauge: {fileID: 827351927}
@@ -1037,8 +988,8 @@ MonoBehaviour:
   playerSprite: {fileID: 1709673033}
   groundCheck: {fileID: 1199494469}
   poolRoot: {fileID: 606972812}
-  dashDustPrefab: {fileID: 7253824467178630427, guid: 978df8ad80a186c44888a33032d4c902, type: 3}
-  dashDustPoolSize: 2
+  movementAttackDustPrefab: {fileID: 7253824467178630427, guid: 978df8ad80a186c44888a33032d4c902, type: 3}
+  movementAttackDustPoolSize: 2
   afterImagePrefab: {fileID: 8859570095480409560, guid: 5521b63c25299a94b8a1f8178f70ffb8, type: 3}
   afterImagePoolSize: 8
   afterImageSpacing: 0.45
@@ -1331,7 +1282,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -5, y: 0}
+  m_AnchoredPosition: {x: -10, y: 0}
   m_SizeDelta: {x: 35, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1153836758
@@ -1591,7 +1542,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 90}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 0, y: 0}
+  m_AnchoredPosition: {x: -5, y: 0}
   m_SizeDelta: {x: 35, y: 3}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!225 &1491316584

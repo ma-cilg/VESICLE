@@ -37,12 +37,6 @@ public class PlayerAnimationEventRelay : MonoBehaviour
         playerAttack.HandlePreSlashEndAnimationEvent();
     }
 
-    //*공격 타격 프레임*
-    public void OnAttackHit()
-    {
-        playerAttack.HandleAttackHitAnimationEvent();
-    }
-
     //*공격 애니메이션 마지막 프레임*
     public void OnAttackEnd()
     {

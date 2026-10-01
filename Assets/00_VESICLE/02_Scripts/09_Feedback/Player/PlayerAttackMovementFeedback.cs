@@ -1,6 +1,7 @@
 //**플레이어 이동 공격 이동 연출 처리**
 //책임: 실제 이동 공격 시작 → 지상 먼지 재생 → 이동 경로에 잔상 생성
 using UnityEngine;
+using UnityEngine.Serialization;    //SerializeField 이름 변경 시 기존 Inspector 연결 유지
 
 public class PlayerAttackMovementFeedback : MonoBehaviour
 {
@@ -13,8 +14,11 @@ public class PlayerAttackMovementFeedback : MonoBehaviour
     [SerializeField] private Transform poolRoot;                        //사용하지 않는 FX 보관 위치
 
     [Header("Ground FX")]
-    [SerializeField] private PooledFX dashDustPrefab;                   //Dash Dust
-    [SerializeField, Min(1)] private int dashDustPoolSize = 2;
+    [FormerlySerializedAs("dashDustPrefab")]
+    [SerializeField] private PooledFX movementAttackDustPrefab;             //이동 공격 시작 시 지상 먼지 FX
+
+    [FormerlySerializedAs("dashDustPoolSize")]
+    [SerializeField, Min(1)] private int movementAttackDustPoolSize = 2;    //이동 공격 FX 초기 Pool 크기
 
     [Header("After Image")]
     [SerializeField] private PlayerAfterImage afterImagePrefab;         //잔상 Prefab
@@ -29,14 +33,14 @@ public class PlayerAttackMovementFeedback : MonoBehaviour
     [SerializeField]
     private Color afterImageColor = new Color(1f, 1f, 1f, 0.45f);
 
-    private ComponentPool<PooledFX> dashDustPool;
+    private ComponentPool<PooledFX> movementAttackDustPool;
     private ComponentPool<PlayerAfterImage> afterImagePool;
 
     private Vector3 lastAfterImagePosition;                             //마지막 잔상 생성 위치
 
     private void Awake()
     {
-        dashDustPool = new ComponentPool<PooledFX>(dashDustPrefab, poolRoot, dashDustPoolSize);
+        movementAttackDustPool = new ComponentPool<PooledFX>(movementAttackDustPrefab, poolRoot, movementAttackDustPoolSize);
         afterImagePool = new ComponentPool<PlayerAfterImage>(afterImagePrefab, poolRoot, afterImagePoolSize);
     }
 
@@ -81,11 +85,13 @@ public class PlayerAttackMovementFeedback : MonoBehaviour
     {
         if (!playerJump.IsGrounded) return;
 
-        PooledFX fx = dashDustPool.Get();
+        PooledFX fx = movementAttackDustPool.Get();
         fx.transform.SetPositionAndRotation(groundCheck.position, Quaternion.identity);
+
         float direction = playerMovement.IsFacingRight ? 1f : -1f;      //플레이어가 바라보는 방향에 맞게 FX 좌우 방향 설정
         fx.transform.localScale = new Vector3(direction, 1f, 1f);
-        fx.Play(dashDustPool.Return);
+
+        fx.Play(movementAttackDustPool.Return);
     }
 
     //*잔상 한 장 생성*

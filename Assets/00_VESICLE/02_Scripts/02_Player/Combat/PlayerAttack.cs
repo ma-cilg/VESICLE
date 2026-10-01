@@ -18,7 +18,6 @@ public class PlayerAttack : MonoBehaviour
 {
     [SerializeField] private PlayerInputReader inputReader;             //좌클릭 입력 확인
     [SerializeField] private PlayerMovement playerMovement;             //현재 바라보는 방향 확인
-    [SerializeField] private PlayerJump playerJump;                     //공격 시작 당시 지상/공중 상태 확인
     [SerializeField] private PlayerControlLock controlLock;             //공격 중 플레이어 조작 잠금
     [SerializeField] private PlayerInvincibility playerInvincibility;   //이동 공격 중 무적 처리
     [SerializeField] private PlayerAttackGauge attackGauge;             //이동 공격 사용 가능 여부와 게이지 소비
@@ -37,7 +36,6 @@ public class PlayerAttack : MonoBehaviour
     public bool IsAttacking => CurrentState != PlayerAttackState.Idle;
     public bool IsCommittedAttack => CurrentState == PlayerAttackState.Slashing || CurrentState == PlayerAttackState.Finishing;
 
-    public bool IsAirAttack { get; private set; }
     public Vector2 AttackDirection => attackDirection;
 
     private float remainingSlashDistance;
@@ -51,9 +49,6 @@ public class PlayerAttack : MonoBehaviour
     public event Action OnFinishStarted;
     public event Action OnAttackCancelled;
     public event Action OnAttackEnded;
-    public event Action OnAttackHit;
-    public event Action OnGroundAttackStarted;
-    public event Action OnAirAttackStarted;
 
     private void Awake()
     {
@@ -75,7 +70,7 @@ public class PlayerAttack : MonoBehaviour
         if (CurrentState != PlayerAttackState.Idle) return;         //공격 중이면 새로운 좌클릭 무시
         if (!inputReader.IsAttackPressed()) return;                 //좌클릭 안했으면 종료
         if (!controlLock.CanAttack) return;                         //공격이 잠겨있다면 종료
-        if (!attackGauge.TryUseAttack()) return;                    //공격 게이지가 25% 미만이면 공격안함
+        if (!attackGauge.TryUseAttack()) return;                    //공격 1회분 게이지가 부족하면 공격하지 않음
 
         StartPreSlash();                                            //공격 직전 상태 시작
     }
@@ -175,7 +170,6 @@ public class PlayerAttack : MonoBehaviour
         if (CurrentState != PlayerAttackState.PreSlash) return;
 
         CurrentState = PlayerAttackState.Slashing;                  //실제 이동 공격 상태 시작
-        IsAirAttack = !playerJump.IsGrounded;                       //공격시 공중 여부 기록
 
         remainingSlashDistance = Vector2.Distance(rb.position, attackTargetPosition);
 
@@ -277,20 +271,12 @@ public class PlayerAttack : MonoBehaviour
         EndAttack();
     }
 
-    //*Animation Event 호환용*
-    public void HandleAttackHitAnimationEvent()
-    {
-        if (CurrentState != PlayerAttackState.Slashing) return;
-        OnAttackHit?.Invoke();
-    }
-
     //*공격 전체 정상 종료*
     private void EndAttack()
     {
         CurrentState = PlayerAttackState.Idle;
         remainingSlashDistance = 0f;
         ReleaseSlashHeight();                           //중력 복구
-        IsAirAttack = false;
         ReleaseControls();                              //플레이어 조작 복구
         OnAttackEnded?.Invoke();                        //공격 전체 종료 알림
     }
@@ -304,7 +290,6 @@ public class PlayerAttack : MonoBehaviour
 
         controlLock.LockMovement();
         controlLock.LockJump();
-        controlLock.LockDash();
         controlLock.LockThrow();
         controlLock.LockDetonate();
     }
@@ -318,7 +303,6 @@ public class PlayerAttack : MonoBehaviour
 
         controlLock.UnlockMovement();
         controlLock.UnlockJump();
-        controlLock.UnlockDash();
         controlLock.UnlockThrow();
         controlLock.UnlockDetonate();
     }
