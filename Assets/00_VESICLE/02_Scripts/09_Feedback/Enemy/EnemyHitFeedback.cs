@@ -1,70 +1,125 @@
-//**적 피격 시 시각적 움찔 효과 처리**
-//책임: 검 피격 이벤트 수신 → Visual에 짧은 위치/크기 반동 적용 → 원래 상태 복구
-using DG.Tweening;      //DOTween 사용
+//**적 피격 시 시각 피드백 처리**
+//책임: 피격 이벤트 수신 → Stuck Sprite 표시 → 짧은 시간 후 원래 Sprite 복구
+using DG.Tweening;
 using UnityEngine;
 
 public class EnemyHitFeedback : MonoBehaviour
 {
-    [SerializeField] private EnemyHitReceiver hitReceiver;                      //공격 받았다는 이벤트를 받기 위한 컴포넌트
-    [SerializeField] private Transform visualTransform;                         //실제 적의 Sprite가 들어있는 Visual Transform
+    [SerializeField] private EnemyHitReceiver hitReceiver;          //피격 이벤트 수신
 
-    [SerializeField, Min(0f)] private float recoilDistance = 0.08f;             //피격 순간 공격 방향으로 밀리는 거리
-    [SerializeField, Min(0f)] private float recoilUp = 0.03f;                   //피격 순간 아주 조금 위로 튀는 시각 효과
-    [SerializeField, Min(0.01f)] private float recoilDuration = 0.1f;           //피격 움찔 효과 전체 시간
-    [SerializeField] private Vector2 scalePunch = new Vector2(-0.06f, 0.08f);   //움찔하면서 적용할 크기 변화
+    [Header("Sprite")]
+    [SerializeField] private SpriteRenderer enemySprite;            //평소 적 SpriteRenderer
+    [SerializeField] private SpriteRenderer stuckSprite;            //피격 순간 보여줄 Stuck SpriteRenderer
+    [SerializeField] private Transform hitVfxPoint;                 //피격 VFX가 생성될 기준 위치
+    [SerializeField, Min(0f)] private float hitVfxHorizontalOffset = 0.6f;
+    [SerializeField] private bool stuckSpriteFacesRightByDefault = true;
+    [SerializeField] private Animator hitAnimator;                  //HitVisual의 피격 애니메이션 재생
+    [SerializeField] private AnimationClip hitAnimationClip;        //피격 애니메이션 전체 길이 확인
 
-    private Tween positionTween;                                                //현재 실행 중인 위치 Tween
-    private Tween scaleTween;                                                   //현재 실행 중인 Scale Tween
+    [Header("Hit VFX")]
+    [SerializeField] private PooledFX hitVfxPrefab;                 //적 피격 순간 재생할 VFX
+    [SerializeField] private Transform poolRoot;                    //사용하지 않는 VFX를 보관할 Pool Root
+    [SerializeField, Min(1)] private int hitVfxPoolSize = 3;        //처음 생성해둘 Hit VFX 개수
 
-    private Vector3 originalLocalPosition;                                      //Visual 원래 위치
-    private Vector3 originalLocalScale;                                         //Visual 원래 크기
+    private Tween stuckTween;                                       //Stuck Sprite 유지 시간 Tween
+    private ComponentPool<PooledFX> hitVfxPool;                     //Hit VFX 전용 Pool
 
     private void Awake()
     {
-        originalLocalPosition = visualTransform.localPosition;                  //게임 시작 시 Visual 원래 위치 저장
-        originalLocalScale = visualTransform.localScale;                        //게임 시작 시 Visual 원래 Scale 저장
+        stuckSprite.enabled = false;
+        hitVfxPool = new ComponentPool<PooledFX>(hitVfxPrefab, poolRoot, hitVfxPoolSize);
     }
 
     private void OnEnable()
     {
-        hitReceiver.OnHitReceived += PlayHitFeedback;                           //검 공격에 맞았을 때 피격 Feedback 실행
+        hitReceiver.OnHitReceived += PlayHitFeedback;
     }
 
     private void OnDisable()
     {
-        hitReceiver.OnHitReceived -= PlayHitFeedback;                           //이벤트 구독 해제
+        hitReceiver.OnHitReceived -= PlayHitFeedback;
 
-        //실행 중인 Tween 제거
-        positionTween?.Kill();
-        scaleTween?.Kill();
+        //진행 중인 Stuck 연출 제거
+        stuckTween?.Kill();
+        stuckTween = null;
 
-        positionTween = null;
-        scaleTween = null;
-
-        //비활성화될 때 Visual 상태 원상복구
-        visualTransform.localPosition = originalLocalPosition;
-        visualTransform.localScale = originalLocalScale;
+        RestoreVisual();                                    //Visual 원상복구
     }
 
-    //*적 피격 움찔 효과 재생*
+    //*적이 공격에 맞았을 때*
     private void PlayHitFeedback(EnemyHitInfo hitInfo)
     {
-        //이전 피격 Tween이 아직 진행 중이라면 제거
-        positionTween?.Kill();
-        scaleTween?.Kill();
+        //이전 피격 연출이 아직 있다면 제거
+        stuckTween?.Kill();
+        stuckTween = null;
 
-        //새 피격 효과를 시작전 항상 원래 위치와 Scale로 복구
-        visualTransform.localPosition = originalLocalPosition;
-        visualTransform.localScale = originalLocalScale;
+        RestoreVisual();                                    //먼저 정상 상태로 복구
 
-        //공격이 들어온 방향으로 Visual이 잠깐 밀려나는 방향 계산
-        Vector3 recoil = new Vector3(hitInfo.HitDirection.x * recoilDistance, recoilUp, 0f);
+        //이동 공격의 가로 방향에 맞춰 HitVisual 방향 결정
+        if (Mathf.Abs(hitInfo.HitDirection.x) > 0.001f)
+        {
+            bool shouldFaceRight = hitInfo.HitDirection.x < 0f;
+            bool shouldFlipX = stuckSpriteFacesRightByDefault ? !shouldFaceRight : shouldFaceRight;
 
-        //Visual 위치를 짧게 움찔시킨 뒤 자동으로 원래 위치로 돌아오게 함
-        positionTween = visualTransform.DOPunchPosition(recoil, recoilDuration, 4, 0.5f).SetEase(Ease.OutQuad);
+            stuckSprite.flipX = shouldFlipX;                //피격 Sprite 방향
+            enemySprite.flipX = shouldFlipX;                //피격 종료 후 Idle도 같은 방향 유지
+        }
 
-        //몸이 살짝 눌렸다 펴지는 타격감 추가
-        Vector3 punchScale = new Vector3(scalePunch.x, scalePunch.y, 0f);
-        scaleTween = visualTransform.DOPunchScale(punchScale, recoilDuration, 4, 0.5f).SetEase(Ease.OutQuad);
+        stuckSprite.color = enemySprite.color;              //현재 적 색상 복사
+
+        enemySprite.enabled = false;                        //평소 Visual 숨김
+        stuckSprite.enabled = true;                         //HitVisual 표시
+
+        //피격 애니메이션을 항상 첫 프레임부터 다시 재생
+        hitAnimator.Play("Enemy_Hit", 0, 0f);
+        hitAnimator.Update(0f);
+
+        PlayHitVFX(hitInfo);                                //같은 순간 피격 VFX 재생
+
+        //Enemy_Hit 애니메이션이 끝날 때까지 HitVisual 유지
+        stuckTween = DOVirtual
+            .DelayedCall(hitAnimationClip.length, RestoreVisual)
+            .OnComplete(() =>
+            {
+                stuckTween = null;
+            });
+    }
+
+    //*적 피격 순간 Hit VFX 재생*
+    private void PlayHitVFX(EnemyHitInfo hitInfo)
+    {
+        PooledFX fx = hitVfxPool.Get();                     //Pool에서 사용 가능한 VFX 하나 가져오기
+        Vector3 hitPosition = hitVfxPoint.position;         //기본 위치는 적 배 중앙의 HitVFXPoint
+
+        //플레이어가 움직인 방향의 반대쪽이 실제로 칼이 들어온 면
+        if (Mathf.Abs(hitInfo.HitDirection.x) > 0.001f)
+        {
+            float hitSide = -Mathf.Sign(hitInfo.HitDirection.x);
+
+            hitPosition.x += hitSide * hitVfxHorizontalOffset;
+        }
+
+        //VFX 위치는 공격 방향과 관계없이 항상 HitVFXPoint에 고정
+        fx.transform.SetPositionAndRotation(hitPosition, Quaternion.identity);
+
+        float direction = hitInfo.HitDirection.x >= 0f ? 1f : -1f;  //공격 방향에 따라 좌우만 뒤집기
+        Vector3 currentScale = fx.transform.localScale;
+        fx.transform.localScale = new Vector3(Mathf.Abs(currentScale.x) * direction, Mathf.Abs(currentScale.y), Mathf.Abs(currentScale.z));
+
+        fx.Play(hitVfxPool.Return);                         //VFX 재생이 끝나면 다시 Pool로 반환
+    }
+
+    //*평소 적 Visual로 복구*
+    private void RestoreVisual()
+    {
+        if (enemySprite != null)
+        {
+            enemySprite.enabled = true;
+        }
+
+        if (stuckSprite != null)
+        {
+            stuckSprite.enabled = false;
+        }
     }
 }

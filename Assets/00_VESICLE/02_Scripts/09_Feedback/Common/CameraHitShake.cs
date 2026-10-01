@@ -5,52 +5,72 @@ using UnityEngine;
 
 public class CameraHitShake : MonoBehaviour
 {
-    [SerializeField] private PlayerHealth playerHealth;             //데미지 받았는지 이벤트 받을 PlayerHealth
-    [SerializeField] private Transform cameraTransform;             //흔들 카메라
+    [SerializeField] private PlayerHealth playerHealth;                     //데미지 받았는지 이벤트 받을 PlayerHealth
+    [SerializeField] private Transform cameraTransform;                     //흔들 카메라
+    [SerializeField] private PlayerAttack playerAttack;                     //이동 공격 시작 이벤트를 받을 PlayerAttack
 
-    [SerializeField, Min(0f)] private float shakeDuration = 0.1f;   //쉐이크가 유지되는 시간
-    [SerializeField, Min(0f)] private float shakeStrength = 0.05f;  //카메라가 원래 위치에서 얼마나 크게 벗어날지
-    [SerializeField, Min(1)] private int vibrato = 8;               //쉐이크 시간 동안 몇 번 정도 흔들릴지
+    [Header("Player Hit")]
+    [SerializeField, Min(0f)] private float hitShakeDuration = 0.1f;        //플레이어 피격 쉐이크 시간
+    [SerializeField, Min(0f)] private float hitShakeStrength = 0.05f;       //플레이어 피격 쉐이크 강도
+    [SerializeField, Min(1)] private int hitVibrato = 8;                    //플레이어 피격 흔들림 횟수
 
-    private Tween shakeTween;                                       //현재 실행 중인 Shake Tween 저장
-    private Vector3 originalLocalPosition;                          //Main Camera의 원래 Local Position 저장
+    [Header("Movement Attack")]
+    [SerializeField, Min(0f)] private float attackShakeDuration = 0.06f;    //이동 공격 발동 쉐이크 시간
+    [SerializeField, Min(0f)] private float attackShakeStrength = 0.025f;   //이동 공격 발동 쉐이크 강도
+    [SerializeField, Min(1)] private int attackVibrato = 5;                 //이동 공격 흔들림 횟수
+
+    private Tween shakeTween;                                               //현재 실행 중인 Shake Tween 저장
+    private Vector3 originalLocalPosition;                                  //Main Camera의 원래 Local Position 저장
 
     private void Awake()
     {
-        originalLocalPosition = cameraTransform.localPosition;      //게임 시작 시 Main Camera의 기본 Local Position 저장
+        originalLocalPosition = cameraTransform.localPosition;              //게임 시작 시 Main Camera의 기본 Local Position 저장
     }
 
     private void OnEnable()
     {
-        playerHealth.OnDamaged += PlayShake;
+        playerHealth.OnDamaged += HandlePlayerDamaged;
+        playerAttack.OnSlashStarted += HandleMovementAttackStarted;
     }
 
     private void OnDisable()
     {
-        playerHealth.OnDamaged -= PlayShake;
+        playerHealth.OnDamaged -= HandlePlayerDamaged;
+        playerAttack.OnSlashStarted -= HandleMovementAttackStarted;
 
-        shakeTween?.Kill();                                         //실행 중인 카메라 Shake가 있다면 중단
-        shakeTween = null;                                          //Tween 참조 제거
+        shakeTween?.Kill();                                                 //실행 중인 카메라 Shake가 있다면 중단
+        shakeTween = null;                                                  //Tween 참조 제거
 
-        cameraTransform.localPosition = originalLocalPosition;      //오브젝트가 Shake 도중 꺼져도 원래 위치 복구
+        cameraTransform.localPosition = originalLocalPosition;              //오브젝트가 Shake 도중 꺼져도 원래 위치 복구
     }
 
-    //*플레이어가 실제 데미지를 받았을 때 카메라 쉐이크 시작*
-    private void PlayShake(float damage)
+    //*플레이어가 실제 데미지를 받았을 때*
+    private void HandlePlayerDamaged(float damage)
     {
-        shakeTween?.Kill();                                         //이전 Shake가 아직 실행 중이면 종료
-        cameraTransform.localPosition = originalLocalPosition;      //새 Shake를 시작하기 전에 기준 위치를 정확하게 복구
+        PlayShake(hitShakeDuration, hitShakeStrength, hitVibrato);
+    }
 
-        //Main Camera의 Local Position을 흔듦
+    //*이동 공격이 실제로 시작됐을 때*
+    private void HandleMovementAttackStarted(float attackDistance)
+    {
+        PlayShake(attackShakeDuration, attackShakeStrength, attackVibrato);
+    }
+
+    //*공통 카메라 쉐이크 재생*
+    private void PlayShake(float duration, float strength, int shakeVibrato)
+    {
+        shakeTween?.Kill();                                                 //기존 쉐이크 남아있으면 먼저 중단
+        cameraTransform.localPosition = originalLocalPosition;              //이전 흔들림의 위치 오차 제거
+
+        //Main Camera의 Local Position 흔들기
         shakeTween = cameraTransform
-            .DOShakePosition(shakeDuration, shakeStrength, vibrato)
-
-            //쉐이크가 끝난 뒤 실행
+            .DOShakePosition(duration, strength, shakeVibrato)
+            .SetUpdate(true)                                                //카메라 쉐이크 자체는 느려지지 않도록 실제 시간 기준으로 실행
             .OnComplete(() =>
             {
-                cameraTransform.localPosition = originalLocalPosition;      //오차가 남지 않도록 원래 Local Position으로 확실하게 복구
-
-                shakeTween = null;                                          //완료된 Tween 참조 제거
+                //정확한 원위치로 복구
+                cameraTransform.localPosition = originalLocalPosition;
+                shakeTween = null;
             });
     }
 }

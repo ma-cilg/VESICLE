@@ -6,8 +6,8 @@ using UnityEngine;
 public class PlayerAttackGauge : MonoBehaviour
 {
     [SerializeField, Min(1f)] private float maxGauge = 100f;                    //최대 공격 게이지
-    [SerializeField, Min(0f)] private float attackCost = 25f;                   //이동 공격 1회 사용량
-    [SerializeField, Min(0f)] private float regenerationPerSecond = 15f;        //초당 자동 회복량
+    [SerializeField, Min(0f)] private float attackCost = 70f;                   //이동 공격 1회 사용량
+    [SerializeField, Min(0f)] private float regenerationPerSecond = 70f;        //초당 자동 회복량
 
     public float CurrentGauge { get; private set; }                             //현재 공격 게이지
     public float MaxGauge => maxGauge;                                          //최대 게이지 외부 제공

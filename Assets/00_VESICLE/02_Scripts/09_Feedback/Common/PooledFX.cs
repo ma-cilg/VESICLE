@@ -20,7 +20,9 @@ public class PooledFX : MonoBehaviour
         remainingTime = animationClip.length;       //실제 Animation Clip 전체 재생시간을 초 단위로 반환
         isPlaying = true;                           //현재 재생 중 상태로 변경
         gameObject.SetActive(true);                 //이전 사용에서 비활성화시 활성화
+
         animator.Play(stateName, 0, 0f);            //Animator의 지정된 State를 다시 재생
+        animator.Update(0f);                        //재사용된 FX를 즉시 애니메이션 첫 프레임으로 갱신
     }
 
     private void Update()
