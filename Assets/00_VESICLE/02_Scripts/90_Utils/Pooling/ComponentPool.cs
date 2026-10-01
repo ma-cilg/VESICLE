@@ -24,15 +24,25 @@ public class ComponentPool<T> where T : Component
     //*Pool에서 사용할 Component 가져오기*
     public T Get()
     {
-        if (available.Count > 0)                    //대기 중인 객체가 있으면 기존 객체 사용
+        T instance;
+
+        //대기 중인 객체가 있으면 재사용
+        if (available.Count > 0)
         {
-            T instance = available.Dequeue();
-            instance.gameObject.SetActive(true);
-            return instance;
+            instance = available.Dequeue();
         }
-        T newInstance = CreateInstance();           //대기 중인 객체 없으면 추가
-        newInstance.gameObject.SetActive(true);     //활성화
-        return newInstance;
+        //대기 중인 객체가 없으면 새로 생성
+        else
+        {
+            instance = CreateInstance();
+        }
+
+        //사용 중인 FX는 Pool Root에서 분리
+        instance.transform.SetParent(null, true);
+
+        instance.gameObject.SetActive(true);
+
+        return instance;
     }
 
     //*사용 끝난 Component를 Pool에 반환*
