@@ -1,5 +1,6 @@
 //**적 피격 시 시각 피드백 처리**
 //책임: 피격 이벤트 수신 → Stuck Sprite 표시 → 짧은 시간 후 원래 Sprite 복구
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -23,6 +24,8 @@ public class EnemyHitFeedback : MonoBehaviour
 
     private Tween stuckTween;                                       //Stuck Sprite 유지 시간 Tween
     private ComponentPool<PooledFX> hitVfxPool;                     //Hit VFX 전용 Pool
+
+    public event Action OnHitFeedbackEnded;                         //피격 애니메이션 종료 알림
 
     private void Awake()
     {
@@ -65,8 +68,6 @@ public class EnemyHitFeedback : MonoBehaviour
             enemySprite.flipX = shouldFlipX;                //피격 종료 후 Idle도 같은 방향 유지
         }
 
-        stuckSprite.color = enemySprite.color;              //현재 적 색상 복사
-
         enemySprite.enabled = false;                        //평소 Visual 숨김
         stuckSprite.enabled = true;                         //HitVisual 표시
 
@@ -76,12 +77,13 @@ public class EnemyHitFeedback : MonoBehaviour
 
         PlayHitVFX(hitInfo);                                //같은 순간 피격 VFX 재생
 
-        //Enemy_Hit 애니메이션이 끝날 때까지 HitVisual 유지
         stuckTween = DOVirtual
-            .DelayedCall(hitAnimationClip.length, RestoreVisual)
-            .OnComplete(() =>
+            .DelayedCall(hitAnimationClip.length, () =>
             {
+                RestoreVisual();                            //피격 Visual 복구
                 stuckTween = null;
+                
+                OnHitFeedbackEnded?.Invoke();               //마지막 피격 모션 종료 알림
             });
     }
 

@@ -19,11 +19,19 @@ public class CameraHitShake : MonoBehaviour
     [SerializeField, Min(0f)] private float attackShakeStrength = 0.025f;   //이동 공격 발동 쉐이크 강도
     [SerializeField, Min(1)] private int attackVibrato = 5;                 //이동 공격 흔들림 횟수
 
+    [Header("Enemy Death")]
+    [SerializeField, Min(0f)] private float enemyDeathShakeDuration = 0.16f;    //적 폭발 쉐이크 시간
+    [SerializeField, Min(0f)] private float enemyDeathShakeStrength = 0.14f;    //적 폭발 쉐이크 강도
+    [SerializeField, Min(1)] private int enemyDeathVibrato = 14;                //적 폭발 흔들림 횟수
+
     private Tween shakeTween;                                               //현재 실행 중인 Shake Tween 저장
     private Vector3 originalLocalPosition;                                  //Main Camera의 원래 Local Position 저장
 
+    public static CameraHitShake Instance { get; private set; }
+
     private void Awake()
     {
+        Instance = this;
         originalLocalPosition = cameraTransform.localPosition;              //게임 시작 시 Main Camera의 기본 Local Position 저장
     }
 
@@ -56,6 +64,12 @@ public class CameraHitShake : MonoBehaviour
         PlayShake(attackShakeDuration, attackShakeStrength, attackVibrato);
     }
 
+    //*적 사망 폭발 쉐이크*
+    public void PlayEnemyDeathShake()
+    {
+        PlayShake(enemyDeathShakeDuration, enemyDeathShakeStrength, enemyDeathVibrato);
+    }
+
     //*공통 카메라 쉐이크 재생*
     private void PlayShake(float duration, float strength, int shakeVibrato)
     {
@@ -72,5 +86,12 @@ public class CameraHitShake : MonoBehaviour
                 cameraTransform.localPosition = originalLocalPosition;
                 shakeTween = null;
             });
+    }
+    private void OnDestroy()
+    {
+        if (Instance == this)
+        {
+            Instance = null;
+        }
     }
 }

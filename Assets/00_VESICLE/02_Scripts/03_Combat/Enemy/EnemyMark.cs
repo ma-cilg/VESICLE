@@ -14,6 +14,7 @@ public class EnemyMark : MonoBehaviour
 {
     [SerializeField] private EnemyHitReceiver hitReceiver;                      //피격 정보를 전달받는 컴포넌트
     [SerializeField] private SpriteRenderer enemySprite;                        //색상을 변경할 적 SpriteRenderer
+    [SerializeField] private SpriteRenderer hitSprite;                          //피격 애니메이션용 SpriteRenderer
 
     [SerializeField] private EnemyMarkType markType = EnemyMarkType.Normal;     //현재 적의 Mark 규칙
 
@@ -99,8 +100,21 @@ public class EnemyMark : MonoBehaviour
     //*부분 Mark 표시*
     private void ApplyPartialMarkVisual()
     {
-        if (enemySprite == null) return;
-        enemySprite.color = partialMarkColor;   //중간색 적용
+        ApplyMarkColor(partialMarkColor);
+    }
+
+    //*현재 Mark 색상을 모든 적 Visual에 동일하게 적용*
+    private void ApplyMarkColor(Color color)
+    {
+        if (enemySprite != null)
+        {
+            enemySprite.color = color;
+        }
+
+        if (hitSprite != null)
+        {
+            hitSprite.color = color;
+        }
     }
 
     //*완전 Mark 처리*
@@ -109,10 +123,9 @@ public class EnemyMark : MonoBehaviour
         if (IsMarked) return;
         IsMarked = true;                        //완전 Mark 상태 저장
         currentHits = requiredHits;             //진행도 최대값에 맞춤
-        if (enemySprite != null)
-        {
-            enemySprite.color = markedColor;    //완전 Mark 색 적용
-        }
+
+        ApplyMarkColor(markedColor);
+
         OnMarked?.Invoke(this);                 //외부에 Mark 완료 알림
     }
 }

@@ -67,7 +67,13 @@ public class PlayerAttack : MonoBehaviour
 
     private void Update()
     {
-        if (CurrentState != PlayerAttackState.Idle) return;         //공격 중이면 새로운 좌클릭 무시
+        //Idle 또는 Finish 모션 중일 때만 이동 공격 입력 허용
+        if (CurrentState != PlayerAttackState.Idle &&
+            CurrentState != PlayerAttackState.Finishing)
+        {
+            return;
+        }
+
         if (!inputReader.IsAttackPressed()) return;                 //좌클릭 안했으면 종료
         if (!controlLock.CanAttack) return;                         //공격이 잠겨있다면 종료
         if (!attackGauge.TryUseAttack()) return;                    //공격 1회분 게이지가 부족하면 공격하지 않음
