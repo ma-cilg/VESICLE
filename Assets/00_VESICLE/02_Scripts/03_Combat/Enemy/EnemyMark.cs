@@ -50,36 +50,52 @@ public class EnemyMark : MonoBehaviour
     {
         if (IsMarked) return;
 
-        //트리거 몹인데 투척검으로 활성화 안된 경우
-        if (markType == EnemyMarkType.Trigger && !IsPrimed)
+        //Trigger 적은 일반 적과 다른 규칙 사용
+        if (markType == EnemyMarkType.Trigger)
         {
-            //일반 공격이면 Mark에는 아무 변화 없음
-            if (hitInfo.HitType != EnemyHitType.ThrownSword) return;
-            
-            //투척검을 처음 맞으면 트리거몹 활성화
-            PrimeTriggerEnemy();
+            HandleTriggerHit(hitInfo);
             return;
         }
 
-        //일반몹이거나 투척검으로 활성화된 트리거몹이면 /Mark 한 단계 증가
+        //Normal 적은 공격 횟수만큼 Mark 누적
         AddMarkHit();
     }
 
-    //*Trigger몹에 투척검이 처음 박혔을 때*
+    //*Trigger 적 피격 규칙*
+    private void HandleTriggerHit(EnemyHitInfo hitInfo)
+    {
+        //이미 검이 박힌 상태라면 추가 공격으로 상태가 변하지 않음
+        if (IsPrimed) return;
+
+        //투척검 이외의 공격은 Trigger 상태에 영향 없음
+        if (hitInfo.HitType != EnemyHitType.ThrownSword) return;
+
+        PrimeTriggerEnemy();
+    }
+
+    //*Trigger 적에 투척검이 처음 박혔을 때*
     private void PrimeTriggerEnemy()
     {
         if (IsPrimed) return;
-        IsPrimed = true;            //투척검에 맞아 Mark 가능 상태
-        currentHits = 1;            //투척검 자체를 첫 번째 Mark 타격으로 계산
 
-        //만약 RequiredHits가 1인 특수 설정이면 바로 완전 Mark 처리
-        if (currentHits >= requiredHits)
-        {
-            CompleteMark();
-            return;
-        }
-        ApplyPartialMarkVisual();   //아직 완전 Mark 전이므로 중간색 적용
-        OnPrimed?.Invoke(this);     //외부에 Trigger 활성화 알림
+        IsPrimed = true;                        //검이 박혀 폭발 가능한 상태
+        currentHits = 0;                        //Trigger는 일반 타격 횟수를 사용하지 않음
+
+        ApplyMarkColor(markedColor);            //검이 박히면 초록색으로 변경
+
+        OnPrimed?.Invoke(this);                 //검 박힘 Visual 등에 상태 전달
+    }
+
+    //*Trigger 적 폭발 시도*
+    public bool TryDetonate()
+    {
+        if (markType != EnemyMarkType.Trigger) return false;    //Trigger 적이 아니면 폭발 불가
+        if (!IsPrimed) return false;                            //아직 검이 박히지 않았다면 폭발 불가
+        if (IsMarked) return false;                             //이미 사망 처리된 상태면 중복 폭발 방지
+
+        CompleteMark();                         //기존 OnMarked → EnemyDeath 흐름 사용
+
+        return true;
     }
 
     //*Mark 한 단계 증가*
