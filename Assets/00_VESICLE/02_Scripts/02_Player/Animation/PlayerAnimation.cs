@@ -17,6 +17,11 @@ public class PlayerAnimation : MonoBehaviour
     private static readonly int ChargeAttackHash = Animator.StringToHash("ChargeAttack");
     private static readonly int SlashAttackHash = Animator.StringToHash("SlashAttack");
     private static readonly int FinishAttackHash = Animator.StringToHash("FinishAttack");
+    private static readonly int IdleStateHash = Animator.StringToHash("Player_Idle");
+    private static readonly int RunStateHash = Animator.StringToHash("Player_Run");
+    private static readonly int JumpRiseStateHash = Animator.StringToHash("Player_Jump_Rise");
+    private static readonly int JumpMidStateHash = Animator.StringToHash("Player_Jump_Mid");
+    private static readonly int JumpFallStateHash = Animator.StringToHash("Player_Jump_Fall");
 
     private void Awake()
     {
@@ -29,7 +34,7 @@ public class PlayerAnimation : MonoBehaviour
         playerAttack.OnPreSlashStarted += PlayPreSlash;
         playerAttack.OnSlashStarted += PlaySlash;
         playerAttack.OnFinishStarted += PlayFinish;
-        playerAttack.OnAttackCancelled += StopAttack;
+        playerAttack.OnAttackCancelled += CancelAttack;
         playerAttack.OnAttackEnded += StopAttack;
     }
 
@@ -39,7 +44,7 @@ public class PlayerAnimation : MonoBehaviour
         playerAttack.OnPreSlashStarted -= PlayPreSlash;
         playerAttack.OnSlashStarted -= PlaySlash;
         playerAttack.OnFinishStarted -= PlayFinish;
-        playerAttack.OnAttackCancelled -= StopAttack;
+        playerAttack.OnAttackCancelled -= CancelAttack;
         playerAttack.OnAttackEnded -= StopAttack;
     }
 
@@ -82,6 +87,49 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(IsAttackingHash, true);    //마무리 중(공격 끝X)
         ResetAttackTriggers();                      //이전 Trigger 초기화
         animator.SetTrigger(FinishAttackHash);      //Finish State 진입
+    }
+
+    //*이동 공격이 피격 등으로 강제 취소됐을 때*
+    private void CancelAttack()
+    {
+        animator.SetBool(IsAttackingHash, false);
+        ResetAttackTriggers();
+
+        //현재 이동 상태에 맞는 애니메이션으로 즉시 복귀
+        PlayCurrentMovementState();
+    }
+
+    //*현재 Player 상태에 맞는 일반 애니메이션으로 즉시 복귀*
+    private void PlayCurrentMovementState()
+    {
+        //공중
+        if (!playerJump.IsGrounded)
+        {
+            if (rb.linearVelocity.y > 0.1f)
+            {
+                animator.Play(JumpRiseStateHash, 0, 0f);
+            }
+            else if (rb.linearVelocity.y < -0.1f)
+            {
+                animator.Play(JumpFallStateHash, 0, 0f);
+            }
+            else
+            {
+                animator.Play(JumpMidStateHash, 0, 0f);
+            }
+
+            return;
+        }
+
+        //지상 이동 중
+        if (Mathf.Abs(rb.linearVelocity.x) > 0.1f)
+        {
+            animator.Play(RunStateHash, 0, 0f);
+            return;
+        }
+
+        //지상 정지
+        animator.Play(IdleStateHash, 0, 0f);
     }
 
     //*공격 취소 / 정상 종료*

@@ -22,6 +22,7 @@ public class EnemyDebrisPiece : MonoBehaviour
 
     private Tween fadeTween;
     private Tween safetyTween;
+    private Tween restoreScaleTween;                                    //폭발 직후 파츠 크기 복원
 
     private Action<EnemyDebrisPiece> returnToPool;
 
@@ -42,10 +43,13 @@ public class EnemyDebrisPiece : MonoBehaviour
         float angularVelocity,
         bool flipX,
         Vector3 worldScale,
+        float startScaleMultiplier,
+        float restoreDuration,
         Action<EnemyDebrisPiece> onFinished)
     {
         fadeTween?.Kill();
         safetyTween?.Kill();
+        restoreScaleTween?.Kill();
 
         fadeTween = null;
         safetyTween = null;
@@ -58,11 +62,14 @@ public class EnemyDebrisPiece : MonoBehaviour
         transform.position = position;
         transform.rotation = Quaternion.identity;
 
-        //Pool 부모나 사망 팽창 Scale을 물려받지 않고
-        //적이 살아있을 때의 원래 크기로 고정
+        //조각 오브젝트 자체의 월드 크기는 기존 적 크기에 맞춤
         transform.localScale = worldScale;
 
-        visualRoot.localScale = originalScale;
+        //보이는 파츠만 본체가 수축했던 크기에서 시작
+        visualRoot.localScale = originalScale * startScaleMultiplier;
+
+        //수축됐던 몸이 원래 크기로 복원되며 터짐
+        restoreScaleTween = visualRoot.DOScale(originalScale, restoreDuration).SetEase(Ease.OutQuad);
 
         spriteRenderer.sprite = sprite;
         spriteRenderer.color = color;
@@ -126,9 +133,11 @@ public class EnemyDebrisPiece : MonoBehaviour
     {
         fadeTween?.Kill();
         safetyTween?.Kill();
+        restoreScaleTween?.Kill();
 
         fadeTween = null;
         safetyTween = null;
+        restoreScaleTween = null;
 
         rb.linearVelocity = Vector2.zero;
         rb.angularVelocity = 0f;

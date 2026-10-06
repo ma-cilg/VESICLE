@@ -243,19 +243,30 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    //*이동 공격 강제 중단*
+    //*현재 위치에서 이동 공격 강제 중단*
     public void InterruptAttack()
     {
-        if (CurrentState != PlayerAttackState.Slashing) return; //실제 이동 공격 중이 아닐 때는 무시
-        rb.linearVelocity = Vector2.zero;                       //현재 이동 즉시 정지
-        remainingSlashDistance = 0f;                            //남은 이동 거리 제거
-        CurrentState = PlayerAttackState.Idle;                  //공격 상태 종료
-        StopAttackInvincibility();                              //무적 종료
+        InterruptAttackAt(rb.position);
+    }
 
-        ReleaseSlashHeight();                                   //공격 중 제거했던 중력 복구
-        ReleaseControls();                                      //일반 조작 잠금 해제
+    //*지정된 위치에서 이동 공격 강제 중단*
+    public void InterruptAttackAt(Vector2 stopPosition)
+    {
+        if (CurrentState != PlayerAttackState.Slashing) return;
 
-        OnAttackCancelled?.Invoke();                            //공격 취소 알림
+        //Trigger를 이미 조금 지나쳤더라도 충돌 직전 위치로 Player를 되돌린 뒤 공격 중단
+        rb.position = stopPosition;
+
+        rb.linearVelocity = Vector2.zero;
+        remainingSlashDistance = 0f;
+
+        CurrentState = PlayerAttackState.Idle;
+
+        StopAttackInvincibility();
+        ReleaseSlashHeight();
+        ReleaseControls();
+
+        OnAttackCancelled?.Invoke();
     }
 
     //*이동 공격 완료*

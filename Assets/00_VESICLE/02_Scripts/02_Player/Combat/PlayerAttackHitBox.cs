@@ -8,6 +8,7 @@ public class PlayerAttackHitBox : MonoBehaviour
     [SerializeField] private PlayerAttack playerAttack;                 //현재 이동 공격 상태와 방향 확인
     [SerializeField] private PlayerHealth playerHealth;                 //Trigger 적 충돌 시 플레이어 강제 피격 처리
     [SerializeField, Min(0f)] private float triggerHitDamage = 60f;     //Trigger 적 충돌 데미지
+    [SerializeField, Min(0f)] private float triggerStopOffset = 0.25f;  //Trigger 바로 앞에서 멈출 거리
 
     [Header("Hit Detection")]
     [SerializeField] private LayerMask enemyLayer;                      //EnemyHurtbox Layer
@@ -97,16 +98,28 @@ public class PlayerAttackHitBox : MonoBehaviour
             //적의 Mark 타입 확인
             EnemyMark enemyMark = hitCollider.GetComponentInParent<EnemyMark>();
 
-            //보라 Trigger 적이라면 일반 타격하지 않고 플레이어가 튕겨나감
             if (enemyMark != null && enemyMark.MarkType == EnemyMarkType.Trigger)
             {
-                if (!hitEnemies.Add(hitReceiver)) continue;     //같은 이동 공격에서 같은 Trigger 적을 여러 번 처리하지 않도록 기록
-                playerAttack.InterruptAttack();                 //이동 공격 즉시 중단
+                if (!hitEnemies.Add(hitReceiver)) continue;
 
-                //적에게서 플레이어 반대 방향으로 밀려나도록 방향 계산
-                Vector2 hitDirection = ((Vector2)transform.position - (Vector2)hitCollider.transform.position).normalized;
+                //이동 공격을 시작했던 방향에서 봤을 때
+                //Trigger HurtBox의 가장 가까운 표면 위치 확인
+                Vector2 contactPoint = hitCollider.ClosestPoint(startPosition);
 
-                playerHealth.TakeForcedDamage(triggerHitDamage, hitDirection);  //이동 공격 무적을 무시하고 강제 데미지 적용
+                //공격 진행 방향의 반대쪽으로 약간 떨어진 위치에서 정지
+                Vector2 stopPosition = contactPoint - direction * triggerStopOffset;
+
+                //이미 적을 조금 지나쳤더라도 충돌 위치 바로 앞으로 되돌린 뒤 공격 중단
+                playerAttack.InterruptAttackAt(stopPosition);
+
+                //Trigger 방어 피드백
+                enemyMark.NotifyMeleeBlocked();
+
+                //무조건 이동 공격의 반대 방향으로 튕김
+                Vector2 knockbackDirection = -direction;
+
+                playerHealth.TakeForcedDamage(triggerHitDamage, knockbackDirection);
+
                 return;
             }
 

@@ -76,8 +76,67 @@ PrefabInstance:
       propertyPath: m_Color.r
       value: 0.86812913
       objectReference: {fileID: 0}
+    - target: {fileID: 7713032028636811419, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      propertyPath: markType
+      value: 1
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 436969639619379131}
   m_SourcePrefab: {fileID: 100100000, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+--- !u!4 &181208962854764930 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4139767953080779860, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &3058951088342267606 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &436969639619379131
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7d815e432d30240bf5e68eeff0df36, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTriggerBlockFeedback
+  enemyMark: {fileID: 5835134947511620941}
+  visualRoot: {fileID: 181208962854764930}
+  enemySprite: {fileID: 8596592514394272261}
+  hitSprite: {fileID: 3540111190721828235}
+  punchScale: 0.35
+  punchDuration: 0.26
+  shieldFlashColor: {r: 0.75, g: 0.95, b: 1, a: 1}
+  flashDuration: 0.035
+  restoreDuration: 0.1
+--- !u!212 &3540111190721828235 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 779582113537216605, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5835134947511620941 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 7713032028636811419, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 839083f6aeff313469c73f2442812050, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyMark
+--- !u!212 &8596592514394272261 stripped
+SpriteRenderer:
+  m_CorrespondingSourceObject: {fileID: 5529746110823725011, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}

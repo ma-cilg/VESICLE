@@ -15,6 +15,7 @@ public class EnemyMark : MonoBehaviour
     [SerializeField] private EnemyHitReceiver hitReceiver;                      //피격 정보를 전달받는 컴포넌트
     [SerializeField] private SpriteRenderer enemySprite;                        //색상을 변경할 적 SpriteRenderer
     [SerializeField] private SpriteRenderer hitSprite;                          //피격 애니메이션용 SpriteRenderer
+    [SerializeField] private Transform deathVisualRoot;                         //사망 시 중앙 수축 기준
 
     [SerializeField] private EnemyMarkType markType = EnemyMarkType.Normal;     //현재 적의 Mark 규칙
 
@@ -28,12 +29,14 @@ public class EnemyMark : MonoBehaviour
     private int currentHits;                                                    //누적 Hit 횟수
     public bool IsPrimed { get; private set; }                                  //트리거몹이 투척검에 맞아서 Mark가 가능해졌는지 확인
     public bool IsMarked { get; private set; }                                  //현재 완전히 Mark된 상태인지 확인
-    public int CurrentHits => currentHits;                                      //외부에서 현재 누적 횟수 제공
-    public int RequiredHits => requiredHits;                                    //외부에서 필요한 공격 횟수 제공
-    public EnemyMarkType MarkType => markType;                                  //외부 에서 필요한 적 타입 제공
+    public int CurrentHits => currentHits;
+    public int RequiredHits => requiredHits;
+    public EnemyMarkType MarkType => markType;
+    public Transform DeathVisualRoot => deathVisualRoot;
 
     public event Action<EnemyMark> OnPrimed;                                    //트리거몹이 투척검에 맞아서 처음 활성화 될 때 이벤트 알림
     public event Action<EnemyMark> OnMarked;                                    //Mark가 완성되면 이벤트 알림
+    public event Action OnMeleeBlocked;                                         //Trigger가 이동 공격을 막았을 때 알림
 
     private void OnEnable()
     {
@@ -84,6 +87,15 @@ public class EnemyMark : MonoBehaviour
         ApplyMarkColor(markedColor);            //검이 박히면 초록색으로 변경
 
         OnPrimed?.Invoke(this);                 //검 박힘 Visual 등에 상태 전달
+    }
+
+    //*Trigger 적이 이동 공격을 막았을 때*
+    public void NotifyMeleeBlocked()
+    {
+        if (markType != EnemyMarkType.Trigger) return;
+        if (IsMarked) return;
+
+        OnMeleeBlocked?.Invoke();
     }
 
     //*Trigger 적 폭발 시도*

@@ -7,6 +7,7 @@ using UnityEngine;
 public class EnemyHitFeedback : MonoBehaviour
 {
     [SerializeField] private EnemyHitReceiver hitReceiver;          //피격 이벤트 수신
+    [SerializeField] private EnemyMark enemyMark;                   //마지막 피격인지 확인
 
     [Header("Sprite")]
     [SerializeField] private SpriteRenderer enemySprite;            //평소 적 SpriteRenderer
@@ -77,14 +78,21 @@ public class EnemyHitFeedback : MonoBehaviour
 
         PlayHitVFX(hitInfo);                                //같은 순간 피격 VFX 재생
 
-        stuckTween = DOVirtual
-            .DelayedCall(hitAnimationClip.length, () =>
+        stuckTween = DOVirtual.DelayedCall(hitAnimationClip.length, () =>
+        {
+            //마지막 공격으로 사망 상태가 됐다면
+            //Idle로 돌아가지 않고 피격 애니메이션 마지막 프레임 유지    
+            if (enemyMark != null && enemyMark.IsMarked)
             {
-                RestoreVisual();                            //피격 Visual 복구
-                stuckTween = null;
-                
-                OnHitFeedbackEnded?.Invoke();               //마지막 피격 모션 종료 알림
-            });
+                HoldLastHitFrame();
+            }     
+            else
+            {
+                RestoreVisual();
+            }
+            stuckTween = null;
+            OnHitFeedbackEnded?.Invoke();
+        });
     }
 
     //*적 피격 순간 Hit VFX 재생*
@@ -111,9 +119,40 @@ public class EnemyHitFeedback : MonoBehaviour
         fx.Play(hitVfxPool.Return);                         //VFX 재생이 끝나면 다시 Pool로 반환
     }
 
+    //*사망 직전 피격 애니메이션 마지막 프레임 유지*
+    public void HoldLastHitFrame()
+    {
+        if (enemySprite != null)
+        {
+            enemySprite.enabled = false;
+        }
+
+        if (stuckSprite != null)
+        {
+            stuckSprite.enabled = true;
+        }
+
+        if (hitAnimator != null)
+        {
+            hitAnimator.speed = 1f;
+
+            //Enemy_Hit의 마지막 지점으로 즉시 이동
+            hitAnimator.Play("Enemy_Hit", 0, 1f);
+            hitAnimator.Update(0f);
+
+            //마지막 프레임에서 완전히 정지
+            hitAnimator.speed = 0f;
+        }
+    }
+
     //*평소 적 Visual로 복구*
     private void RestoreVisual()
     {
+        if (hitAnimator != null)
+        {
+            hitAnimator.speed = 1f;
+        }
+
         if (enemySprite != null)
         {
             enemySprite.enabled = true;

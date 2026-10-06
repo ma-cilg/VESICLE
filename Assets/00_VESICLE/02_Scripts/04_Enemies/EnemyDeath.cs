@@ -43,13 +43,22 @@ public class EnemyDeath : MonoBehaviour
     {
         if (isDead) return;
 
-        isDeathPending = true;                                  //마지막 Hit 모션 종료 대기
-        hitReceiver.SetReceiveHitEnabled(false);                //이후 들어오는 공격 정보 차단
+        hitReceiver.SetReceiveHitEnabled(false);
 
         if (hurtBox != null)
         {
-            hurtBox.enabled = false;                            //이동 공격 HitBox 탐지에서도 제외
+            hurtBox.enabled = false;
         }
+
+        //추가 Hit 애니메이션을 기다리지 않고 바로 사망 연출 시작
+        if (mark.MarkType == EnemyMarkType.Trigger)
+        {
+            StartDeathSequence();
+            return;
+        }
+
+        //Normal 적은 기존처럼 마지막 피격 연출이 끝난 뒤 사망
+        isDeathPending = true;
     }
 
     //*마지막 피격 애니메이션이 끝났을 때*

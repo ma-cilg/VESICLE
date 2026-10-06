@@ -24,18 +24,18 @@ public class EnemyDeathFeedback : MonoBehaviour
     [SerializeField, Min(0f)] private float maxAngularSpeed = 720f;     //파츠 회전 속도
     [SerializeField, Min(0f)] private float debrisSpawnRadius = 0.15f;
 
-    [SerializeField] private float debrisSpawnYOffset = -0.5f;          //파츠 폭발 시작 위치 Y 보정
-
     [Header("Death Scale")]
-    [SerializeField, Min(0f)] private float compressScale = 0.82f;      //죽기 직전 순간적으로 압축
-    [SerializeField, Min(0f)] private float expandScale = 1.18f;        //폭발 직전 순간적으로 팽창
-    [SerializeField, Min(0f)] private float compressHoldDuration = 0.03f;   //압축 상태에서 아주 잠깐 힘을 모으는 시간
+    [SerializeField, Range(0.01f, 0.2f)]
+    private float minBodyScale = 0.05f;                          //거의 사라질 정도까지 수축
 
     [SerializeField, Min(0f)]
-    private float compressDuration = 0.04f;
+    private float shrinkDuration = 0.12f;                        //본체가 수축하는 시간
 
     [SerializeField, Min(0f)]
-    private float expandDuration = 0.06f;
+    private float shrinkHoldDuration = 0.025f;                   //최소 크기에서 아주 잠깐 멈춤
+
+    [SerializeField, Min(0f)]
+    private float debrisRestoreDuration = 0.09f;                 //파츠가 원래 크기로 돌아오는 시간
 
     private Vector3 originalScale;
     private Sequence deathSequence;
@@ -79,27 +79,26 @@ public class EnemyDeathFeedback : MonoBehaviour
 
         deathSequence = DOTween.Sequence();
 
-        //압축 연출
-        deathSequence.Append(visualRoot.DOScale(originalScale * compressScale, compressDuration).SetEase(Ease.OutQuad));
+        //현재 보이고 있는 자세 그대로 수축
+        deathSequence.Append(visualRoot.DOScale(originalScale * minBodyScale, shrinkDuration).SetEase(Ease.InQuad));
 
-        //아주 짧게 압축 상태 유지
-        deathSequence.AppendInterval(compressHoldDuration);
+        //아주 잠깐 유지
+        deathSequence.AppendInterval(shrinkHoldDuration);
 
-        //폭발 직전 크게 팽창
-        deathSequence.Append(visualRoot.DOScale(originalScale * expandScale, expandDuration).SetEase(Ease.InQuad));
+        //압축됐던 몸이 실제 파츠로 갈라지는 순간
+        deathSequence.AppendCallback(() =>
+        {
+            PlayDeathImpact();
+            SpawnDebris();
+            enemyDeath.CompleteDeath();
+        });
 
-        //실제로 몸이 터지는 순간에 충격 연출
-        deathSequence.AppendCallback(PlayDeathImpact);
-
-        //슬로모 중에도 사망 Scale 연출 자체는 원래 속도로 재생
+        //슬로모 걸려도 수축 연출 원래 속도로 진행
         deathSequence.SetUpdate(true);
 
         deathSequence.OnComplete(() =>
         {
             deathSequence = null;
-
-            SpawnDebris();                  //5조각 폭발
-            enemyDeath.CompleteDeath();     //원래 적 오브젝트 비활성화
         });
     }
 
@@ -115,7 +114,8 @@ public class EnemyDeathFeedback : MonoBehaviour
     {
         if (debrisSprites == null || debrisSprites.Length == 0) return;
 
-        Vector2 explosionCenter = (Vector2)enemySprite.bounds.center + Vector2.up * debrisSpawnYOffset;
+        //DeathVisualRoot의 중심이 곧 수축과 폭발의 중심
+        Vector2 explosionCenter = visualRoot.position;
 
         //죽기 직전의 초록색을 조각에도 그대로 적용
         Color debrisColor = enemySprite.color;
@@ -151,13 +151,15 @@ public class EnemyDeathFeedback : MonoBehaviour
             float angularVelocity = Random.Range(-maxAngularSpeed, maxAngularSpeed);
 
             piece.Play(
-                debrisSprite, 
-                debrisColor, 
-                spawnPosition, 
-                velocity, 
-                angularVelocity, 
-                enemySprite.flipX, 
-                originalDebrisScale, 
+                debrisSprite,
+                debrisColor,
+                spawnPosition,
+                velocity,
+                angularVelocity,
+                enemySprite.flipX,
+                originalDebrisScale,
+                minBodyScale,                   //본체가 줄어든 크기에서 시작
+                debrisRestoreDuration,          //원래 크기로 빠르게 복원
                 debrisPool.Return
                 );
         }
