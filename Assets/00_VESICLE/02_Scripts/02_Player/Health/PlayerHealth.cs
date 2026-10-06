@@ -67,6 +67,15 @@ public class PlayerHealth : MonoBehaviour
         OnHealthChanged?.Invoke(CurrentHealth, maxHealth);
     }
 
+    //*플레이어 체력 상태 초기화*
+    public void ResetHealth()
+    {
+        CurrentHealth = maxHealth;
+        IsDead = false;
+
+        OnHealthChanged?.Invoke(CurrentHealth, maxHealth);              //체력바 등 UI 즉시 최대 체력 상태로 갱신
+    }
+
     //*사망 처리*
     private void Die()
     {

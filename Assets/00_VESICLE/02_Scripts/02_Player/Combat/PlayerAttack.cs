@@ -243,30 +243,38 @@ public class PlayerAttack : MonoBehaviour
         }
     }
 
-    //*현재 위치에서 이동 공격 강제 중단*
+    //*현재 진행 중인 공격 강제 중단*
     public void InterruptAttack()
     {
-        InterruptAttackAt(rb.position);
-    }
-
-    //*지정된 위치에서 이동 공격 강제 중단*
-    public void InterruptAttackAt(Vector2 stopPosition)
-    {
-        if (CurrentState != PlayerAttackState.Slashing) return;
-
-        //Trigger를 이미 조금 지나쳤더라도 충돌 직전 위치로 Player를 되돌린 뒤 공격 중단
-        rb.position = stopPosition;
+        //공격 중이 아니라면 중단할 것이 없음
+        if (CurrentState == PlayerAttackState.Idle) return;
 
         rb.linearVelocity = Vector2.zero;
         remainingSlashDistance = 0f;
 
         CurrentState = PlayerAttackState.Idle;
 
+        //Slash 도중이었다면 무적과 중력 고정을 복구
         StopAttackInvincibility();
         ReleaseSlashHeight();
+
+        //공격이 잡고 있던 조작 Lock만 해제
         ReleaseControls();
 
         OnAttackCancelled?.Invoke();
+    }
+
+    //*지정된 위치에서 이동 공격 강제 중단*
+    public void InterruptAttackAt(Vector2 stopPosition)
+    {
+        //이 메서드는 Trigger 적에게 Slash가 막혔을 때만 사용
+        if (CurrentState != PlayerAttackState.Slashing) return;
+
+        //Trigger를 이미 조금 지나쳤더라도 충돌 직전 위치로 Player를 되돌림
+        rb.position = stopPosition;
+
+        //실제 공격 정리는 공통 메서드에서 처리
+        InterruptAttack();
     }
 
     //*이동 공격 완료*

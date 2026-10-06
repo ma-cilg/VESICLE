@@ -641,15 +641,15 @@ MonoBehaviour:
   playerHealth: {fileID: 827351918}
   cameraTransform: {fileID: 2000062264}
   playerAttack: {fileID: 827351924}
-  hitShakeDuration: 0.1
-  hitShakeStrength: 0.05
-  hitVibrato: 8
-  attackShakeDuration: 0.06
-  attackShakeStrength: 0.025
-  attackVibrato: 5
-  enemyDeathShakeDuration: 0.12
-  enemyDeathShakeStrength: 0.09
-  enemyDeathVibrato: 10
+  hitShakeDuration: 0.2
+  hitShakeStrength: 0.1
+  hitVibrato: 12
+  attackShakeDuration: 0.1
+  attackShakeStrength: 0.05
+  attackVibrato: 6
+  enemyDeathShakeDuration: 0.2
+  enemyDeathShakeStrength: 0.1
+  enemyDeathVibrato: 12
 --- !u!114 &1774700045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -677,8 +677,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c2ca4cdd23178641931f1e18ce850ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeSlowmo
-  enemyDeathTimeScale: 0.2
-  enemyDeathSlowmoDuration: 0.06
+  enemyDeathTimeScale: 0.04
+  enemyDeathSlowmoDuration: 0.22
 --- !u!1001 &1912851507
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -924,6 +924,18 @@ PrefabInstance:
     - target: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
       propertyPath: m_Name
       value: Enemy_Normal
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225327981721251375, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      propertyPath: m_Size.x
+      value: 0.4
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225327981721251375, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      propertyPath: m_Size.y
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 6225327981721251375, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      propertyPath: m_Offset.y
+      value: 0.5
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []

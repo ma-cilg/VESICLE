@@ -804,6 +804,9 @@ GameObject:
   - component: {fileID: 6501459573328138349}
   - component: {fileID: 8486472436016157597}
   - component: {fileID: 841941754642027032}
+  - component: {fileID: 8029509012077699730}
+  - component: {fileID: 3110349077220638592}
+  - component: {fileID: 2853687680133456133}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -965,6 +968,7 @@ MonoBehaviour:
   animator: {fileID: 1581498296881578870}
   playerJump: {fileID: 282203505627145486}
   playerAttack: {fileID: 6275188774622283942}
+  playerHealth: {fileID: 6509203233265092523}
 --- !u!114 &7965413222227010325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1074,7 +1078,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHitReaction
   playerHealth: {fileID: 6509203233265092523}
   controlLock: {fileID: 1909164100341221498}
-  playerWeaponThrow: {fileID: 1641776374137425134}
   knockbackSpeedX: 10
   knockbackSpeedY: 6.5
   controlLockDuration: 0.25
@@ -1091,7 +1094,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHitFeedback
   playerHealth: {fileID: 6509203233265092523}
-  playerWeaponThrow: {fileID: 1641776374137425134}
   playerSprite: {fileID: 2522500009748670705}
   hitSprite: {fileID: 533584505847714205}
   hitPoseDuration: 0.15
@@ -1170,6 +1172,7 @@ MonoBehaviour:
   controlLock: {fileID: 1909164100341221498}
   throwPoint: {fileID: 6736527562231027768}
   swordPrefab: {fileID: 6225504458629514088, guid: 725be30a93ba98a4b9dba80ff4f617e9, type: 3}
+  playerHealth: {fileID: 6509203233265092523}
 --- !u!114 &6501459573328138349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1228,6 +1231,54 @@ MonoBehaviour:
   flashInDuration: 0.035
   holdDuration: 0.025
   fadeOutDuration: 0.2
+--- !u!114 &8029509012077699730
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342449836396030624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 92bad683e0c6a7d4ca431bee57dc442a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerDeath
+  playerHealth: {fileID: 6509203233265092523}
+  controlLock: {fileID: 1909164100341221498}
+  playerAttack: {fileID: 6275188774622283942}
+--- !u!114 &3110349077220638592
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342449836396030624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b2a99a9186b9e564e90533056a9e91d5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawn
+  playerHealth: {fileID: 6509203233265092523}
+  playerDeath: {fileID: 8029509012077699730}
+  playerAnimation: {fileID: 7601062269765792390}
+  respawnDelay: 1
+--- !u!114 &2853687680133456133
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342449836396030624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 03e56e8a6113b6743994297d9fa07850, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRespawnFeedback
+  playerRespawn: {fileID: 3110349077220638592}
+  playerSprite: {fileID: 2522500009748670705}
+  blinkAlpha: 0.25
+  blinkDuration: 0.08
+  blinkCount: 3
 --- !u!1 &7346853274365916244
 GameObject:
   m_ObjectHideFlags: 0

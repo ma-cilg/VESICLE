@@ -7,6 +7,7 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] private Animator animator;             //Visual에 붙은 Animator 연결
     [SerializeField] private PlayerJump playerJump;         //바닥 상태 확인
     [SerializeField] private PlayerAttack playerAttack;     //공격 시작/취소/종료 이벤트 확인
+    [SerializeField] private PlayerHealth playerHealth;     //플레이어 사망 상태와 사망 이벤트 확인
     private Rigidbody2D rb;
 
     //Animator Parameter의 문자열 이름을 Hash값으로 변환해서 재사용
@@ -22,6 +23,7 @@ public class PlayerAnimation : MonoBehaviour
     private static readonly int JumpRiseStateHash = Animator.StringToHash("Player_Jump_Rise");
     private static readonly int JumpMidStateHash = Animator.StringToHash("Player_Jump_Mid");
     private static readonly int JumpFallStateHash = Animator.StringToHash("Player_Jump_Fall");
+    private static readonly int DieStateHash = Animator.StringToHash("Player_Die");
 
     private void Awake()
     {
@@ -36,6 +38,7 @@ public class PlayerAnimation : MonoBehaviour
         playerAttack.OnFinishStarted += PlayFinish;
         playerAttack.OnAttackCancelled += CancelAttack;
         playerAttack.OnAttackEnded += StopAttack;
+        playerHealth.OnDied += PlayDeath;
     }
 
     private void OnDisable()
@@ -46,11 +49,14 @@ public class PlayerAnimation : MonoBehaviour
         playerAttack.OnFinishStarted -= PlayFinish;
         playerAttack.OnAttackCancelled -= CancelAttack;
         playerAttack.OnAttackEnded -= StopAttack;
+        playerHealth.OnDied -= PlayDeath;
     }
-
 
     private void Update()
     {
+        //사망 중에는 Idle / Run / Jump가 Die 애니메이션을 덮어쓰지 않음
+        if (playerHealth.IsDead) return;
+
         UpdateMovementAnimation();
     }
 
@@ -95,8 +101,18 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(IsAttackingHash, false);
         ResetAttackTriggers();
 
-        //현재 이동 상태에 맞는 애니메이션으로 즉시 복귀
-        PlayCurrentMovementState();
+        if (playerHealth.IsDead) return;            //사망 때문에 공격이 취소된 경우 Die 애니메이션을 덮어쓰지 않음
+
+        PlayCurrentMovementState();                 //현재 이동 상태에 맞는 애니메이션으로 즉시 복귀
+    }
+
+    //*사망 애니메이션 재생*
+    private void PlayDeath()
+    {
+        animator.SetBool(IsAttackingHash, false);   //공격 관련 Animator 값이 남지 않도록 정리
+        ResetAttackTriggers();
+
+        animator.Play(DieStateHash, 0, 0f);         //사망 애니메이션 처음부터 재생
     }
 
     //*현재 Player 상태에 맞는 일반 애니메이션으로 즉시 복귀*
@@ -137,6 +153,15 @@ public class PlayerAnimation : MonoBehaviour
     {
         animator.SetBool(IsAttackingHash, false);   //공격 상태 종료
         ResetAttackTriggers();                      //남아있는 공격 Trigger 정리
+    }
+
+    //*Respawn 후 기본 애니메이션으로 복귀*
+    public void ResetAfterRespawn()
+    {
+        animator.SetBool(IsAttackingHash, false);
+        ResetAttackTriggers();
+
+        animator.Play(IdleStateHash, 0, 0f);        //부활 순간 Idle 애니메이션 처음부터 재생
     }
 
     //*공격 Trigger 전체 초기화*

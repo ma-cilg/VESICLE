@@ -9,6 +9,7 @@ public class PlayerWeaponThrow : MonoBehaviour
     [SerializeField] private PlayerControlLock controlLock;                 //현재 투척 가능 여부 확인
     [SerializeField] private Transform throwPoint;                          //검이 생성되어 날아가기 시작할 위치
     [SerializeField] private ThrownSwordProjectile swordPrefab;             //투척검 Prefab
+    [SerializeField] private PlayerHealth playerHealth;                     //플레이어 사망 시 투척검 초기화
 
     private Camera mainCamera;                                              //마우스 화면 좌표 → 월드 좌표 변환
     private ThrownSwordProjectile swordInstance;                            //게임 중 하나만 생성해서 재사용
@@ -24,6 +25,16 @@ public class PlayerWeaponThrow : MonoBehaviour
         mainCamera = Camera.main;
         swordInstance = Instantiate(swordPrefab);                           //검은 시작할 때 한 번만 생성해서 재사용
         swordInstance.gameObject.SetActive(false);
+    }
+
+    private void OnEnable()
+    {
+        playerHealth.OnDied += HandlePlayerDied;
+    }
+
+    private void OnDisable()
+    {
+        playerHealth.OnDied -= HandlePlayerDied;
     }
 
     private void Update()
@@ -70,6 +81,14 @@ public class PlayerWeaponThrow : MonoBehaviour
         Vector2 throwDirection = direction.normalized;
 
         swordInstance.Launch(startPosition, throwDirection);
+    }
+
+    //*플레이어 사망 시 투척검 초기화*
+    private void HandlePlayerDied()
+    {
+        if (swordInstance == null) return;
+
+        swordInstance.ResetProjectile();
     }
 
     //*박혀 있는 Trigger 적 폭발*

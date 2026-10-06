@@ -251,6 +251,24 @@ public class ThrownSwordProjectile : MonoBehaviour
         gameObject.SetActive(false);
     }
 
+    //*플레이어 사망 등으로 투척검 상태 전체 초기화*
+    public void ResetProjectile()
+    {
+        //Trigger 적에 박혀 있었다면
+        //검 제거와 함께 적의 Prime 상태도 원래대로 복구
+        if (EmbeddedEnemy != null)
+        {
+            EmbeddedEnemy.ResetTriggerPrime();
+        }
+
+        //Trigger 적의 자식으로 붙어있었다면 먼저 분리
+        transform.SetParent(null, false);
+
+        //검 자체를 비활성화하면 OnDisable에서
+        //비행 / 박힘 / Fade / 물리 상태가 전부 정리됨
+        gameObject.SetActive(false);
+    }
+
     //*LayerMask 안에 해당 Layer가 포함되어 있는지 확인*
     private bool IsInLayerMask(int layer, LayerMask layerMask)
     {

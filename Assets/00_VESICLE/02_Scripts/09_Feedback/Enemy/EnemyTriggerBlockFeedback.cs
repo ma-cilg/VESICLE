@@ -35,11 +35,13 @@ public class EnemyTriggerBlockFeedback : MonoBehaviour
     private void OnEnable()
     {
         enemyMark.OnMeleeBlocked += PlayBlockFeedback;
+        enemyMark.OnPrimeReset += HandlePrimeReset;
     }
 
     private void OnDisable()
     {
         enemyMark.OnMeleeBlocked -= PlayBlockFeedback;
+        enemyMark.OnPrimeReset -= HandlePrimeReset;
 
         scaleTween?.Kill();
         flashSequence?.Kill();
@@ -47,6 +49,19 @@ public class EnemyTriggerBlockFeedback : MonoBehaviour
         scaleTween = null;
         flashSequence = null;
 
+        visualRoot.localScale = originalScale;
+    }
+
+    //*Trigger Prime 해제 시 진행 중인 방어 연출 정리*
+    private void HandlePrimeReset()
+    {
+        scaleTween?.Kill();
+        flashSequence?.Kill();
+
+        scaleTween = null;
+        flashSequence = null;
+
+        //방어 중 확대된 크기가 남지 않도록 복구
         visualRoot.localScale = originalScale;
     }
 

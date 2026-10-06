@@ -37,7 +37,8 @@ public class EnemyMark : MonoBehaviour
     public EnemyMarkType MarkType => markType;
     public Transform DeathVisualRoot => deathVisualRoot;
 
-    public event Action<EnemyMark> OnPrimed;                                    //트리거몹이 투척검에 맞아서 처음 활성화 될 때 이벤트 알림
+    public event Action<EnemyMark> OnPrimed;                                    //Trigger 적이 Prime됐을 때 알림
+    public event Action OnPrimeReset;                                           //Trigger Prime이 강제로 해제됐을 때 알림
     public event Action<EnemyMark> OnMarked;                                    //Mark가 완성되면 이벤트 알림
     public event Action OnMeleeBlocked;                                         //Trigger가 이동 공격을 막았을 때 알림
 
@@ -125,6 +126,30 @@ public class EnemyMark : MonoBehaviour
         ApplyMarkColor(markedColor);            //검이 박히면 초록색으로 변경
 
         OnPrimed?.Invoke(this);                 //검 박힘 Visual 등에 상태 전달
+    }
+
+    //*박힌 검이 강제로 제거됐을 때 Trigger Prime 취소*
+    public void ResetTriggerPrime()
+    {
+        if (markType != EnemyMarkType.Trigger) return;
+        if (!IsPrimed) return;
+        if (IsMarked) return;
+
+        IsPrimed = false;
+        currentHits = 0;
+
+        //검이 박히기 전 원래 색상으로 복구
+        if (enemySprite != null)
+        {
+            enemySprite.color = initialEnemyColor;
+        }
+
+        if (hitSprite != null)
+        {
+            hitSprite.color = initialHitColor;
+        }
+
+        OnPrimeReset?.Invoke();
     }
 
     //*Trigger 적이 이동 공격을 막았을 때*
