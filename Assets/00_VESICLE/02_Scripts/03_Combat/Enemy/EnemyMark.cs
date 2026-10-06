@@ -27,6 +27,9 @@ public class EnemyMark : MonoBehaviour
     private Color markedColor = Color.white;                                    //Mark가 완전히 완료됐을 때의 색 (인스펙터에서 HEX로 관리)
 
     private int currentHits;                                                    //누적 Hit 횟수
+    private Color initialEnemyColor;                                            //적 본체의 처음 색상
+    private Color initialHitColor;                                              //피격 Sprite의 처음 색상
+
     public bool IsPrimed { get; private set; }                                  //트리거몹이 투척검에 맞아서 Mark가 가능해졌는지 확인
     public bool IsMarked { get; private set; }                                  //현재 완전히 Mark된 상태인지 확인
     public int CurrentHits => currentHits;
@@ -38,14 +41,49 @@ public class EnemyMark : MonoBehaviour
     public event Action<EnemyMark> OnMarked;                                    //Mark가 완성되면 이벤트 알림
     public event Action OnMeleeBlocked;                                         //Trigger가 이동 공격을 막았을 때 알림
 
+    private void Awake()
+    {
+        //Mark되기 전 원래 Sprite 색상을 저장
+        if (enemySprite != null)
+        {
+            initialEnemyColor = enemySprite.color;
+        }
+
+        if (hitSprite != null)
+        {
+            initialHitColor = hitSprite.color;
+        }
+    }
+
     private void OnEnable()
     {
+        ResetMarkState();
+
         hitReceiver.OnHitReceived += HandleHit;
     }
 
     private void OnDisable()
     {
         hitReceiver.OnHitReceived -= HandleHit;
+    }
+
+    //*재활성화 시 Mark 상태 초기화*
+    private void ResetMarkState()
+    {
+        currentHits = 0;
+        IsPrimed = false;
+        IsMarked = false;
+
+        //Mark 색상이 남지 않도록 처음 색상으로 복구
+        if (enemySprite != null)
+        {
+            enemySprite.color = initialEnemyColor;
+        }
+
+        if (hitSprite != null)
+        {
+            hitSprite.color = initialHitColor;
+        }
     }
 
     //*공격에 맞았을 때 Mark 규칙*

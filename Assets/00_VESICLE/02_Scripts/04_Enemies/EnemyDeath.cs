@@ -21,6 +21,8 @@ public class EnemyDeath : MonoBehaviour
 
     private void OnEnable()
     {
+        ResetDeathState();
+
         hitReceiver.SetReceiveHitEnabled(true);
 
         if (hurtBox != null)
@@ -36,6 +38,14 @@ public class EnemyDeath : MonoBehaviour
     {
         enemyMark.OnMarked -= HandleMarked;
         hitFeedback.OnHitFeedbackEnded -= HandleHitFeedbackEnded;
+    }
+
+    //*재활성화 시 사망 상태 초기화*
+    private void ResetDeathState()
+    {
+        isDeathPending = false;
+        isDeathSequenceStarted = false;
+        isDead = false;
     }
 
     //*Mark가 완성됐을 때*

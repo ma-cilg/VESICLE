@@ -90,6 +90,15 @@ public class EnemyDeathFeedback : MonoBehaviour
         {
             PlayDeathImpact();
             SpawnDebris();
+
+            //Trigger 적에 박혀 있던 검이 있다면 적이 비활성화되기 전에 검을 분리하고 숨김
+            ThrownSwordProjectile embeddedSword = visualRoot.GetComponentInChildren<ThrownSwordProjectile>();
+
+            if (embeddedSword != null)
+            {
+                embeddedSword.HideEmbeddedSword();
+            }
+
             enemyDeath.CompleteDeath();
         });
 

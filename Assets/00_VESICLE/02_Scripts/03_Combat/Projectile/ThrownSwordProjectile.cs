@@ -1,6 +1,5 @@
 //**플레이어 투척검 Projectile**
 //책임: 발사 → 비행 → 적/장애물 충돌 → Trigger 적에 박힘 → 비행 종료
-using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -41,12 +40,6 @@ public class ThrownSwordProjectile : MonoBehaviour
     public bool IsEmbedded => isEmbedded;
     public bool IsEnvironmentEmbedded => isEnvironmentEmbedded;
     public EnemyMark EmbeddedEnemy { get; private set; }                //현재 검이 박힌 Trigger 적
-
-    //Trigger 적에 검이 박혔을 때
-    public event Action<ThrownSwordProjectile, EnemyMark> OnEmbedded;
-
-    //벽 / 일반 적 / 시간 초과로 비행이 끝났을 때
-    public event Action<ThrownSwordProjectile> OnFlightEnded;
 
     private void Update()
     {
@@ -175,8 +168,6 @@ public class ThrownSwordProjectile : MonoBehaviour
         hitCollider.enabled = false;
         animator.Play(EmbedStateHash, 0, 0f);                   //검 박히는 애니메이션 재생
         transform.SetParent(enemyMark.DeathVisualRoot, true);   //Trigger 죽을 때 몸이랑 검이 같은 중심으로 수축
-
-        OnEmbedded?.Invoke(this, enemyMark);
     }
 
     //*Ground / Wall에 검 고정*
@@ -227,8 +218,6 @@ public class ThrownSwordProjectile : MonoBehaviour
 
         isEnvironmentEmbedded = false;
 
-        OnFlightEnded?.Invoke(this);
-
         gameObject.SetActive(false);
     }
 
@@ -246,8 +235,6 @@ public class ThrownSwordProjectile : MonoBehaviour
 
         hitCollider.enabled = false;
 
-        OnFlightEnded?.Invoke(this);
-
         gameObject.SetActive(false);
     }
 
@@ -259,7 +246,7 @@ public class ThrownSwordProjectile : MonoBehaviour
         isEmbedded = false;
         EmbeddedEnemy = null;
 
-        transform.SetParent(null, true);
+        transform.SetParent(null, false);
 
         gameObject.SetActive(false);
     }

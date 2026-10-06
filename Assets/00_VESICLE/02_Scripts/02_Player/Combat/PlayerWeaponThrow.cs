@@ -13,7 +13,6 @@ public class PlayerWeaponThrow : MonoBehaviour
     private Camera mainCamera;                                              //마우스 화면 좌표 → 월드 좌표 변환
     private ThrownSwordProjectile swordInstance;                            //게임 중 하나만 생성해서 재사용
 
-    public bool IsThrowing { get; private set; }                            //향후 Player 투척 애니메이션용 상태
     public bool IsWeaponAvailable =>
         swordInstance != null &&
         !swordInstance.IsFlying &&
@@ -25,33 +24,6 @@ public class PlayerWeaponThrow : MonoBehaviour
         mainCamera = Camera.main;
         swordInstance = Instantiate(swordPrefab);                           //검은 시작할 때 한 번만 생성해서 재사용
         swordInstance.gameObject.SetActive(false);
-    }
-
-    private void OnEnable()
-    {
-        if (swordInstance == null) return;
-
-        swordInstance.OnFlightEnded += HandleFlightEnded;
-        swordInstance.OnEmbedded += HandleSwordEmbedded;
-    }
-
-    private void Start()
-    {
-        //Awake에서 생성된 후 OnEnable보다 늦게 연결될 가능성을 대비
-        //이미 연결된 경우 중복되지 않도록 먼저 제거 후 등록
-        swordInstance.OnFlightEnded -= HandleFlightEnded;
-        swordInstance.OnEmbedded -= HandleSwordEmbedded;
-
-        swordInstance.OnFlightEnded += HandleFlightEnded;
-        swordInstance.OnEmbedded += HandleSwordEmbedded;
-    }
-
-    private void OnDisable()
-    {
-        if (swordInstance == null) return;
-
-        swordInstance.OnFlightEnded -= HandleFlightEnded;
-        swordInstance.OnEmbedded -= HandleSwordEmbedded;
     }
 
     private void Update()
@@ -81,8 +53,6 @@ public class PlayerWeaponThrow : MonoBehaviour
         if (swordInstance == null) return;
         if (throwPoint == null) return;
 
-        IsThrowing = true;
-
         //마우스 화면 좌표
         Vector2 mouseScreenPosition = inputReader.AimPosition;
 
@@ -95,33 +65,11 @@ public class PlayerWeaponThrow : MonoBehaviour
 
         Vector2 direction = (Vector2)mouseWorldPosition - startPosition;
 
-        //방향 계산 불가능한 경우 발사 취소
-        if (direction.sqrMagnitude <= 0.001f)
-        {
-            IsThrowing = false;
-            return;
-        }
-
+        if (direction.sqrMagnitude <= 0.001f) return;
+        
         Vector2 throwDirection = direction.normalized;
 
         swordInstance.Launch(startPosition, throwDirection);
-
-        //현재는 별도 투척 모션을 기다리지 않으므로 즉시 종료
-        IsThrowing = false;
-    }
-
-    //*검이 Trigger 적에 박혔을 때*
-    private void HandleSwordEmbedded(
-        ThrownSwordProjectile projectile,
-        EnemyMark enemyMark)
-    {
-        IsThrowing = false;
-    }
-
-    //*검 비행이 일반적으로 종료됐을 때*
-    private void HandleFlightEnded(ThrownSwordProjectile projectile)
-    {
-        IsThrowing = false;
     }
 
     //*박혀 있는 Trigger 적 폭발*

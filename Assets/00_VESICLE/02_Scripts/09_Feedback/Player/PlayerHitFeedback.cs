@@ -6,7 +6,6 @@ using UnityEngine;
 public class PlayerHitFeedback : MonoBehaviour
 {
     [SerializeField] private PlayerHealth playerHealth;                 //데미지 이벤트 확인
-    [SerializeField] private PlayerWeaponThrow playerWeaponThrow;       //투척 중 피격 예외 확인
 
     [SerializeField] private SpriteRenderer playerSprite;               //평소 Player Sprite
     [SerializeField] private SpriteRenderer hitSprite;                  //피격 순간 표시할 Hit Sprite
@@ -44,19 +43,12 @@ public class PlayerHitFeedback : MonoBehaviour
     //*실제 피격이 발생했을 때 시각 연출 시작*
     private void PlayHitFeedback(float damage)
     {
-        hitSequence?.Kill();                                            //기존거 있을 수 있으니 연출 먼저 중단
-        hitSequence = null;                                             //기존 Sequence 참조도 제거
+        //기존 피격 연출이 남아있다면 먼저 종료
+        hitSequence?.Kill();
+        hitSequence = null;
 
-        RestoreVisual();                                                //먼저 기본 상태 복구
-
-        if (playerWeaponThrow.IsThrowing)                               //검 투척 / 검 재생성 상태라면
-        {
-            PlayThrowHitFlash();                                        //Hit Pose 없이 빨간 Flash만 실행
-            return;
-        }
-
-        //일반 피격이라면 기존 Hit Pose 연출 실행
-        PlayNormalHitFeedback();
+        RestoreVisual();                                                //항상 기본 Visual 상태에서 새 피격 연출 시작
+        PlayNormalHitFeedback();                                        //투척 여부와 관계없이 동일한 피격 연출 사용
     }
 
     //*일반 피격 연출*
@@ -84,26 +76,6 @@ public class PlayerHitFeedback : MonoBehaviour
         hitSequence.OnComplete(() =>
         {
             RestoreVisual();
-            hitSequence = null;
-        });
-    }
-
-    //*투척 중 피격 Flash*
-    private void PlayThrowHitFlash()
-    {
-        playerSprite.enabled = true;                                                        //현재 Player Sprite가 보이는 상태 유지
-        hitSprite.enabled = false;                                                          //Hit Sprite는 사용하지 않음
-        playerSprite.color = originalPlayerColor;                                           //혹시 이전 색상이 남아있다면 원래 색으로 초기화
-        hitSequence = DOTween.Sequence();                                                   //Flash Sequence 생성
-
-        float halfFlashDuration = flashDuration * 0.5f;
-
-        hitSequence.Append(playerSprite.DOColor(hitColor, halfFlashDuration));              //현재 투척 Sprite를 빨간색으로
-        hitSequence.Append(playerSprite.DOColor(originalPlayerColor, halfFlashDuration));   //다시 원래 색으로 복구
-
-        hitSequence.OnComplete(() =>
-        {
-            playerSprite.color = originalPlayerColor;
             hitSequence = null;
         });
     }
