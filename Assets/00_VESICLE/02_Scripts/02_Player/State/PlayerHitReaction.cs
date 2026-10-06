@@ -50,21 +50,27 @@ public class PlayerHitReaction : MonoBehaviour
     {
         if (playerWeaponThrow.IsThrowing) return;
 
-        isReacting = true;                              //현재 피격 반응 중이라고 기록
-        remainingLockTime = controlLockDuration;        //조작 제한 시간을 처음 값으로 설정
+        //피격될 때마다 경직 시간은 처음부터 다시 갱신
+        remainingLockTime = controlLockDuration;
 
-        //피격 중 통합 잠금
+        //hitDirection에서 좌우 방향 가져오기
+        float horizontalDirection = Mathf.Sign(hitDirection.x);
+
+        //연속으로 맞아도 새 피격 방향으로 넉백은 다시 적용
+        rb.linearVelocity = new Vector2(horizontalDirection * knockbackSpeedX, knockbackSpeedY);
+
+        //이미 피격 반응 중이라면
+        //조작 Lock을 또 추가하지 않고 시간과 넉백만 갱신
+        if (isReacting) return;
+
+        isReacting = true;
+
+        //피격 시작 시 한 번만 통합 잠금
         controlLock.LockMovement();
         controlLock.LockJump();
         controlLock.LockAttack();
         controlLock.LockThrow();
         controlLock.LockDetonate();
-
-        //hitDirection에서 좌우 방향 가져옴
-        float horizontalDirection = Mathf.Sign(hitDirection.x);
-
-        //Player의 현재 속도를 피격 넉백 속도로 변경
-        rb.linearVelocity = new Vector2(horizontalDirection * knockbackSpeedX, knockbackSpeedY);
     }
 
     //*피격 경직 종료*

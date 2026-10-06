@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2587409779956305124}
   - component: {fileID: 5539440774667254505}
-  - component: {fileID: 5101305223040072322}
+  - component: {fileID: 3739867769366385381}
   - component: {fileID: 6225504458629514088}
   m_Layer: 0
   m_Name: ThrownSwordProjectile
@@ -62,8 +62,8 @@ Rigidbody2D:
   m_SleepingMode: 0
   m_CollisionDetection: 1
   m_Constraints: 4
---- !u!58 &5101305223040072322
-CircleCollider2D:
+--- !u!61 &3739867769366385381
+BoxCollider2D:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
@@ -96,8 +96,18 @@ CircleCollider2D:
   m_UsedByEffector: 0
   m_CompositeOperation: 0
   m_CompositeOrder: 0
-  m_Offset: {x: 0, y: -0.15}
-  m_Radius: 0.4
+  m_Offset: {x: 0.15, y: 0.01}
+  m_SpriteTilingProperty:
+    border: {x: 0, y: 0, z: 0, w: 0}
+    pivot: {x: 0, y: 0}
+    oldSize: {x: 0, y: 0}
+    newSize: {x: 0, y: 0}
+    adaptiveTilingThreshold: 0
+    drawMode: 0
+    adaptiveTiling: 0
+  m_AutoTiling: 0
+  m_Size: {x: 0.5, y: 0.15}
+  m_EdgeRadius: 0
 --- !u!114 &6225504458629514088
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -111,10 +121,14 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ThrownSwordProjectile
   rb: {fileID: 5539440774667254505}
-  hitCollider: {fileID: 5101305223040072322}
+  hitCollider: {fileID: 3739867769366385381}
   animator: {fileID: 4454247605507900111}
+  swordSprite: {fileID: 6975146307735418498}
   moveSpeed: 24
   maxFlightDuration: 1.5
+  environmentHoldDuration: 0.25
+  environmentFadeDuration: 0.6
+  environmentEmbedDepth: -0.05
   enemyLayer:
     serializedVersion: 2
     m_Bits: 1024
@@ -203,7 +217,7 @@ SpriteRenderer:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_MaskInteraction: 0
-  m_Sprite: {fileID: 21300000, guid: ab0560f1d7e5ddc498a548fb5cdc1989, type: 3}
+  m_Sprite: {fileID: 21300000, guid: a266f5f89bb5ebf4c8e85122c4ce6426, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
   m_FlipX: 0
   m_FlipY: 0

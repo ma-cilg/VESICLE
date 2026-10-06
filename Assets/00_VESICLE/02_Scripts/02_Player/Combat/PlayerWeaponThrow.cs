@@ -14,10 +14,11 @@ public class PlayerWeaponThrow : MonoBehaviour
     private ThrownSwordProjectile swordInstance;                            //게임 중 하나만 생성해서 재사용
 
     public bool IsThrowing { get; private set; }                            //향후 Player 투척 애니메이션용 상태
-    public bool IsWeaponAvailable =>                                        //현재 새로운 검을 던질 수 있는지
+    public bool IsWeaponAvailable =>
         swordInstance != null &&
         !swordInstance.IsFlying &&
-        !swordInstance.IsEmbedded;
+        !swordInstance.IsEmbedded &&
+        !swordInstance.IsEnvironmentEmbedded;
 
     private void Awake()
     {
@@ -64,9 +65,9 @@ public class PlayerWeaponThrow : MonoBehaviour
             return;
         }
 
-        //이미 검이 날아가는 중이면 추가 투척 금지
-        if (swordInstance != null && swordInstance.IsFlying) return;
-
+        //검이 날아가는 중이거나 환경에 박혀있는 동안 추가 투척 금지
+        if (swordInstance != null && (swordInstance.IsFlying || swordInstance.IsEnvironmentEmbedded)) return;
+        
         //현재 투척이 잠겨있다면 실행하지 않음
         if (!controlLock.CanThrow) return;
 
