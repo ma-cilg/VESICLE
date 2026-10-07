@@ -271,17 +271,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a0611101da7b9454bb7e327801efdae0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
---- !u!114 &827351924 stripped
-MonoBehaviour:
-  m_CorrespondingSourceObject: {fileID: 6275188774622283942, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
-  m_PrefabInstance: {fileID: 7460882862946946367}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 0}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 01adbcf0121919c46b884988dcf4b735, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttack
 --- !u!1 &1008686456
 GameObject:
   m_ObjectHideFlags: 0
@@ -640,16 +629,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CameraHitShake
   playerHealth: {fileID: 827351918}
   cameraTransform: {fileID: 2000062264}
-  playerAttack: {fileID: 827351924}
   hitShakeDuration: 0.2
-  hitShakeStrength: 0.1
-  hitVibrato: 12
-  attackShakeDuration: 0.1
-  attackShakeStrength: 0.05
-  attackVibrato: 6
-  enemyDeathShakeDuration: 0.2
-  enemyDeathShakeStrength: 0.1
-  enemyDeathVibrato: 12
+  hitShakeStrength: 0.35
+  hitVibrato: 20
+  attackShakeDuration: 0.14
+  attackShakeStrength: 0.25
+  attackVibrato: 15
+  enemyDeathShakeDuration: 0.24
+  enemyDeathShakeStrength: 0.5
+  enemyDeathVibrato: 22
 --- !u!114 &1774700045
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -677,8 +665,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 4c2ca4cdd23178641931f1e18ce850ad, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::TimeSlowmo
-  enemyDeathTimeScale: 0.04
-  enemyDeathSlowmoDuration: 0.22
+  playerHealth: {fileID: 827351918}
+  playerHitTimeScale: 0.04
+  playerHitSlowmoDuration: 0.14
 --- !u!1001 &1912851507
 PrefabInstance:
   m_ObjectHideFlags: 0

@@ -7,12 +7,11 @@ public class TimeSlowmo : MonoBehaviour
 {
     public static TimeSlowmo Instance { get; private set; }
 
-    [Header("Enemy Death")]
-    [SerializeField, Range(0.01f, 1f)]
-    private float enemyDeathTimeScale = 0.2f;               //적 사망 순간 게임 속도
+    [SerializeField] private PlayerHealth playerHealth;                                 //플레이어 피격 이벤트 수신
 
-    [SerializeField, Min(0f)]
-    private float enemyDeathSlowmoDuration = 0.06f;         //실제 시간 기준 슬로모 지속시간
+    [Header("Player Hit")]
+    [SerializeField, Range(0.01f, 1f)] private float playerHitTimeScale = 0.04f;        //플레이어가 실제 데미지를 받았을 때 게임 속도
+    [SerializeField, Min(0f)] private float playerHitSlowmoDuration = 0.14f;            //실제 시간 기준 플레이어 피격 슬로모 길이
 
     private Tween restoreTween;
 
@@ -24,10 +23,21 @@ public class TimeSlowmo : MonoBehaviour
         Instance = this;
     }
 
-    //*적 사망 순간 슬로모*
-    public void PlayEnemyDeathSlowmo()
+    private void OnEnable()
     {
-        PlaySlowmo(enemyDeathTimeScale, enemyDeathSlowmoDuration);
+        playerHealth.OnDamaged += HandlePlayerDamaged;
+    }
+
+    //*플레이어가 실제 데미지를 받은 순간*
+    private void HandlePlayerDamaged(float damage)
+    {
+        PlayPlayerHitSlowmo();
+    }
+
+    //*플레이어가 실제 데미지를 받은 순간 슬로모*
+    public void PlayPlayerHitSlowmo()
+    {
+        PlaySlowmo(playerHitTimeScale, playerHitSlowmoDuration);
     }
 
     //*공통 슬로모 시작*
@@ -66,6 +76,8 @@ public class TimeSlowmo : MonoBehaviour
 
     private void OnDisable()
     {
+        playerHealth.OnDamaged -= HandlePlayerDamaged;
+
         restoreTween?.Kill();
         restoreTween = null;
 

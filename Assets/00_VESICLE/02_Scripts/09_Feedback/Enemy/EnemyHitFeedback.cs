@@ -59,6 +59,12 @@ public class EnemyHitFeedback : MonoBehaviour
 
         RestoreVisual();                                    //먼저 정상 상태로 복구
 
+        //이동 공격이 실제로 적에게 적중한 순간 카메라 충격
+        if (hitInfo.HitType == EnemyHitType.Melee)
+        {
+            CameraHitShake.Instance?.PlayEnemyHitShake();
+        }
+
         //이동 공격의 가로 방향에 맞춰 HitVisual 방향 결정
         if (Mathf.Abs(hitInfo.HitDirection.x) > 0.001f)
         {

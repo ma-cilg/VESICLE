@@ -7,14 +7,13 @@ public class CameraHitShake : MonoBehaviour
 {
     [SerializeField] private PlayerHealth playerHealth;                     //데미지 받았는지 이벤트 받을 PlayerHealth
     [SerializeField] private Transform cameraTransform;                     //흔들 카메라
-    [SerializeField] private PlayerAttack playerAttack;                     //이동 공격 시작 이벤트를 받을 PlayerAttack
 
     [Header("Player Hit")]
     [SerializeField, Min(0f)] private float hitShakeDuration = 0.1f;        //플레이어 피격 쉐이크 시간
     [SerializeField, Min(0f)] private float hitShakeStrength = 0.05f;       //플레이어 피격 쉐이크 강도
     [SerializeField, Min(1)] private int hitVibrato = 8;                    //플레이어 피격 흔들림 횟수
 
-    [Header("Movement Attack")]
+    [Header("Enemy Hit")]
     [SerializeField, Min(0f)] private float attackShakeDuration = 0.06f;    //이동 공격 발동 쉐이크 시간
     [SerializeField, Min(0f)] private float attackShakeStrength = 0.025f;   //이동 공격 발동 쉐이크 강도
     [SerializeField, Min(1)] private int attackVibrato = 5;                 //이동 공격 흔들림 횟수
@@ -38,13 +37,11 @@ public class CameraHitShake : MonoBehaviour
     private void OnEnable()
     {
         playerHealth.OnDamaged += HandlePlayerDamaged;
-        playerAttack.OnSlashStarted += HandleMovementAttackStarted;
     }
 
     private void OnDisable()
     {
         playerHealth.OnDamaged -= HandlePlayerDamaged;
-        playerAttack.OnSlashStarted -= HandleMovementAttackStarted;
 
         shakeTween?.Kill();                                                 //실행 중인 카메라 Shake가 있다면 중단
         shakeTween = null;                                                  //Tween 참조 제거
@@ -58,8 +55,8 @@ public class CameraHitShake : MonoBehaviour
         PlayShake(hitShakeDuration, hitShakeStrength, hitVibrato);
     }
 
-    //*이동 공격이 실제로 시작됐을 때*
-    private void HandleMovementAttackStarted(float attackDistance)
+    //*이동 공격이 적에게 실제로 적중한 순간 쉐이크*
+    public void PlayEnemyHitShake()
     {
         PlayShake(attackShakeDuration, attackShakeStrength, attackVibrato);
     }

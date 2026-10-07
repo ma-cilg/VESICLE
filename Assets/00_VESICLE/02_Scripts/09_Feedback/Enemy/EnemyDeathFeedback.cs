@@ -114,8 +114,9 @@ public class EnemyDeathFeedback : MonoBehaviour
     //*적 폭발 직전 충격 연출*
     private void PlayDeathImpact()
     {
+        //폭발 순간에는 카메라 충격만 적용
+        //Slowmo는 실제 공격이 적중한 순간에 따로 처리
         CameraHitShake.Instance?.PlayEnemyDeathShake();
-        TimeSlowmo.Instance?.PlayEnemyDeathSlowmo();
     }
 
     //*적 몸체 5조각 폭발*
