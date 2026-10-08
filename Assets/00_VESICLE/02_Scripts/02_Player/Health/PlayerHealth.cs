@@ -2,6 +2,7 @@
 //책임: HP 관리 → 데미지/회복 적용 → 체력 변경 및 사망 이벤트 전달
 using System;       //Action 이벤트 사용
 using UnityEngine;
+using UnityEngine.InputSystem;
 
 public class PlayerHealth : MonoBehaviour
 {
@@ -21,6 +22,19 @@ public class PlayerHealth : MonoBehaviour
     {
         CurrentHealth = maxHealth;
     }
+
+#if UNITY_EDITOR
+    private void Update()
+    {
+        //개발 중 체크포인트 / 사망 연출 테스트용
+        //Game View에 포커스를 둔 상태에서 K를 누르면 즉시 사망
+        if (Keyboard.current != null &&
+            Keyboard.current.kKey.wasPressedThisFrame)
+        {
+            TestKillPlayer();
+        }
+    }
+#endif
 
     //*데미지 처리*
     public void TakeDamage(float damage, Vector2 hitDirection)
@@ -83,5 +97,15 @@ public class PlayerHealth : MonoBehaviour
 
         IsDead = true;
         OnDied?.Invoke();
+    }
+
+    //*체크포인트 Respawn 테스트용 강제 사망*
+    [ContextMenu("Test Kill Player")]
+    private void TestKillPlayer()
+    {
+        if (IsDead) return;
+
+        //무적 여부와 관계없이 현재 체력 전부 감소
+        TakeForcedDamage(CurrentHealth, Vector2.zero);
     }
 }

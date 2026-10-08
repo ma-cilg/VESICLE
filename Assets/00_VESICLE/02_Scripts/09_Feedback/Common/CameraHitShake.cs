@@ -5,26 +5,35 @@ using UnityEngine;
 
 public class CameraHitShake : MonoBehaviour
 {
-    [SerializeField] private PlayerHealth playerHealth;                     //데미지 받았는지 이벤트 받을 PlayerHealth
-    [SerializeField] private Transform cameraTransform;                     //흔들 카메라
+    [SerializeField] private PlayerHealth playerHealth;                         //데미지 받았는지 이벤트 받을 PlayerHealth
+    [SerializeField] private Transform cameraTransform;                         //흔들 카메라
 
     [Header("Player Hit")]
-    [SerializeField, Min(0f)] private float hitShakeDuration = 0.1f;        //플레이어 피격 쉐이크 시간
-    [SerializeField, Min(0f)] private float hitShakeStrength = 0.05f;       //플레이어 피격 쉐이크 강도
-    [SerializeField, Min(1)] private int hitVibrato = 8;                    //플레이어 피격 흔들림 횟수
+    [SerializeField, Min(0f)] private float hitShakeDuration = 0.1f;            //플레이어 피격 쉐이크 시간
+    [SerializeField, Min(0f)] private float hitShakeStrength = 0.05f;           //플레이어 피격 쉐이크 강도
+    [SerializeField, Min(1)] private int hitVibrato = 8;                        //플레이어 피격 흔들림 횟수
 
     [Header("Enemy Hit")]
-    [SerializeField, Min(0f)] private float attackShakeDuration = 0.06f;    //이동 공격 발동 쉐이크 시간
-    [SerializeField, Min(0f)] private float attackShakeStrength = 0.025f;   //이동 공격 발동 쉐이크 강도
-    [SerializeField, Min(1)] private int attackVibrato = 5;                 //이동 공격 흔들림 횟수
+    [SerializeField, Min(0f)] private float attackShakeDuration = 0.06f;        //이동 공격 발동 쉐이크 시간
+    [SerializeField, Min(0f)] private float attackShakeStrength = 0.025f;       //이동 공격 발동 쉐이크 강도
+    [SerializeField, Min(1)] private int attackVibrato = 5;                     //이동 공격 흔들림 횟수
 
     [Header("Enemy Death")]
     [SerializeField, Min(0f)] private float enemyDeathShakeDuration = 0.16f;    //적 폭발 쉐이크 시간
     [SerializeField, Min(0f)] private float enemyDeathShakeStrength = 0.14f;    //적 폭발 쉐이크 강도
     [SerializeField, Min(1)] private int enemyDeathVibrato = 14;                //적 폭발 흔들림 횟수
 
-    private Tween shakeTween;                                               //현재 실행 중인 Shake Tween 저장
-    private Vector3 originalLocalPosition;                                  //Main Camera의 원래 Local Position 저장
+    [Header("Room Door")]
+    [SerializeField, Min(0f)] private float doorShakeStrength = 0.10f;          //문이 열리는 동안 카메라 흔들림 강도
+    [SerializeField, Min(1)] private int doorShakeVibrato = 24;                 //문 개방 중 흔들림 횟수
+
+    [Header("Room Door Close")]
+    [SerializeField, Min(0f)] private float doorCloseShakeDuration = 0.12f;     //문이 닫히는 순간 충격 시간
+    [SerializeField, Min(0f)] private float doorCloseShakeStrength = 0.45f;     //문 닫힘 충격 강도
+    [SerializeField, Min(1)] private int doorCloseVibrato = 16;                 //문 닫힘 흔들림 횟수
+
+    private Tween shakeTween;                                                   //현재 실행 중인 Shake Tween 저장
+    private Vector3 originalLocalPosition;                                      //Main Camera의 원래 Local Position 저장
 
     public static CameraHitShake Instance { get; private set; }
 
@@ -65,6 +74,18 @@ public class CameraHitShake : MonoBehaviour
     public void PlayEnemyDeathShake()
     {
         PlayShake(enemyDeathShakeDuration, enemyDeathShakeStrength, enemyDeathVibrato);
+    }
+
+    //*방 문 열리는 동안 카메라 쉐이크*
+    public void PlayDoorOpenShake(float duration)
+    {
+        PlayShake(duration, doorShakeStrength, doorShakeVibrato);
+    }
+
+    //*방 문 완전히 닫히는 순간 쉐이크*
+    public void PlayDoorCloseImpact()
+    {
+        PlayShake(doorCloseShakeDuration, doorCloseShakeStrength, doorCloseVibrato);
     }
 
     //*공통 카메라 쉐이크 재생*

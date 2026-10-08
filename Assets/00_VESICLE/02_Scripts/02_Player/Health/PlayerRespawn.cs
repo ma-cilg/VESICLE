@@ -1,31 +1,28 @@
-//**플레이어 사망 후 재시작 처리**
-//책임: 사망 감지 → 잠시 대기 → 시작 위치 복귀 → 체력/사망 상태 복구
+//**플레이어 사망 후 체크포인트 재시작 처리**
+//책임: 사망 감지 → 잠시 대기 → 현재 Scene 재로드 → 저장된 Room에서 재시작 알림
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
-[RequireComponent(typeof(Rigidbody2D))]
 public class PlayerRespawn : MonoBehaviour
 {
-    [SerializeField] private PlayerHealth playerHealth;         //사망 감지 및 체력 복구
-    [SerializeField] private PlayerDeath playerDeath;           //사망으로 걸린 조작 Lock 복구
-    [SerializeField] private PlayerAnimation playerAnimation;   //Respawn 후 Idle 상태 복귀
+    [SerializeField] private PlayerHealth playerHealth;             //플레이어 사망 감지
+    [SerializeField, Min(0f)] private float respawnDelay = 1f;      //사망 후 재시작까지 대기 시간
 
-    [SerializeField, Min(0f)]
-    private float respawnDelay = 1f;                            //사망 후 다시 살아나기까지 대기 시간
+    private Coroutine respawnRoutine;                               //중복 Respawn 방지
 
-    private Rigidbody2D rb;
+    private static bool respawnAfterSceneReload;                    //Scene Reload 뒤 새 PlayerRespawn이 부활 상황임을 알 수 있도록 유지
 
-    private Vector2 respawnPosition;                            //현재 Respawn 위치
-    private Coroutine respawnRoutine;                           //중복 Respawn 방지
-    public event Action OnRespawned;                            //플레이어 부활 완료 알림
+    public event Action OnRespawned;                                //부활 Feedback 등에 알림
 
-    private void Awake()
+    private void Start()
     {
-        rb = GetComponent<Rigidbody2D>();
+        if (!respawnAfterSceneReload) return;
 
-        //현재 테스트에서는 씬에 배치된 Player의 시작 위치를 Respawn 위치로 사용
-        respawnPosition = rb.position;
+        respawnAfterSceneReload = false;
+
+        StartCoroutine(NotifyRespawnedNextFrame());                 //StageFlowController가 Player / Camera 위치를 먼저 복구할 시간을 줌
     }
 
     private void OnEnable()
@@ -44,7 +41,7 @@ public class PlayerRespawn : MonoBehaviour
         }
     }
 
-    //*사망 시 Respawn 시작*
+    //*플레이어 사망 시 재시작 시작*
     private void StartRespawn()
     {
         if (respawnRoutine != null) return;
@@ -52,21 +49,22 @@ public class PlayerRespawn : MonoBehaviour
         respawnRoutine = StartCoroutine(RespawnRoutine());
     }
 
-    //*일정 시간 후 플레이어 복구*
+    //*사망 연출을 잠시 보여준 뒤 현재 Stage Scene 재로드*
     private IEnumerator RespawnRoutine()
     {
         yield return new WaitForSeconds(respawnDelay);
 
-        rb.linearVelocity = Vector2.zero;               //남아있는 움직임 제거
-        rb.angularVelocity = 0f;
-        rb.position = respawnPosition;                  //시작 위치로 이동
+        respawnAfterSceneReload = true;     //다음 Scene 시작이 사망으로 인한 Respawn임을 기록
 
-        playerHealth.ResetHealth();                     //HP와 사망 상태 복구
-        playerAnimation.ResetAfterRespawn();            //사망 애니메이션에서 기본 Idle로 복귀
-        playerDeath.ResetDeathState();                  //사망으로 걸었던 조작 Lock 해제
+        //현재 Stage Scene 전체를 새로 로드 (적 / 방 / 투사체 / Mark 등의 런타임 상태도 함께 초기화)
+        SceneManager.LoadScene(SceneManager.GetActiveScene().name);
+    }
 
-        OnRespawned?.Invoke();                          //부활 완료를 Feedback 등에 알림
+    //*Scene Reload 후 체크포인트 복구가 끝난 다음 부활 Feedback 실행*
+    private IEnumerator NotifyRespawnedNextFrame()
+    {
+        yield return null;
 
-        respawnRoutine = null;
+        OnRespawned?.Invoke();
     }
 }
