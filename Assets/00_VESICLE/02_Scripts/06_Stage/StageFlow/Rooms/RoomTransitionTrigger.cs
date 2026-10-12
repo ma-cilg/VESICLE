@@ -38,9 +38,31 @@ public class RoomTransitionTrigger : MonoBehaviour
     private float originalGravityScale;                             //전환 전 플레이어 중력값
     private bool playerPhysicsOverridden;                           //전환 중 물리값을 변경했는지
 
+    private BoxCollider2D transitionCollider;                       //방 통로의 Trigger 영역
+    private CapsuleCollider2D playerBodyCollider;                   //플레이어 실제 충돌 영역
+    private bool cameraMoveStarted;                                 //카메라 이동 시작 여부
+
+    private void Awake()
+    {
+        transitionCollider = GetComponent<BoxCollider2D>();                     //현재 통로 Trigger
+        playerBodyCollider = playerRigidbody.GetComponent<CapsuleCollider2D>(); //Player 충돌 영역
+
+        if (transitionCollider != null && playerBodyCollider != null) return;
+
+        Debug.LogError("RoomTransitionTrigger: 통로 또는 Player Collider를 찾을 수 없습니다.", this);
+        enabled = false;
+    }
+
     private void OnTriggerEnter2D(Collider2D other)
     {
         if (transitionStarted) return;
+
+        //다음 방이 이미 시작됐다면 다시 방 전환하지 않음
+        if (nextRoom == null || nextRoom.IsStarted) return;
+
+        //두 문이 완전히 열렸을 때만 방 전환 허용
+        if (previousExitDoor == null || nextEntryDoor == null) return;
+        if (!previousExitDoor.IsOpen || !nextEntryDoor.IsOpen) return;
 
         //Player 또는 Player 자식 Collider인지 확인
         PlayerControlLock enteredControlLock = other.GetComponentInParent<PlayerControlLock>();
@@ -51,13 +73,31 @@ public class RoomTransitionTrigger : MonoBehaviour
         StartRoomTransition();
     }
 
+
     //*방 전환 중 플레이어 자동 이동*
     private void FixedUpdate()
     {
         if (!isPlayerAutoMoving) return;
 
-        float remainingDistance = playerTargetX - playerRigidbody.position.x;
+        //플레이어 머리가 통로 위쪽 벽보다 높으면 내려올 때까지 대기
+        float passageTopY = transitionCollider.bounds.max.y;
 
+        if (playerBodyCollider.bounds.max.y > passageTopY - 0.05f)
+        {
+            //좌우 이동만 멈추고 중력에 의한 낙하는 유지
+            playerRigidbody.linearVelocity = new Vector2(0f, playerRigidbody.linearVelocity.y);
+
+            return;
+        }
+
+        //안전하게 통과할 수 있을 때 카메라 이동 시작
+        if (!cameraMoveStarted)
+        {
+            cameraMoveStarted = true;
+            roomCamera.MoveToRoom(nextRoomCameraPoint);
+        }
+
+        float remainingDistance = playerTargetX - playerRigidbody.position.x;
         float direction = Mathf.Sign(remainingDistance);
 
         //이번 물리 프레임에서 이동할 거리
@@ -77,9 +117,10 @@ public class RoomTransitionTrigger : MonoBehaviour
             return;
         }
 
-        //실제 Rigidbody 속도로 이동
-        playerRigidbody.linearVelocity = new Vector2(direction * playerAutoMoveSpeed, 0f);
+        //중력에 의한 수직 이동을 유지하면서 다음 방으로 이동
+        playerRigidbody.linearVelocity = new Vector2(direction * playerAutoMoveSpeed, playerRigidbody.linearVelocity.y);
     }
+
 
     //*다음 방 전환 시작*
     private void StartRoomTransition()
@@ -99,19 +140,16 @@ public class RoomTransitionTrigger : MonoBehaviour
         playerRigidbody.linearVelocity = Vector2.zero;
         playerRigidbody.angularVelocity = 0f;
 
-        //자동 이동 중에는 높이가 떨어지지 않도록 잠시 중력 제거
+        //자동 이동 중에도 중력을 유지해 공중에서 문에 끼이지 않도록 처리
         originalGravityScale = playerRigidbody.gravityScale;
-        playerRigidbody.gravityScale = 0f;
         playerPhysicsOverridden = true;
 
         cameraMoveCompleted = false;
         playerMoveCompleted = false;
+        cameraMoveStarted = false;                      //실제 통로 진입 전까지 카메라 이동 대기
 
         //카메라 이동 완료 이벤트 대기
         roomCamera.OnMoveCompleted += HandleCameraMoveCompleted;
-
-        //카메라를 다음 방으로 이동
-        roomCamera.MoveToRoom(nextRoomCameraPoint);
 
         //다음 방 안쪽 목표 X 저장
         playerTargetX = playerEntryPoint.position.x;
@@ -160,26 +198,30 @@ public class RoomTransitionTrigger : MonoBehaviour
         nextEntryDoor.CloseDoor();
     }
 
+
     //*문 하나가 완전히 닫혔을 때*
     private void HandleDoorClosed()
     {
         closedDoorCount++;
 
-        //두 문 모두 닫힐 때까지 대기
         if (closedDoorCount < 2) return;
 
         previousExitDoor.OnClosed -= HandleDoorClosed;
         nextEntryDoor.OnClosed -= HandleDoorClosed;
 
-        //자동 이동을 위해 변경했던 물리값 원상복구
         RestorePlayerPhysics();
 
-        //양쪽 문이 완전히 닫힌 순간 다음 방 시작
-        nextRoom?.StartRoom();
+        //양쪽 문이 완전히 닫혔으므로 다음 방 시작 및 체크포인트 저장
+        if (nextRoom != null)
+        {
+            nextRoom.StartRoom();
+            nextRoom.SaveEntryCheckpoint();                 //진입 완료한 Room의 위치를 저장
+        }
 
         //방이 시작된 뒤 플레이어 조작 복구
         ReleaseTransitionControls();
     }
+
 
     //*방 전환 동안 플레이어 전체 조작 잠금*
     private void LockTransitionControls()

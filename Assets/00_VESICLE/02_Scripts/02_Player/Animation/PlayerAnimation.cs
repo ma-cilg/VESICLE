@@ -183,11 +183,13 @@ public class PlayerAnimation : MonoBehaviour
     }
 
 
-    //*일어나는 연출이 끝난 뒤 일반 Idle 상태로 복귀*
+    //*일어나는 연출 종료 및 일반 Idle 상태 복귀*
     public void FinishTutorialStandUp()
     {
-        animator.speed = 1f;
-        animator.Play(IdleStateHash, 0, 0f);
+        isTutorialPoseHeld = false;                 //타이틀 앉은 자세 유지 상태 해제
+
+        animator.speed = 1f;                        //멈춰 있던 Animator 정상 재생
+        animator.Play(IdleStateHash, 0, 0f);        //일반 Idle 애니메이션으로 복귀
     }
 
 

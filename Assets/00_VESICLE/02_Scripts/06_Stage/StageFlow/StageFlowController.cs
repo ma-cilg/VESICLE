@@ -112,6 +112,12 @@ public class StageFlowController : MonoBehaviour
         if (checkpointRoom.room != null)
         {
             checkpointRoom.room.StartRoom();
+
+            //튜토리얼 첫 방으로 복구했다면 Room_02로 가는 통로 개방
+            if (stageIndex == 0 && checkpointRoomIndex == 0)
+            {
+                checkpointRoom.room.OpenPassageWithoutClear();
+            }
         }
     }
 }

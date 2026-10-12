@@ -103,12 +103,6 @@ public class CombatRoom : MonoBehaviour
 
         isCleared = true;
 
-        //다음에 시작할 방을 체크포인트로 저장
-        if (SaveManager.Instance != null && nextRoom != null)
-        {
-            SaveManager.Instance.SaveCheckpoint(stageIndex, roomIndex + 1);
-        }
-
         purificationSequence?.Kill();
         roomFrame.localScale = originalFrameScale;
         purificationSequence = DOTween.Sequence();
@@ -180,7 +174,17 @@ public class CombatRoom : MonoBehaviour
 
         roomFrame.localScale = originalFrameScale;      //방 크기 원상복구
 
-        ApplyFrameColor(purifiedRoomColor);             //연출 없이 바로 클리어 색상 적용
+        roomFrame.localScale = originalFrameScale;      //방 크기 원상복구
+
+        //튜토리얼 방은 정화 대상이 아니므로 원래 흰색 유지
+        if (roomType == CombatRoomType.Tutorial)
+        {
+            ApplyFrameColor(tutorialRoomColor);
+        }
+        else
+        {
+            ApplyFrameColor(purifiedRoomColor);          //일반 / 보스 방은 정화된 초록색 복구
+        }
 
         //이미 클리어한 방의 적은 다시 나타나지 않도록 비활성화
         foreach (EnemyDeath enemy in enemies)
@@ -189,6 +193,14 @@ public class CombatRoom : MonoBehaviour
 
             enemy.gameObject.SetActive(false);
         }
+    }
+
+    //*방 진입 완료 시 현재 Room 체크포인트 저장*
+    public void SaveEntryCheckpoint()
+    {
+        if (SaveManager.Instance == null) return;       //SaveManager가 없다면 저장하지 않음
+
+        SaveManager.Instance.SaveCheckpoint(stageIndex, roomIndex);     //현재 Stage / Room 위치 저장
     }
 
     //*플레이어 입장 완료 후 방 진행 시작*

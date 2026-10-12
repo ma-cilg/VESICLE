@@ -26,11 +26,13 @@ public class TitleMenuController : MonoBehaviour
     [SerializeField] private PlayerAnimation playerAnimation;
     [SerializeField] private CombatRoom firstRoom;
 
-    [SerializeField, Min(0f)]
-    private float titleFadeDuration = 0.65f;
+    [Header("Continue")]
+    [SerializeField] private StageFlowController stageFlowController;       //저장된 Room 및 Player / Camera 복구
+    [SerializeField] private CanvasGroup continueFadeCanvasGroup;           //화면 전체 암전 연출
+    [SerializeField, Min(0f)] private float continueFadeDuration = 0.45f;   //암전 및 화면 복구 시간
 
-    [SerializeField, Min(0f)]
-    private float standUpDuration = 0.8f;
+    [SerializeField, Min(0f)] private float titleFadeDuration = 0.65f;
+    [SerializeField, Min(0f)] private float standUpDuration = 0.8f;
 
     private bool isStarting;
     private bool isRespawnReload;
@@ -39,6 +41,14 @@ public class TitleMenuController : MonoBehaviour
     {
         //PlayerRespawn이 사망 플래그를 지우기 전에 확인
         isRespawnReload = PlayerRespawn.IsRespawnReload;
+
+        //게임 시작 시 암전 화면 안 보이게 초기화
+        if (continueFadeCanvasGroup != null)
+        {
+            continueFadeCanvasGroup.alpha = 0f;
+            continueFadeCanvasGroup.interactable = false;
+            continueFadeCanvasGroup.blocksRaycasts = false;
+        }
     }
 
     private void OnEnable()
@@ -59,6 +69,7 @@ public class TitleMenuController : MonoBehaviour
         backButton.onClick.RemoveListener(ShowTitle);
 
         titleCanvasGroup.DOKill();
+        continueFadeCanvasGroup?.DOKill();                      //이어하기 암전 Tween 정리
     }
 
     private void Start()
@@ -158,11 +169,69 @@ public class TitleMenuController : MonoBehaviour
     //*이어하기*
     private void HandleContinue()
     {
-        if (isStarting) return;
-        if (SaveManager.Instance == null) return;
-        if (!SaveManager.Instance.HasSave) return;
+        if (isStarting) return;                                 //이미 시작 연출 중이면 중복 실행 방지
+        if (SaveManager.Instance == null) return;               //SaveManager가 없다면 실행하지 않음
+        if (!SaveManager.Instance.HasSave) return;              //저장된 진행도가 없다면 실행하지 않음
 
-        //암전 + StageFlowController 복구 연결 예정
+        //필요한 컴포넌트가 연결되지 않았다면 실행하지 않음
+        if (stageFlowController == null || continueFadeCanvasGroup == null)
+        {
+            Debug.LogError("TitleMenuController: Continue 관련 컴포넌트가 연결되지 않았습니다.", this);
+            return;
+        }
+
+        StartCoroutine(ContinueRoutine());                      //이어하기 암전 및 복구 시작
+    }
+
+    //*CONTINUE 암전 및 저장된 체크포인트 복구*
+    private IEnumerator ContinueRoutine()
+    {
+        isStarting = true;                                      //다른 메뉴 버튼의 중복 실행 방지
+
+        titleCanvasGroup.interactable = false;                  //이어하기 중 메뉴 입력 차단
+        titleCanvasGroup.blocksRaycasts = false;
+
+        continueFadeCanvasGroup.alpha = 0f;                     //투명한 상태에서 시작
+        continueFadeCanvasGroup.blocksRaycasts = true;          //암전 중 다른 UI 클릭 방지
+
+        //검은 화면이 서서히 나타남
+        Tween fadeOutTween = continueFadeCanvasGroup
+            .DOFade(1f, continueFadeDuration)
+            .SetUpdate(true);
+
+        yield return fadeOutTween.WaitForCompletion();
+
+        //화면이 완전히 검어졌으므로 타이틀 UI 숨기기
+        titleGroup.SetActive(false);
+        optionsPanel.SetActive(false);
+
+        stageFlowController.ContinueFromSave();                 //저장된 체크포인트의 Player / Camera / Room 상태 복구
+        playerAnimation.FinishTutorialStandUp();                //타이틀에서 멈춰둔 Animator를 다시 실행하고 Idle로 전환
+
+        //튜토리얼 첫 방이라면 출구 문이 완전히 열릴 때까지 대기
+        GameSaveData saveData = SaveManager.Instance.CurrentSaveData;
+
+        if (saveData != null &&
+            saveData.stageIndex == 0 &&
+            saveData.roomIndex == 0 &&
+            firstRoom != null &&
+            firstRoom.ExitDoor != null)
+        {
+            yield return new WaitUntil(() => firstRoom.ExitDoor.IsOpen);
+        }
+
+        //복구가 끝났으므로 검은 화면을 서서히 제거
+        Tween fadeInTween = continueFadeCanvasGroup
+            .DOFade(0f, continueFadeDuration)
+            .SetUpdate(true);
+
+        yield return fadeInTween.WaitForCompletion();
+
+        continueFadeCanvasGroup.blocksRaycasts = false;         //게임 화면 입력 차단 해제
+
+        tutorialStart.ReleaseTutorialControls();                //화면이 나타난 뒤 플레이어 조작 허용
+
+        isStarting = false;                                     //이어하기 연출 완료
     }
 
     //*게임 종료*
