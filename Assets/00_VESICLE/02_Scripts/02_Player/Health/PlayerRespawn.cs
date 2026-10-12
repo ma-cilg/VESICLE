@@ -14,6 +14,8 @@ public class PlayerRespawn : MonoBehaviour
 
     private static bool respawnAfterSceneReload;                    //Scene Reload 뒤 새 PlayerRespawn이 부활 상황임을 알 수 있도록 유지
 
+    public static bool IsRespawnReload => respawnAfterSceneReload;  //사망으로 다시 로드한 씬인지 외부에서 확인
+
     public event Action OnRespawned;                                //부활 Feedback 등에 알림
 
     private void Start()

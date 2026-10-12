@@ -9,6 +9,7 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] private PlayerAttack playerAttack;     //공격 시작/취소/종료 이벤트 확인
     [SerializeField] private PlayerHealth playerHealth;     //플레이어 사망 상태와 사망 이벤트 확인
     private Rigidbody2D rb;
+    private bool isTutorialPoseHeld;                        //타이틀에서 앉은 자세를 유지 중인지
 
     //Animator Parameter의 문자열 이름을 Hash값으로 변환해서 재사용
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -24,6 +25,7 @@ public class PlayerAnimation : MonoBehaviour
     private static readonly int JumpMidStateHash = Animator.StringToHash("Player_Jump_Mid");
     private static readonly int JumpFallStateHash = Animator.StringToHash("Player_Jump_Fall");
     private static readonly int DieStateHash = Animator.StringToHash("Player_Die");
+    private static readonly int StandUpStateHash = Animator.StringToHash("Player_StandUp");
 
     private void Awake()
     {
@@ -54,8 +56,8 @@ public class PlayerAnimation : MonoBehaviour
 
     private void Update()
     {
-        //사망 중에는 Idle / Run / Jump가 Die 애니메이션을 덮어쓰지 않음
-        if (playerHealth.IsDead) return;
+        //사망 중이거나 타이틀에서 앉아 있는 동안에는 일반 이동 애니메이션으로 전환하지 않음
+        if (playerHealth.IsDead || isTutorialPoseHeld) return;
 
         UpdateMovementAnimation();
     }
@@ -154,6 +156,40 @@ public class PlayerAnimation : MonoBehaviour
         animator.SetBool(IsAttackingHash, false);   //공격 상태 종료
         ResetAttackTriggers();                      //남아있는 공격 Trigger 정리
     }
+
+    //*튜토리얼 타이틀에서 앉은 자세*
+    public void HoldTutorialSitPose()
+    {
+        isTutorialPoseHeld = true;
+
+        //StandUp 애니메이션 첫 프레임
+        animator.speed = 1f;
+        animator.Play(StandUpStateHash, 0, 0f);
+        animator.Update(0f);
+
+        animator.speed = 0f;                        //애니메이션 멈춰 첫 프레임 유지
+    }
+
+    //*NEW GAME 시작 시 일어나는 애니메이션 재생*
+    public void PlayTutorialStandUp()
+    {
+        if (!isTutorialPoseHeld) return;
+
+        isTutorialPoseHeld = false;
+
+        animator.speed = 1f;                        //멈춰둔 Animator 작동
+
+        animator.Play(StandUpStateHash, 0, 0f);     //StandUp 처음부터 재생
+    }
+
+
+    //*일어나는 연출이 끝난 뒤 일반 Idle 상태로 복귀*
+    public void FinishTutorialStandUp()
+    {
+        animator.speed = 1f;
+        animator.Play(IdleStateHash, 0, 0f);
+    }
+
 
     //*Respawn 후 기본 애니메이션으로 복귀*
     public void ResetAfterRespawn()

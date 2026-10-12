@@ -7,8 +7,9 @@ using UnityEngine;
 //방의 종류에 따라 정화 전 색상을 구분
 public enum CombatRoomType
 {
-    Normal,     //일반 방: 검붉은색
-    Boss        //보스 방: 보라색
+    Tutorial,       //튜토리얼 이동/조작 설명 방: 흰색
+    Normal,         //일반 전투 방: 빨간색
+    Boss            //보스 방: 보라색
 }
 
 public class CombatRoom : MonoBehaviour
@@ -30,6 +31,7 @@ public class CombatRoom : MonoBehaviour
     [SerializeField] private EnemyDeath[] enemies;                                          //이 방에 배치된 적들
 
     [Header("Room Colors")]
+    [SerializeField] private Color tutorialRoomColor = new Color32(0xF2, 0xF2, 0xF2, 0xFF); //튜토리얼 방 흰색
     [SerializeField] private Color normalRoomColor = new Color32(0xDB, 0x4D, 0x60, 0xFF);   //일반 방 붉은색
     [SerializeField] private Color bossRoomColor = new Color32(0x79, 0x3E, 0xA1, 0xFF);     //보스 방 보라색
     [SerializeField] private Color purifiedRoomColor = new Color32(0x55, 0xD6, 0x8B, 0xFF); //클리어 방 초록색
@@ -50,6 +52,7 @@ public class CombatRoom : MonoBehaviour
 
     public bool IsStarted => isStarted;
     public bool IsCleared => isCleared;
+    public RoomDoor ExitDoor => exitDoor;
 
     public event Action OnRoomStarted;                                                      //문이 닫힌 뒤 실제 방 시작 알림
     public event Action OnPurified;                                                         //클리어 연출 완료 알림
@@ -64,7 +67,19 @@ public class CombatRoom : MonoBehaviour
     //*방 종류에 맞는 클리어 전 색상 적용*
     private void ApplyInitialRoomColor()
     {
-        Color startColor = roomType == CombatRoomType.Boss ? bossRoomColor : normalRoomColor;
+        Color startColor;
+
+        switch (roomType)
+        {
+            case CombatRoomType.Tutorial: startColor = tutorialRoomColor;
+                break;
+
+            case CombatRoomType.Boss: startColor = bossRoomColor;
+                break;
+
+            default: startColor = normalRoomColor;
+                break;
+        }
 
         ApplyFrameColor(startColor);
     }
@@ -128,6 +143,13 @@ public class CombatRoom : MonoBehaviour
     public void OpenEntryDoor()
     {
         entryDoor?.OpenDoor();
+    }
+
+    //*튜토리얼 방에서 정화 연출 없이 통로 개방*
+    public void OpenPassageWithoutClear()
+    {
+        exitDoor?.OpenDoor();                   //현재 방 오른쪽 문 열기
+        nextRoom?.OpenEntryDoor();              //다음 방 왼쪽 문 동시에 열기
     }
 
     private void OnDisable()

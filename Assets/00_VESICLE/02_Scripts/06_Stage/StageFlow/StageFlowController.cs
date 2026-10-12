@@ -24,8 +24,28 @@ public class StageFlowController : MonoBehaviour
     [Header("Camera")]
     [SerializeField] private RoomCameraController roomCamera;
 
+    private bool shouldRestoreAfterDeath;                       //사망 후 씬 재로드 여부를 기억
+
+    private void Awake()
+    {
+        //PlayerRespawn.Start()가 복구 플래그를 초기화하기 전에
+        //사망으로 인한 Scene Reload인지 먼저 저장
+        shouldRestoreAfterDeath = PlayerRespawn.IsRespawnReload;
+    }
+
     private void Start()
     {
+        if (!shouldRestoreAfterDeath) return;                   //일반 게임 실행이라면 타이틀 화면을 유지
+
+        RestoreStageProgress();
+    }
+
+    //*CONTINUE 버튼에서 저장된 체크포인트 복구 요청*
+    public void ContinueFromSave()
+    {
+        if (SaveManager.Instance == null) return;
+        if (!SaveManager.Instance.HasSave) return;
+
         RestoreStageProgress();
     }
 

@@ -1,16 +1,32 @@
 //**튜토리얼 시작 상태 제어**
-//책임: 튜토리얼 시작 시 플레이어 조작 잠금 → 시작 연출 완료 후 자기 Lock만 해제
+//책임: 타이틀 중 조작 잠금 → 앉은 자세 유지 → 시작 연출 종료 후 조작 복구
 using UnityEngine;
 
 public class TutorialStartController : MonoBehaviour
 {
-    [SerializeField] private PlayerControlLock controlLock;     //튜토리얼 동안 잠글 Player 조작 관리
+    [SerializeField] private PlayerControlLock controlLock;     //Player 조작 잠금
+    [SerializeField] private PlayerAnimation playerAnimation;   //Player 애니메이션
 
-    private bool controlsLocked;                                //튜토리얼 Lock 중복 적용 방지
+    private bool controlsLocked;
+    private bool isRespawnReload;                               //사망 후 재시작인지
+
+    private void Awake()
+    {
+        isRespawnReload = PlayerRespawn.IsRespawnReload;
+    }
 
     private void OnEnable()
     {
+        if (isRespawnReload) return;
+
         LockTutorialControls();
+    }
+
+    private void Start()
+    {
+        if (isRespawnReload) return;
+
+        playerAnimation.HoldTutorialSitPose();
     }
 
     private void OnDisable()
@@ -18,7 +34,7 @@ public class TutorialStartController : MonoBehaviour
         ReleaseTutorialControls();
     }
 
-    //*튜토리얼 시작 시 플레이어 전체 조작 잠금*
+    //*튜토리얼 시작 중 전체 조작 잠금*
     private void LockTutorialControls()
     {
         if (controlsLocked) return;
@@ -32,7 +48,7 @@ public class TutorialStartController : MonoBehaviour
         controlLock.LockDetonate();
     }
 
-    //*튜토리얼 시작 연출 종료 후 조작 복구*
+    //*시작 연출 종료 후 자신의 조작 Lock만 해제*
     public void ReleaseTutorialControls()
     {
         if (!controlsLocked) return;
