@@ -1,5 +1,36 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
+--- !u!1 &434431190326823536
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2650756563123272835}
+  m_Layer: 9
+  m_Name: GroundCheck
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &2650756563123272835
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 434431190326823536}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: -0.08, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 3862642505396998983}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &4319129692746434006
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -82,7 +113,10 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents: []
     m_RemovedGameObjects: []
-    m_AddedGameObjects: []
+    m_AddedGameObjects:
+    - targetCorrespondingSourceObject: {fileID: 1038780613554673297, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2650756563123272835}
     m_AddedComponents:
     - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
       insertIndex: -1
@@ -90,12 +124,38 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 1821025109805582741}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 6864140976476345798}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 9152340845159216219}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3275364439785349455}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 301082800521467476}
+    - targetCorrespondingSourceObject: {fileID: 9022211538940756860, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 5052542951656320746}
   m_SourcePrefab: {fileID: 100100000, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
 --- !u!4 &181208962854764930 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4139767953080779860, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
   m_PrefabInstance: {fileID: 4319129692746434006}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &2612978777441056314 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2284323131310765036, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c622b03d42d3f6b41bfff1a173d9a6ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDeath
 --- !u!1 &3058951088342267606 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
@@ -137,7 +197,7 @@ Rigidbody2D:
   m_Mass: 1
   m_LinearDamping: 0
   m_AngularDamping: 0.05
-  m_GravityScale: 0
+  m_GravityScale: 3
   m_Material: {fileID: 0}
   m_IncludeLayers:
     serializedVersion: 2
@@ -149,11 +209,144 @@ Rigidbody2D:
   m_SleepingMode: 1
   m_CollisionDetection: 1
   m_Constraints: 4
+--- !u!114 &6864140976476345798
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: e5be219709f06884797901b0797a8078, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDashAttack
+  combatRoom: {fileID: 0}
+  enemyDeath: {fileID: 2612978777441056314}
+  enemyMark: {fileID: 5835134947511620941}
+  hitReaction: {fileID: 8001927676678051670}
+  playerHealth: {fileID: 0}
+  playerTarget: {fileID: 0}
+  movement: {fileID: 9152340845159216219}
+  visual: {fileID: 3275364439785349455}
+  afterimage: {fileID: 301082800521467476}
+  startDelayMin: 0.5
+  startDelayMax: 2
+  attackIntervalMin: 1.5
+  attackIntervalMax: 3
+  chargeDuration: 0.3
+  dashDuration: 0.45
+  stopFrameDuration: 0.08
+--- !u!114 &9152340845159216219
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d6a660fc1d438bc40abd70d87af96b54, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTriggerMovement
+  rb: {fileID: 1821025109805582741}
+  playerTarget: {fileID: 0}
+  groundCheck: {fileID: 2650756563123272835}
+  groundLayer:
+    serializedVersion: 2
+    m_Bits: 64
+  groundCheckRadius: 0.15
+  normalGravityScale: 3
+  chaseSpeed: 7
+  dashSpeed: 30
+  chaseStopDistance: 0.15
+--- !u!114 &3275364439785349455
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3e8ee31e7c2a97f4db24a8aa34f5408c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTriggerVisual
+  visualRoot: {fileID: 181208962854764930}
+  enemySprite: {fileID: 8596592514394272261}
+  chargeSprite: {fileID: 21300000, guid: 82e6b596188111043a307af9957bdff5, type: 3}
+  dashSprite: {fileID: 21300000, guid: 00fda886eae39e44d9a7e712524bfb76, type: 3}
+  stopSprites:
+  - {fileID: 21300000, guid: 574874eb740cdfe42aac4d42711b488a, type: 3}
+  - {fileID: 21300000, guid: 8b609dcd043e907429efe3ed8bcdb9b1, type: 3}
+  - {fileID: 21300000, guid: 0d35bba8191bc7d4c895a00fc03d6a7a, type: 3}
+  - {fileID: 21300000, guid: 3b99580b17355a2488b754228a5eb106, type: 3}
+  runSprites:
+  - {fileID: 21300000, guid: 8675a077b52cbe7459e9def1666a1720, type: 3}
+  - {fileID: 21300000, guid: 7fe1cc9412f4e7547a2d8090013bbe5b, type: 3}
+  - {fileID: 21300000, guid: ac1ac9da72768cf429da83e5a57a6fe0, type: 3}
+  - {fileID: 21300000, guid: c44077605a5ccff428c47aacbee401bf, type: 3}
+  - {fileID: 21300000, guid: 936b1517b89c6df41998b0fcade9a198, type: 3}
+  - {fileID: 21300000, guid: 25776a9ec495e974bae25262b8783608, type: 3}
+  - {fileID: 21300000, guid: babdabf67c6556a4aa847b7ad5f38088, type: 3}
+  - {fileID: 21300000, guid: eb85796ed22fcf64ebf0a5bfed003dfc, type: 3}
+  runFrameDuration: 0.08
+  fallSprites:
+  - {fileID: 21300000, guid: c2d39fcaa5d1b2445a50779a9c494d04, type: 3}
+  fallFrameDuration: 0.08
+  shakeStrength: 0.1
+  shakeVibrato: 25
+--- !u!114 &301082800521467476
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 70e0fc3a5cd898e468b558b98dac30f9, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDashAfterimage
+  sourceSprite: {fileID: 8596592514394272261}
+  poolParent: {fileID: 0}
+  poolSize: 8
+  spawnInterval: 0.04
+  lifetime: 0.2
+  alpha: 0.45
 --- !u!212 &3540111190721828235 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 779582113537216605, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
   m_PrefabInstance: {fileID: 4319129692746434006}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &3862642505396998983 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 1038780613554673297, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!1 &5099750458197591722 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 9022211538940756860, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &5052542951656320746
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 5099750458197591722}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0f9069dd82726cd42aca3539818b863f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyContactDamage
+  combatRoom: {fileID: 0}
+  enemyDeath: {fileID: 2612978777441056314}
+  enemyMark: {fileID: 5835134947511620941}
+  playerHealth: {fileID: 0}
+  playerAttack: {fileID: 0}
+  contactDamage: 70
 --- !u!114 &5835134947511620941 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7713032028636811419, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
@@ -165,6 +358,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 839083f6aeff313469c73f2442812050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMark
+--- !u!114 &8001927676678051670 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6123821549741757056, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9912892941c5a4e9aa4d622971cc16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitReaction
 --- !u!212 &8596592514394272261 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 5529746110823725011, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
