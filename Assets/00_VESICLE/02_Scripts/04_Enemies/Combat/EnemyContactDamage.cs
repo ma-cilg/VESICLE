@@ -1,5 +1,5 @@
 //**적과 플레이어의 접촉 데미지 처리**
-//책임: 플레이어 몸통 충돌 감지 → 공격 가능 여부 확인 → 데미지 전달
+//책임: HurtBox 접촉 감지 → 이동 공격 예외 확인 → 플레이어 데미지 적용
 using UnityEngine;
 
 [RequireComponent(typeof(Collider2D))]
@@ -10,46 +10,52 @@ public class EnemyContactDamage : MonoBehaviour
     [SerializeField] private EnemyDeath enemyDeath;
     [SerializeField] private EnemyMark enemyMark;
     [SerializeField] private PlayerHealth playerHealth;
+    [SerializeField] private PlayerAttack playerAttack;
 
     [Header("Damage")]
-    [SerializeField, Min(0f)] private float contactDamage = 40f;
+    [SerializeField, Min(0f)] private float contactDamage = 70f;
 
-    //*플레이어와 처음 부딪힌 순간*
-    private void OnCollisionEnter2D(Collision2D collision)
+    //*플레이어가 HurtBox에 처음 닿았을 때*
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        TryApplyContactDamage(collision);
+        TryApplyContactDamage(other);
     }
 
-    //*계속 접촉하고 있는 경우*
-    private void OnCollisionStay2D(Collision2D collision)
+    //*플레이어가 HurtBox와 계속 겹쳐 있을 때*
+    private void OnTriggerStay2D(Collider2D other)
     {
-        TryApplyContactDamage(collision);
+        TryApplyContactDamage(other);
     }
 
-    //*실제 접촉 데미지 처리*
-    private void TryApplyContactDamage(Collision2D collision)
+    //*몸통박치기 데미지 처리*
+    private void TryApplyContactDamage(Collider2D other)
     {
-        //현재 방의 전투가 시작되기 전에는 공격하지 않음
+        //방의 전투가 시작되기 전에는 공격하지 않음
         if (combatRoom == null || !combatRoom.IsStarted) return;
         if (combatRoom.IsCleared) return;
 
-        //적이 죽었거나 완전히 마킹됐다면 데미지 없음
+        //사망하거나 마킹 완료된 적은 공격하지 않음
         if (enemyDeath == null || enemyDeath.IsDead) return;
         if (enemyMark != null && enemyMark.IsMarked) return;
 
         if (playerHealth == null || playerHealth.IsDead) return;
+        if (playerAttack == null) return;
 
-        //충돌한 대상이 지정한 플레이어인지 확인
-        PlayerHealth hitPlayer = collision.gameObject.GetComponentInParent<PlayerHealth>();
+        //실제로 닿은 대상이 플레이어인지 확인
+        PlayerHealth hitPlayer = other.GetComponentInParent<PlayerHealth>();
 
         if (hitPlayer != playerHealth) return;
 
-        //적을 기준으로 플레이어가 밀려날 좌우 방향
-        float directionX = playerHealth.transform.position.x >= transform.position.x ? 1f : -1f;
+        //좌클릭 이동 공격 중에는 일반 접촉 데미지 무시
+        //Trigger 적 반격은 PlayerAttackHitBox에서 별도 처리
+        if (playerAttack.CurrentState == PlayerAttackState.Slashing) return;
+
+        //적의 위치를 기준으로 플레이어가 튕겨날 방향
+        float directionX = playerHealth.transform.position.x >= enemyDeath.transform.position.x ? 1f : -1f;
 
         Vector2 hitDirection = new Vector2(directionX, 0f);
 
-        //플레이어의 기존 무적 여부까지 포함해서 데미지 처리
+        //기존 무적 시간, 피격, 넉백 시스템 재사용
         playerHealth.TakeDamage(contactDamage, hitDirection);
     }
 }

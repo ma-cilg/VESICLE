@@ -87,12 +87,34 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 436969639619379131}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1821025109805582741}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 8770455246060200280}
   m_SourcePrefab: {fileID: 100100000, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
 --- !u!4 &181208962854764930 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4139767953080779860, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
   m_PrefabInstance: {fileID: 4319129692746434006}
   m_PrefabAsset: {fileID: 0}
+--- !u!4 &367682411541512060 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: 4533687380425145002, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &2612978777441056314 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 2284323131310765036, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c622b03d42d3f6b41bfff1a173d9a6ec, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDeath
 --- !u!1 &3058951088342267606 stripped
 GameObject:
   m_CorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
@@ -119,6 +141,63 @@ MonoBehaviour:
   shieldFlashColor: {r: 0.75, g: 0.95, b: 1, a: 1}
   flashDuration: 0.035
   restoreDuration: 0.1
+--- !u!50 &1821025109805582741
+Rigidbody2D:
+  serializedVersion: 5
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_BodyType: 0
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDamping: 0
+  m_AngularDamping: 0.05
+  m_GravityScale: 0
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_Interpolate: 1
+  m_SleepingMode: 1
+  m_CollisionDetection: 1
+  m_Constraints: 4
+--- !u!114 &8770455246060200280
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 909f67ed9dbeb934c937e251a8753f8b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDashAttack
+  combatRoom: {fileID: 0}
+  enemyDeath: {fileID: 2612978777441056314}
+  enemyMark: {fileID: 5835134947511620941}
+  hitReaction: {fileID: 8001927676678051670}
+  playerHealth: {fileID: 0}
+  playerTarget: {fileID: 0}
+  rb: {fileID: 1821025109805582741}
+  visualRoot: {fileID: 367682411541512060}
+  enemySprite: {fileID: 8596592514394272261}
+  chargeSprite: {fileID: 0}
+  dashSprite: {fileID: 0}
+  initialDelay: 0
+  chargeDuration: 1
+  dashSpeed: 18
+  dashDuration: 0.5
+  recoveryDuration: 1
+  shakeStrength: 0.1
+  shakeVibrato: 25
 --- !u!212 &3540111190721828235 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 779582113537216605, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
@@ -135,6 +214,17 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 839083f6aeff313469c73f2442812050, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EnemyMark
+--- !u!114 &8001927676678051670 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 6123821549741757056, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+  m_PrefabInstance: {fileID: 4319129692746434006}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: cc9912892941c5a4e9aa4d622971cc16, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitReaction
 --- !u!212 &8596592514394272261 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 5529746110823725011, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
