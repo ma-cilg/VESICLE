@@ -53,18 +53,32 @@ public class RoomTransitionTrigger : MonoBehaviour
         enabled = false;
     }
 
+
+    //*플레이어가 방 전환 영역에 처음 진입했을 때*
     private void OnTriggerEnter2D(Collider2D other)
+    {
+        TryStartRoomTransition(other);
+    }
+
+    //*문이 열리기 전에 이미 영역에 진입한 경우도 다시 확인*
+    private void OnTriggerStay2D(Collider2D other)
+    {
+        TryStartRoomTransition(other);
+    }
+
+    //*전환 가능 조건을 확인하고 다음 방 이동 시작*
+    private void TryStartRoomTransition(Collider2D other)
     {
         if (transitionStarted) return;
 
-        //다음 방이 이미 시작됐다면 다시 방 전환하지 않음
+        //이미 진행 중이거나 시작된 방으로 다시 이동하지 않음
         if (nextRoom == null || nextRoom.IsStarted) return;
 
-        //두 문이 완전히 열렸을 때만 방 전환 허용
+        //양쪽 문이 완전히 열릴 때까지 전환 대기
         if (previousExitDoor == null || nextEntryDoor == null) return;
         if (!previousExitDoor.IsOpen || !nextEntryDoor.IsOpen) return;
 
-        //Player 또는 Player 자식 Collider인지 확인
+        //Player 본인 또는 자식 Collider인지 확인
         PlayerControlLock enteredControlLock = other.GetComponentInParent<PlayerControlLock>();
 
         if (enteredControlLock == null) return;
@@ -72,6 +86,7 @@ public class RoomTransitionTrigger : MonoBehaviour
 
         StartRoomTransition();
     }
+
 
 
     //*방 전환 중 플레이어 자동 이동*
