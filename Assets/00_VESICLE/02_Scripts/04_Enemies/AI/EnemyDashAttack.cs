@@ -1,20 +1,15 @@
-//**Æ®¸®°Å¸÷ ÃßÀû ¹× µ¹Áø °ø°İ**
-//Ã¥ÀÓ: ÇÃ·¹ÀÌ¾î ÃßÀû ¡æ ·£´ı Â÷Â¡ ¡æ µ¹Áø ¡æ Á¤Áö ¸ğ¼Ç ¡æ ¹İº¹
+//**íŠ¸ë¦¬ê±°ëª¹ ê³µê²© íŒ¨í„´ ì œì–´**
+//ì±…ì„: ëœë¤ ì¶”ì  ëŒ€ê¸° â†’ ì°¨ì§• ì¡°ì¤€ â†’ ëŒì§„ â†’ 4í”„ë ˆì„ ì •ì§€ â†’ ë‚™í•˜ â†’ ì¬ì¶”ì 
+//ë¬¼ë¦¬ ì´ë™, Sprite/Shake, ì”ìƒì€ ê°ê° ì „ìš© ì»´í¬ë„ŒíŠ¸ì— ìœ„ì„
 using System.Collections;
-using DG.Tweening;
 using UnityEngine;
 
-[RequireComponent(typeof(Rigidbody2D))]
+[RequireComponent(typeof(EnemyTriggerMovement))]
+[RequireComponent(typeof(EnemyTriggerVisual))]
+[RequireComponent(typeof(EnemyDashAfterimage))]
 public class EnemyDashAttack : MonoBehaviour
 {
-    private enum AttackPhase
-    {
-        Chase,
-        Charge,
-        Dash,
-        Stop,
-        Fall
-    }
+    private enum Phase { Chase, Charge, Dash, Stop, Fall }
 
     [Header("References")]
     [SerializeField] private CombatRoom combatRoom;
@@ -23,561 +18,184 @@ public class EnemyDashAttack : MonoBehaviour
     [SerializeField] private EnemyHitReaction hitReaction;
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private Transform playerTarget;
-    [SerializeField] private Rigidbody2D rb;
+    [SerializeField] private EnemyTriggerMovement movement;
+    [SerializeField] private EnemyTriggerVisual visual;
+    [SerializeField] private EnemyDashAfterimage afterimage;
 
-    [Header("Visual")]
-    [SerializeField] private Transform visualRoot;
-    [SerializeField] private SpriteRenderer enemySprite;
-    [SerializeField] private Sprite chargeSprite;
-    [SerializeField] private Sprite dashSprite;
-    [SerializeField] private Sprite[] stopSprites = new Sprite[4];
-    [SerializeField, Min(0.01f)] private float stopFrameDuration = 0.08f;
-
-    [Header("Chase")]
-    [SerializeField, Min(0f)] private float chaseSpeed = 4f;
+    [Header("Chase / Random Timing")]
     [SerializeField, Min(0f)] private float startDelayMin = 0.5f;
     [SerializeField, Min(0f)] private float startDelayMax = 2f;
     [SerializeField, Min(0f)] private float attackIntervalMin = 1.5f;
     [SerializeField, Min(0f)] private float attackIntervalMax = 3f;
 
-    [Header("Dash")]
+    [Header("Attack Timing")]
     [SerializeField, Min(0f)] private float chargeDuration = 0.5f;
-    [SerializeField, Min(0f)] private float dashSpeed = 24f;
     [SerializeField, Min(0f)] private float dashDuration = 0.45f;
+    [SerializeField, Min(0.01f)] private float stopFrameDuration = 0.08f;
 
-    [Header("Charge Feedback")]
-    [SerializeField, Min(0f)] private float shakeStrength = 0.1f;
-    [SerializeField, Min(1)] private int shakeVibrato = 25;
-
-    [Header("Afterimage")]
-    [SerializeField, Range(1, 16)] private int afterimagePoolSize = 8;
-    [SerializeField, Min(0.01f)] private float afterimageInterval = 0.04f;
-    [SerializeField, Min(0.01f)] private float afterimageLifetime = 0.2f;
-    [SerializeField, Range(0f, 1f)] private float afterimageAlpha = 0.45f;
-
-    [Header("Ground")]
-    [SerializeField] private Transform groundCheck;
-    [SerializeField] private LayerMask groundLayer;
-    [SerializeField, Min(0.01f)] private float groundCheckRadius = 0.15f;
-    [SerializeField, Min(0f)] private float normalGravityScale = 3f;
-
-    [Header("Run Animation")]
-    [SerializeField] private Sprite[] runSprites;
-    [SerializeField, Min(0.01f)] private float runFrameDuration = 0.08f;
-
-    [Header("Fall Animation")]
-    [SerializeField] private Sprite[] fallSprites;
-    [SerializeField, Min(0.01f)] private float fallFrameDuration = 0.08f;
-
-    //ÇöÀç Àç»ıÇÏ´Â ´Ş¸®±â/³«ÇÏ ¾Ö´Ï¸ŞÀÌ¼Ç Á¤º¸
-    private Sprite[] currentMotionSprites;
-    private int motionFrameIndex;
-    private float motionFrameTimer;
-
-    private AttackPhase phase = AttackPhase.Chase;
+    private Phase phase = Phase.Chase;
     private Coroutine attackRoutine;
-    private Tween chargeTween;
-
-    private Sprite originalSprite;
-    private bool originalFlipX;
-    private Vector3 originalVisualPosition;
-
     private bool combatStarted;
     private float nextAttackTime;
-    private Vector2 dashDirection;
-
-    private SpriteRenderer[] afterimages;
-    private Tween[] afterimageTweens;
-    private int afterimageIndex;
-    private float nextAfterimageTime;
 
     private void Awake()
     {
-        if (rb == null) rb = GetComponent<Rigidbody2D>();
-
-        if (enemySprite != null)
-        {
-            originalSprite = enemySprite.sprite;
-            originalFlipX = enemySprite.flipX;
-        }
-
-        if (visualRoot != null) originalVisualPosition = visualRoot.localPosition;
-
-        CreateAfterimagePool();
+        if (movement == null) movement = GetComponent<EnemyTriggerMovement>();
+        if (visual == null) visual = GetComponent<EnemyTriggerVisual>();
+        if (afterimage == null) afterimage = GetComponent<EnemyDashAfterimage>();
     }
 
     private void OnEnable()
     {
+        phase = Phase.Chase;
         combatStarted = false;
-        phase = AttackPhase.Chase;
-        rb.gravityScale = normalGravityScale;
-        currentMotionSprites = null;
-
-        if (enemyDeath != null) enemyDeath.OnDeathStarted += StopAttack;
+        if (combatRoom != null)
+        {
+            combatRoom.OnRoomStarted += HandleRoomStarted;
+            if (combatRoom.IsStarted) HandleRoomStarted();
+        }
+        if (enemyDeath != null) enemyDeath.OnDeathStarted += HandleDeath;
+        if (hitReaction != null) hitReaction.OnStaggerStarted += HandleStagger;
     }
 
     private void OnDisable()
     {
-        if (enemyDeath != null) enemyDeath.OnDeathStarted -= StopAttack;
-
-        StopAttack();
-        ClearAfterimages();
-
-        if (enemySprite != null) enemySprite.flipX = originalFlipX;
+        if (combatRoom != null) combatRoom.OnRoomStarted -= HandleRoomStarted;
+        if (enemyDeath != null) enemyDeath.OnDeathStarted -= HandleDeath;
+        if (hitReaction != null) hitReaction.OnStaggerStarted -= HandleStagger;
+        CancelAttack();
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Idle);
+        visual.SetMotion(EnemyTriggerVisual.Motion.Idle);
+        combatStarted = false;
     }
 
-    private void OnDestroy()
+    //*ë°© ë¬¸ì´ ì™„ì „íˆ ë‹«íŒ í›„ 1íšŒë§Œ ì „íˆ¬ ì‹œì‘*
+    private void HandleRoomStarted()
     {
-        if (afterimages == null) return;
-
-        foreach (SpriteRenderer image in afterimages)
-        {
-            if (image != null) Destroy(image.gameObject);
-        }
+        if (combatStarted) return;
+        combatStarted = true;
+        phase = Phase.Chase;
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Chase);
+        ScheduleNextAttack(true);
     }
 
-
-    //*ÇöÀç AI »óÅÂ °»½Å ¹× ´ÙÀ½ °ø°İ ½ÃÀÛ*
     private void Update()
     {
-        //°ø°İÇÒ ¼ö ¾ø´Â »óÅÂ¸é ÁøÇà ÁßÀÎ °ø°İ Á¤¸®
+        if (!combatStarted) return;
         if (!CanAct())
         {
-            if (attackRoutine != null)
-            {
-                StopAttack();
-                ScheduleNextAttack();
-            }
-
+            if (attackRoutine != null) CancelAttack();
+            movement.SetMode(EnemyTriggerMovement.MoveMode.Idle);
+            visual.SetMotion(EnemyTriggerVisual.Motion.Idle);
             return;
         }
 
-        //¹æ ÀüÅõ ½ÃÀÛ ÈÄ Ã¹ Â÷Â¡ ½Ã°£ ·£´ı ¼³Á¤
-        if (!combatStarted)
+        if (phase == Phase.Fall)
         {
-            combatStarted = true;
-
-            nextAttackTime = Time.time + Random.Range(startDelayMin, startDelayMax);
+            visual.SetMotion(EnemyTriggerVisual.Motion.Fall);
+            if (!movement.IsGrounded) return;
+            phase = Phase.Chase;
+            movement.SetMode(EnemyTriggerMovement.MoveMode.Chase);
+            ScheduleNextAttack(false);
         }
 
-        //Ãß°¡: ´Ş¸®±â ¹× ³«ÇÏ ¾Ö´Ï¸ŞÀÌ¼Ç °»½Å
-        UpdateMotionAnimation();
+        if (phase != Phase.Chase) return;
 
-        //µ¹Áø Áß ÀÏÁ¤ °£°İÀ¸·Î ÀÜ»ó »ı¼º
-        if (phase == AttackPhase.Dash &&
-            Time.time >= nextAfterimageTime)
-        {
-            SpawnAfterimage();
+        //í”¼ê²© ê²½ì§ì´ ëë‚˜ë©´ Idleì—ì„œ ë‹¤ì‹œ Chaseë¡œ ë³µê·€
+        if (movement.Mode != EnemyTriggerMovement.MoveMode.Chase)
+            movement.SetMode(EnemyTriggerMovement.MoveMode.Chase);
 
-            nextAfterimageTime =
-                Time.time + afterimageInterval;
-        }
+        float dx = movement.PlayerOffsetX;
+        visual.Face(dx);
+        visual.SetMotion(!movement.IsGrounded ? EnemyTriggerVisual.Motion.Fall :
+            movement.IsRunning ? EnemyTriggerVisual.Motion.Run : EnemyTriggerVisual.Motion.Idle);
 
-        //Æò»ó½Ã ÃßÀû »óÅÂ°¡ ¾Æ´Ï¶ó¸é »õ·Î¿î Â÷Â¡ ½ÃÀÛ ºÒ°¡
-        if (phase != AttackPhase.Chase) return;
-
-        //Ãß°¡: °øÁß¿¡¼­´Â »õ·Î¿î Â÷Â¡À» ½ÃÀÛÇÏÁö ¾ÊÀ½
-        if (!IsGrounded()) return;
-
-        //ÀÌ¹Ì °ø°İ ÄÚ·çÆ¾ ½ÇÇà ÁßÀÌ¶ó¸é Áßº¹ ½ÇÇà ¹æÁö
-        if (attackRoutine != null) return;
-
-        //¾ÆÁ÷ ´ÙÀ½ °ø°İ ½Ã°£ÀÌ ¾Æ´Ï¶ó¸é ´ë±â
-        if (Time.time < nextAttackTime) return;
-
-        //Â÷Â¡ ¡æ µ¹Áø ¡æ Á¤Áö ¸ğ¼Ç ½ÃÀÛ
+        if (attackRoutine != null || !movement.IsGrounded || Time.time < nextAttackTime) return;
         attackRoutine = StartCoroutine(AttackRoutine());
     }
 
-
-
-    //*ÇöÀç Çàµ¿ »óÅÂ¿¡ µû¶ó ÀÌµ¿ ¹× Áß·Â Á¦¾î*
-    private void FixedUpdate()
-    {
-        if (!CanAct())
-        {
-            if (rb == null) return;
-
-            rb.gravityScale = normalGravityScale;
-            rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-
-            return;
-        }
-
-        switch (phase)
-        {
-            case AttackPhase.Chase:
-                rb.gravityScale = normalGravityScale;
-
-                if (IsGrounded())
-                    ChasePlayer();
-                else
-                    StopHorizontalMovement();
-
-                break;
-
-            case AttackPhase.Charge:
-                //Â÷Â¡ Áß¿¡µµ Áß·ÂÀÌ ÀÛµ¿ÇÔ
-                rb.gravityScale = normalGravityScale;
-                StopHorizontalMovement();
-                break;
-
-            case AttackPhase.Dash:
-                //°øÁß µ¹Áø Áß¿¡¸¸ Áß·Â Á¦°Å
-                rb.gravityScale = 0f;
-                rb.linearVelocity = dashDirection * dashSpeed;
-                break;
-
-            case AttackPhase.Stop:
-                //4ÇÁ·¹ÀÓ Á¤Áö ¸ğ¼Ç µ¿¾È ÇöÀç À§Ä¡ °íÁ¤
-                rb.gravityScale = 0f;
-                rb.linearVelocity = Vector2.zero;
-                break;
-
-            case AttackPhase.Fall:
-                //Á¤Áö ¸ğ¼Ç Á¾·á ÈÄ Áß·ÂÀ¸·Î ÀÚ¿¬ ³«ÇÏ
-                rb.gravityScale = normalGravityScale;
-                StopHorizontalMovement();
-
-                //¹Ù´Ú¿¡ ÂøÁöÇÏ¸é ´Ù½Ã ÃßÀû ½ÃÀÛ
-                if (IsGrounded())
-                {
-                    phase = AttackPhase.Chase;
-                    currentMotionSprites = null;
-                    ScheduleNextAttack();
-                }
-
-                break;
-        }
-    }
-
-    //*ÁÂ¿ì ÀÌµ¿¸¸ Á¤ÁöÇÏ°í ¼öÁ÷ ¼Óµµ´Â À¯Áö*
-    private void StopHorizontalMovement()
-    {
-        rb.linearVelocity = new Vector2(0f, rb.linearVelocity.y);
-    }
-
-    //*ÀûÀÌ ¹Ù´Ú¿¡ ´ê¾Æ ÀÖ´ÂÁö È®ÀÎ*
-    private bool IsGrounded()
-    {
-        if (groundCheck == null) return false;
-
-        return Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
-    }
-
-
-    //*ÇÃ·¹ÀÌ¾î¸¦ ÇâÇØ Áö»ó ÃßÀû*
-    private void ChasePlayer()
-    {
-        float distanceX = playerTarget.position.x - rb.position.x;
-
-        float speed = Mathf.Abs(distanceX) > 0.15f ? Mathf.Sign(distanceX) * chaseSpeed : 0f;
-
-        //Áß·Â°ú Á¡ÇÁ µî YÃà ¼Óµµ¸¦ À¯Áö
-        rb.linearVelocity = new Vector2(speed, rb.linearVelocity.y);
-
-        //ÇÃ·¹ÀÌ¾î ¹æÇâ ¹Ù¶óº¸±â
-        if (enemySprite != null &&
-            Mathf.Abs(distanceX) > 0.15f)
-        {
-            enemySprite.flipX = distanceX < 0f;
-        }
-    }
-
-    //*Áö»ó ´Ş¸®±â ¹× °øÁß ³«ÇÏ ¸ğ¼Ç Àç»ı*
-    private void UpdateMotionAnimation()
-    {
-        if (enemySprite == null) return;
-
-        Sprite[] frames;
-        float frameDuration;
-
-        //³«ÇÏ ÁßÀÌ°Å³ª °øÁß¿¡ ¶° ÀÖ´Ù¸é Fall
-        if (phase == AttackPhase.Fall || (phase == AttackPhase.Chase && !IsGrounded()))
-        {
-            frames = fallSprites;
-            frameDuration = fallFrameDuration;
-        }
-        else if (phase == AttackPhase.Chase)
-        {
-            //¿òÁ÷ÀÌÁö ¾ÊÀ» ¶§´Â ±âº» ½ºÇÁ¶óÀÌÆ®
-            if (Mathf.Abs(rb.linearVelocity.x) < 0.1f)
-            {
-                if (currentMotionSprites != null)
-                    RestoreSprite();
-
-                currentMotionSprites = null;
-                return;
-            }
-
-            frames = runSprites;
-            frameDuration = runFrameDuration;
-        }
-        else
-        {
-            //Â÷Â¡ / µ¹Áø / Á¤Áö ¸ğ¼ÇÀº ±âÁ¸ ÄÚµå°¡ Ã³¸®
-            currentMotionSprites = null;
-            return;
-        }
-
-        //¾ÆÁ÷ ½ºÇÁ¶óÀÌÆ®¸¦ ¿¬°áÇÏÁö ¾Ê¾Ò´Ù¸é ±âº» ÀÌ¹ÌÁö
-        if (frames == null || frames.Length == 0)
-        {
-            if (currentMotionSprites != frames)
-                RestoreSprite();
-
-            currentMotionSprites = frames;
-            return;
-        }
-
-        //¸ğ¼ÇÀÌ º¯°æµÇ¸é Ã¹ ÇÁ·¹ÀÓºÎÅÍ Àç»ı
-        if (currentMotionSprites != frames)
-        {
-            currentMotionSprites = frames;
-            motionFrameIndex = 0;
-            motionFrameTimer = 0f;
-
-            if (frames[0] != null) enemySprite.sprite = frames[0];
-        }
-
-        motionFrameTimer += Time.deltaTime;
-
-        if (motionFrameTimer < frameDuration) return;
-
-        motionFrameTimer -= frameDuration;
-
-        motionFrameIndex = (motionFrameIndex + 1) % frames.Length;
-
-        if (frames[motionFrameIndex] != null) enemySprite.sprite = frames[motionFrameIndex];
-    }
-
-    //*Â÷Â¡ ¡æ µ¹Áø ¡æ Á¤Áö ¸ğ¼Ç*
-    private IEnumerator AttackRoutine()
-    {
-        phase = AttackPhase.Charge;
-        rb.linearVelocity = Vector2.zero;
-
-        //Â÷Â¡ ½ÃÀÛ ¼ø°£ÀÇ ÇÃ·¹ÀÌ¾î À§Ä¡¸¦ ±â¾ï
-        dashDirection = (Vector2)playerTarget.position - rb.position;
-
-        if (dashDirection.sqrMagnitude < 0.001f)
-        {
-            dashDirection = enemySprite != null && enemySprite.flipX ? Vector2.left : Vector2.right;
-        }
-
-        dashDirection.Normalize();
-
-        if (enemySprite != null)
-        {
-            enemySprite.flipX = dashDirection.x < 0f;
-
-            if (chargeSprite != null) enemySprite.sprite = chargeSprite;
-        }
-
-        //Ãæµ¹ ÆÇÁ¤ÀÌ ¾Æ´Ñ Visual¸¸ DOTweenÀ¸·Î Èçµé±â
-        if (visualRoot != null)
-        {
-            StopChargeShake();
-
-            chargeTween = visualRoot.DOShakePosition(chargeDuration, shakeStrength, shakeVibrato, 90f, false, false);
-        }
-
-        yield return new WaitForSeconds(chargeDuration);
-
-        StopChargeShake();
-
-        if (!CanAct())
-        {
-            StopAttack();
-            yield break;
-        }
-
-        //±â¾ïÇÑ ¹æÇâÀ¸·Î µ¹Áø
-        phase = AttackPhase.Dash;
-
-        if (enemySprite != null && dashSprite != null) enemySprite.sprite = dashSprite;
-
-        nextAfterimageTime = Time.time;
-        rb.linearVelocity = dashDirection * dashSpeed;
-
-        yield return new WaitForSeconds(dashDuration);
-
-        //µµÂø ÈÄ 4ÇÁ·¹ÀÓ Á¤Áö ¾Ö´Ï¸ŞÀÌ¼Ç
-        phase = AttackPhase.Stop;
-        rb.gravityScale = 0f;
-        rb.linearVelocity = Vector2.zero;
-
-        for (int i = 0; i < 4; i++)
-        {
-            if (enemySprite != null &&
-                stopSprites != null &&
-                i < stopSprites.Length &&
-                stopSprites[i] != null)
-            {
-                enemySprite.sprite = stopSprites[i];
-            }
-
-            yield return new WaitForSeconds(stopFrameDuration);
-        }
-
-        //Á¤Áö ¸ğ¼ÇÀÌ ³¡³µÀ¸¹Ç·Î ³«ÇÏ »óÅÂ ÁøÀÔ
-        RestoreSprite();
-
-        phase = AttackPhase.Fall;
-        rb.gravityScale = normalGravityScale;
-
-        currentMotionSprites = null;
-        attackRoutine = null;
-    }
-
-    //*´ÙÀ½ Â÷Â¡ Å¸ÀÌ¹ÖÀ» ¸÷¸¶´Ù ´Ù¸£°Ô °áÁ¤*
-    private void ScheduleNextAttack()
-    {
-        float min = Mathf.Min(attackIntervalMin, attackIntervalMax);
-        float max = Mathf.Max(attackIntervalMin, attackIntervalMax);
-
-        nextAttackTime = Time.time + Random.Range(min, max);
-    }
-
-    //*°ø°İ °¡´É ¿©ºÎ È®ÀÎ*
+    //*ê²€ ë°•íŒ IsPrimed ìƒíƒœì—¬ë„ ì¶”ì , ê³µê²© ì§€ì†*
     private bool CanAct()
     {
-        if (combatRoom == null || !combatRoom.IsStarted) return false;
-        if (combatRoom.IsCleared) return false;
+        if (combatRoom == null || !combatRoom.IsStarted || combatRoom.IsCleared) return false;
         if (enemyDeath == null || enemyDeath.IsDead) return false;
         if (enemyMark != null && enemyMark.IsMarked) return false;
         if (hitReaction != null && hitReaction.IsStaggered) return false;
-        if (playerHealth == null || playerHealth.IsDead) return false;
-        if (playerTarget == null || rb == null) return false;
-
+        if (playerHealth == null || playerHealth.IsDead || playerTarget == null) return false;
         return true;
     }
 
-    //*Â÷Â¡ Èçµé¸² ¿ø»óº¹±¸*
-    private void StopChargeShake()
+    private IEnumerator AttackRoutine()
     {
-        chargeTween?.Kill();
-        chargeTween = null;
+        phase = Phase.Charge;
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Charge);
 
-        if (visualRoot != null) visualRoot.localPosition = originalVisualPosition;
+        Vector2 direction = (Vector2)playerTarget.position - (Vector2)transform.position;
+        if (direction.sqrMagnitude <= 0.001f)
+            direction = movement.PlayerOffsetX < 0f ? Vector2.left : Vector2.right;
+        direction.Normalize();
+        movement.SetDashDirection(direction);
+        visual.Face(direction.x);
+        visual.BeginCharge(chargeDuration);
+
+        yield return new WaitForSeconds(chargeDuration);
+        if (!CanAct()) { CancelAttack(); yield break; }
+
+        phase = Phase.Dash;
+        visual.SetMotion(EnemyTriggerVisual.Motion.Dash);
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Dash);
+        afterimage.StartTrail();
+        yield return new WaitForSeconds(dashDuration);
+        afterimage.StopTrail();
+        if (!CanAct()) { CancelAttack(); yield break; }
+
+        phase = Phase.Stop;
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Stop);
+        visual.SetMotion(EnemyTriggerVisual.Motion.Stop);
+        for (int i = 0; i < 4; i++)
+        {
+            visual.PlayStopFrame(i);
+            yield return new WaitForSeconds(stopFrameDuration);
+        }
+
+        phase = Phase.Fall;
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Fall);
+        visual.SetMotion(EnemyTriggerVisual.Motion.Fall);
+        attackRoutine = null;
     }
 
-
-    //*°ø°İ Ãë¼Ò ¶Ç´Â »ç¸Á ½Ã Á¤¸®*
-    private void StopAttack()
+    private void ScheduleNextAttack(bool first)
     {
-        //ÁøÇà ÁßÀÎ °ø°İ ÄÚ·çÆ¾ Á¤¸®
+        float a = first ? startDelayMin : attackIntervalMin;
+        float b = first ? startDelayMax : attackIntervalMax;
+        nextAttackTime = Time.time + Random.Range(Mathf.Min(a, b), Mathf.Max(a, b));
+    }
+
+    private void HandleDeath() => StopCombat();
+    private void HandleStagger()
+    {
+        CancelAttack();
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Idle);
+        visual.SetMotion(EnemyTriggerVisual.Motion.Idle);
+        ScheduleNextAttack(false);
+    }
+
+    private void StopCombat()
+    {
+        CancelAttack();
+        movement.SetMode(EnemyTriggerMovement.MoveMode.Idle);
+        visual.SetMotion(EnemyTriggerVisual.Motion.Idle);
+        combatStarted = false;
+    }
+
+    private void CancelAttack()
+    {
         if (attackRoutine != null)
         {
             StopCoroutine(attackRoutine);
             attackRoutine = null;
         }
-
-        //Â÷Â¡ DOTween ¿¬Ãâ Á¤¸®
-        StopChargeShake();
-
-        if (rb != null)
-        {
-            rb.linearVelocity = Vector2.zero;
-
-            //Ãß°¡: Áß·Â°ª ¿ø»óº¹±¸
-            rb.gravityScale = normalGravityScale;
-        }
-
-        phase = AttackPhase.Chase;
-
-        //Ãß°¡: ´Ş¸®±â / ³«ÇÏ ¸ğ¼Ç »óÅÂ ÃÊ±âÈ­
-        currentMotionSprites = null;
-
-        RestoreSprite();
-    }
-
-
-    private void RestoreSprite()
-    {
-        if (enemySprite != null) enemySprite.sprite = originalSprite;
-    }
-
-    //*ÀÜ»ó SpriteRenderer¸¦ ¹Ì¸® »ı¼ºÇØ Àç»ç¿ë*
-    private void CreateAfterimagePool()
-    {
-        if (enemySprite == null) return;
-
-        afterimages = new SpriteRenderer[afterimagePoolSize];
-        afterimageTweens = new Tween[afterimagePoolSize];
-
-        Transform parent = combatRoom != null ? combatRoom.transform : transform.parent;
-
-        for (int i = 0; i < afterimagePoolSize; i++)
-        {
-            GameObject ghost = new GameObject("DashAfterimage_" + i);
-
-            ghost.transform.SetParent(parent, false);
-
-            SpriteRenderer renderer = ghost.AddComponent<SpriteRenderer>();
-
-            renderer.sharedMaterial = enemySprite.sharedMaterial;
-            renderer.sortingLayerID = enemySprite.sortingLayerID;
-            renderer.sortingOrder = enemySprite.sortingOrder - 1;
-
-            ghost.SetActive(false);
-            afterimages[i] = renderer;
-        }
-    }
-
-    //*µ¹Áø Áß ÇöÀç ¸ğ½ÀÀ» ÀÜ»óÀ¸·Î ³²±â±â*
-    private void SpawnAfterimage()
-    {
-        if (afterimages == null || afterimages.Length == 0) return;
-
-        if (enemySprite == null || enemySprite.sprite == null) return;
-
-        int index = afterimageIndex;
-        afterimageIndex = (afterimageIndex + 1) % afterimages.Length;
-
-        afterimageTweens[index]?.Kill();
-
-        SpriteRenderer ghost = afterimages[index];
-
-        ghost.sprite = enemySprite.sprite;
-        ghost.flipX = enemySprite.flipX;
-        ghost.sortingLayerID = enemySprite.sortingLayerID;
-        ghost.sortingOrder = enemySprite.sortingOrder - 1;
-
-        ghost.transform.position = enemySprite.transform.position;
-
-        ghost.transform.rotation = enemySprite.transform.rotation;
-
-        ghost.transform.localScale = enemySprite.transform.lossyScale;
-
-        Color color = enemySprite.color;
-        color.a *= afterimageAlpha;
-
-        ghost.color = color;
-        ghost.gameObject.SetActive(true);
-
-        //DOTweenÀ¸·Î ÃµÃµÈ÷ »ç¶óÁö°Ô
-        afterimageTweens[index] = ghost
-            .DOFade(0f, afterimageLifetime)
-            .SetEase(Ease.OutQuad)
-            .OnComplete(() =>
-            {
-                ghost.gameObject.SetActive(false);
-                afterimageTweens[index] = null;
-            });
-    }
-
-    //*»ç¿ëÇÑ ÀÜ»ó ÀüÃ¼ Á¤¸®*
-    private void ClearAfterimages()
-    {
-        if (afterimages == null) return;
-
-        for (int i = 0; i < afterimages.Length; i++)
-        {
-            afterimageTweens[i]?.Kill();
-            afterimageTweens[i] = null;
-
-            if (afterimages[i] != null) afterimages[i].gameObject.SetActive(false);
-        }
+        afterimage.StopTrail();
+        phase = Phase.Chase;
     }
 }
