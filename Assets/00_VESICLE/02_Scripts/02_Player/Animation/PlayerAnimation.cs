@@ -8,11 +8,9 @@ public class PlayerAnimation : MonoBehaviour
     [SerializeField] private PlayerJump playerJump;         //바닥 상태 확인
     [SerializeField] private PlayerAttack playerAttack;     //공격 시작/취소/종료 이벤트 확인
     [SerializeField] private PlayerHealth playerHealth;     //플레이어 사망 상태와 사망 이벤트 확인
-    [SerializeField] private PlayerWallGrab playerWallGrab; //벽잡기 상태 확인
 
     private Rigidbody2D rb;
     private bool isTutorialPoseHeld;                        //타이틀에서 앉은 자세를 유지 중인지
-    private bool wasWallGrabbing;                           //직전 프레임 벽잡기 여부
 
     //Animator Parameter의 문자열 이름을 Hash값으로 변환해서 재사용
     private static readonly int SpeedHash = Animator.StringToHash("Speed");
@@ -29,7 +27,6 @@ public class PlayerAnimation : MonoBehaviour
     private static readonly int JumpFallStateHash = Animator.StringToHash("Player_Jump_Fall");
     private static readonly int DieStateHash = Animator.StringToHash("Player_Die");
     private static readonly int StandUpStateHash = Animator.StringToHash("Player_StandUp");
-    private static readonly int WallIdleStateHash = Animator.StringToHash("Player_WallIdle");
 
     private void Awake()
     {
@@ -57,47 +54,14 @@ public class PlayerAnimation : MonoBehaviour
         playerAttack.OnAttackEnded -= StopAttack;
         playerHealth.OnDied -= PlayDeath;
     }
-
-
     private void Update()
     {
-        //사망 또는 타이틀 연출 중에는 변경하지 않음
+        //사망 중이거나 타이틀 연출 중에는 갱신하지 않음
         if (playerHealth.IsDead || isTutorialPoseHeld) return;
 
-        //공격 애니메이션이 벽잡기보다 우선
-        if (playerAttack.IsAttacking)
-        {
-            wasWallGrabbing = false;
-            UpdateMovementAnimation();
-            return;
-        }
-
-        bool isWallGrabbing = playerWallGrab != null && playerWallGrab.IsWallGrabbing;
-
-        //벽에 붙어 있는 상태
-        if (isWallGrabbing)
-        {
-            //처음 붙는 순간에만 Wall Idle 시작
-            if (!wasWallGrabbing)
-            {
-                animator.Play(WallIdleStateHash, 0, 0f);
-            }
-
-            wasWallGrabbing = true;
-            return;
-        }
-
-        //벽에서 떨어진 순간 기존 이동 애니메이션 복귀
-        if (wasWallGrabbing)
-        {
-            wasWallGrabbing = false;
-            PlayCurrentMovementState();
-        }
-
-        //평상시에는 기존 애니메이션 로직 유지
+        //기존 이동 / 점프 / 공격 애니메이션 유지
         UpdateMovementAnimation();
     }
-
 
     //*애니메이션 갱신*
     private void UpdateMovementAnimation()

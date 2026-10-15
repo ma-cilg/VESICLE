@@ -170,6 +170,8 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheckRadius: 0.15
+  wallApproachOffset: 0.3
+  wallStopDistance: 0.2
 --- !u!114 &6107426142635547831
 MonoBehaviour:
   m_ObjectHideFlags: 0

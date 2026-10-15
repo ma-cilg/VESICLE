@@ -70,6 +70,16 @@ public class ThrownSwordProjectile : MonoBehaviour
         bool isFlyingLeft = flightDirection.x < 0f;
         swordSprite.flipX = isFlyingLeft;
 
+        //왼쪽으로 던질 때 Sprite뿐 아니라 충돌 영역도 반전
+        if (hitCollider is BoxCollider2D swordBox)
+        {
+            Vector2 offset = swordBox.offset;
+
+            offset.x = Mathf.Abs(offset.x) * (isFlyingLeft ? -1f : 1f);
+
+            swordBox.offset = offset;
+        }
+
         float flightAngle;
 
         if (isFlyingLeft)

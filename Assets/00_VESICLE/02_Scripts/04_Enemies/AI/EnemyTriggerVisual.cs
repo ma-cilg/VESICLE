@@ -17,6 +17,8 @@ public class EnemyTriggerVisual : MonoBehaviour
     [SerializeField] private Sprite[] stopSprites = new Sprite[4];
 
     [Header("Movement Sprites")]
+    [SerializeField] private Sprite[] idleSprites = new Sprite[7];
+    [SerializeField, Min(0.01f)] private float idleFrameDuration = 0.08f;
     [SerializeField] private Sprite[] runSprites;
     [SerializeField, Min(0.01f)] private float runFrameDuration = 0.08f;
     [SerializeField] private Sprite[] fallSprites;
@@ -44,6 +46,15 @@ public class EnemyTriggerVisual : MonoBehaviour
         if (visualRoot != null)
             originalLocalPosition = visualRoot.localPosition;
     }
+    private void OnEnable()
+    {
+        motion = Motion.Idle;
+        frameIndex = 0;
+        frameTimer = 0f;
+
+        if (enemySprite != null)
+            SetFirstFrame(idleSprites);
+    }
 
     //*처음 그림이 오른쪽을 본다는 기존 설정을 유지*
     public void Face(float directionX)
@@ -63,7 +74,7 @@ public class EnemyTriggerVisual : MonoBehaviour
         if (enemySprite == null) return;
         switch (motion)
         {
-            case Motion.Idle: enemySprite.sprite = originalSprite; break;
+            case Motion.Idle: SetFirstFrame(idleSprites); break;
             case Motion.Charge: enemySprite.sprite = chargeSprite != null ? chargeSprite : originalSprite; break;
             case Motion.Dash: enemySprite.sprite = dashSprite != null ? dashSprite : originalSprite; break;
             case Motion.Run: SetFirstFrame(runSprites); break;
@@ -91,17 +102,45 @@ public class EnemyTriggerVisual : MonoBehaviour
     private void Update()
     {
         if (enemySprite == null) return;
-        if (motion != Motion.Run && motion != Motion.Fall) return;
 
-        Sprite[] frames = motion == Motion.Run ? runSprites : fallSprites;
+        //Idle / Run / Fall 상태에서만 프레임 애니메이션
+        if (motion != Motion.Idle &&
+            motion != Motion.Run &&
+            motion != Motion.Fall)
+            return;
+
+        Sprite[] frames;
+        float duration;
+
+        switch (motion)
+        {
+            case Motion.Idle:
+                frames = idleSprites;
+                duration = idleFrameDuration;
+                break;
+
+            case Motion.Run:
+                frames = runSprites;
+                duration = runFrameDuration;
+                break;
+
+            default:
+                frames = fallSprites;
+                duration = fallFrameDuration;
+                break;
+        }
+
         if (frames == null || frames.Length <= 1) return;
 
-        float duration = motion == Motion.Run ? runFrameDuration : fallFrameDuration;
         frameTimer += Time.deltaTime;
+
         if (frameTimer < duration) return;
+
         frameTimer -= duration;
         frameIndex = (frameIndex + 1) % frames.Length;
-        if (frames[frameIndex] != null) enemySprite.sprite = frames[frameIndex];
+
+        if (frames[frameIndex] != null)
+            enemySprite.sprite = frames[frameIndex];
     }
 
     private void SetFirstFrame(Sprite[] sprites)

@@ -807,8 +807,6 @@ GameObject:
   - component: {fileID: 8029509012077699730}
   - component: {fileID: 3110349077220638592}
   - component: {fileID: 2853687680133456133}
-  - component: {fileID: 4377725030371247733}
-  - component: {fileID: 4957916314716461314}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -971,7 +969,6 @@ MonoBehaviour:
   playerJump: {fileID: 282203505627145486}
   playerAttack: {fileID: 6275188774622283942}
   playerHealth: {fileID: 6509203233265092523}
-  playerWallGrab: {fileID: 4377725030371247733}
 --- !u!114 &7965413222227010325
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1176,9 +1173,6 @@ MonoBehaviour:
   throwPoint: {fileID: 6736527562231027768}
   swordPrefab: {fileID: 6225504458629514088, guid: 725be30a93ba98a4b9dba80ff4f617e9, type: 3}
   playerHealth: {fileID: 6509203233265092523}
-  playerWallGrab: {fileID: 0}
-  wallGrab: {fileID: 0}
-  wallGrabFeedback: {fileID: 0}
 --- !u!114 &6501459573328138349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1283,38 +1277,6 @@ MonoBehaviour:
   blinkAlpha: 0.25
   blinkDuration: 0.08
   blinkCount: 3
---- !u!114 &4377725030371247733
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6342449836396030624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: e2ebca47b0772db429670d8082e0ea62, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerWallGrab
-  wallLayer:
-    serializedVersion: 2
-    m_Bits: 64
-  wallCheckDistance: 0.03
---- !u!114 &4957916314716461314
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 6342449836396030624}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab438fb61a602d44384ccf1f3212547e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerWallGrabFeedback
-  visualRoot: {fileID: 2196965711316432645}
-  shakeDuration: 0.12
-  shakeStrength: 0.05
-  shakeVibrato: 14
 --- !u!1 &7346853274365916244
 GameObject:
   m_ObjectHideFlags: 0

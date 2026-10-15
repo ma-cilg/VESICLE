@@ -25,8 +25,12 @@ public class EnemyChase : MonoBehaviour
     [SerializeField] private bool waitForFirstLanding;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
-    [SerializeField, Min(0.01f)]
-    private float groundCheckRadius = 0.15f;
+    [SerializeField, Min(0.01f)] private float groundCheckRadius = 0.15f;
+
+
+    [Header("Wall Grab Target")]
+    [SerializeField, Min(0f)] private float wallApproachOffset = 0.3f;
+    [SerializeField, Min(0f)] private float wallStopDistance = 0.08f;
 
     private bool hasLanded;
 
@@ -36,13 +40,9 @@ public class EnemyChase : MonoBehaviour
         hasLanded = !waitForFirstLanding;
     }
 
-
     private void Awake()
     {
-        if (rb == null)
-        {
-            rb = GetComponent<Rigidbody2D>();
-        }
+        if (rb == null) rb = GetComponent<Rigidbody2D>();
     }
 
     private void FixedUpdate()
@@ -52,7 +52,6 @@ public class EnemyChase : MonoBehaviour
             StopHorizontalMovement();
             return;
         }
-
 
         //공중 소환된 적 첫 착지 전까지 수직 낙하
         if (!hasLanded)
@@ -68,20 +67,19 @@ public class EnemyChase : MonoBehaviour
             hasLanded = true;
         }
 
-        //플레이어까지의 가로 / 세로 거리
-        float distanceX = playerTarget.position.x - rb.position.x;
-        float distanceY = playerTarget.position.y - rb.position.y;
+        float targetX = playerTarget.position.x;
 
-        //플레이어가 위에 있으면 정지 거리를 줄여
-        //점프 중에도 벽 쪽으로 적극적으로 접근
-        float currentStopDistance = distanceY > 0.9f ? 0.05f : stopDistance;
+
+        float distanceX = targetX - rb.position.x;
+
+        //벽잡기 중에는 별도의 근접 정지 거리 사용
+        float currentStopDistance = isTargetWallGrabbing ? wallStopDistance : stopDistance;
 
         if (Mathf.Abs(distanceX) <= currentStopDistance)
         {
             StopHorizontalMovement();
             return;
         }
-
 
         //플레이어가 있는 방향으로 계속 달리기
         float direction = Mathf.Sign(distanceX);

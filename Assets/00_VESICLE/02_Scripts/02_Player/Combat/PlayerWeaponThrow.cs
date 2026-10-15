@@ -10,9 +10,6 @@ public class PlayerWeaponThrow : MonoBehaviour
     [SerializeField] private Transform throwPoint;                          //검이 생성되어 날아가기 시작할 위치
     [SerializeField] private ThrownSwordProjectile swordPrefab;             //투척검 Prefab
     [SerializeField] private PlayerHealth playerHealth;                     //플레이어 사망 시 투척검 초기화
-    [SerializeField] private PlayerWallGrab playerWallGrab;                 //벽잡기 중 우클릭 차단
-    [SerializeField] private PlayerWallGrab wallGrab;
-    [SerializeField] private PlayerWallGrabFeedback wallGrabFeedback;
 
     private Camera mainCamera;                                              //마우스 화면 좌표 → 월드 좌표 변환
     private ThrownSwordProjectile swordInstance;                            //게임 중 하나만 생성해서 재사용
@@ -26,10 +23,6 @@ public class PlayerWeaponThrow : MonoBehaviour
     private void Awake()
     {
         mainCamera = Camera.main;
-
-        //같은 Player에 있는 벽잡기 컴포넌트 참조
-        if (playerWallGrab == null) 
-            playerWallGrab = GetComponent<PlayerWallGrab>();
 
         swordInstance = Instantiate(swordPrefab);                           //검은 시작할 때 한 번만 생성해서 재사용
         swordInstance.gameObject.SetActive(false);
@@ -48,13 +41,6 @@ public class PlayerWeaponThrow : MonoBehaviour
     private void Update()
     {
         if (!inputReader.IsThrowPressed()) return;
-
-        //벽에 매달린 상태에서는 투척 / 폭발 모두 차단
-        if (wallGrab != null && wallGrab.IsWallGrabbing)
-        {
-            wallGrabFeedback?.PlayBlockedThrow();
-            return;
-        }
 
         //검이 Trigger 적에 박혀 있다면 우클릭으로 폭발
         if (swordInstance != null && swordInstance.IsEmbedded)

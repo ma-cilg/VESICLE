@@ -281,6 +281,15 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 8b609dcd043e907429efe3ed8bcdb9b1, type: 3}
   - {fileID: 21300000, guid: 0d35bba8191bc7d4c895a00fc03d6a7a, type: 3}
   - {fileID: 21300000, guid: 3b99580b17355a2488b754228a5eb106, type: 3}
+  idleSprites:
+  - {fileID: 21300000, guid: 0ccd2b99e9b547b498330df9c7104170, type: 3}
+  - {fileID: 21300000, guid: 220c9309dbf73b348968f36e2539ba95, type: 3}
+  - {fileID: 21300000, guid: f3510eadfe4b42044aca97792c6d0316, type: 3}
+  - {fileID: 21300000, guid: cf98dbdd2a53fcd4587b4b327f851a53, type: 3}
+  - {fileID: 21300000, guid: 25c6bb483910bd04faa93d619fa90bd0, type: 3}
+  - {fileID: 21300000, guid: b437659f0a59b1e41b493cd3f77754e6, type: 3}
+  - {fileID: 21300000, guid: 6947463b1cdf5954fae76ba20a4a616a, type: 3}
+  idleFrameDuration: 0.08
   runSprites:
   - {fileID: 21300000, guid: 8675a077b52cbe7459e9def1666a1720, type: 3}
   - {fileID: 21300000, guid: 7fe1cc9412f4e7547a2d8090013bbe5b, type: 3}
