@@ -68,16 +68,20 @@ public class EnemyChase : MonoBehaviour
             hasLanded = true;
         }
 
-
-        //플레이어까지의 좌우 거리
+        //플레이어까지의 가로 / 세로 거리
         float distanceX = playerTarget.position.x - rb.position.x;
+        float distanceY = playerTarget.position.y - rb.position.y;
 
-        //플레이어와 거의 겹쳤다면 좌우 이동 정지
-        if (Mathf.Abs(distanceX) <= stopDistance)
+        //플레이어가 위에 있으면 정지 거리를 줄여
+        //점프 중에도 벽 쪽으로 적극적으로 접근
+        float currentStopDistance = distanceY > 0.9f ? 0.05f : stopDistance;
+
+        if (Mathf.Abs(distanceX) <= currentStopDistance)
         {
             StopHorizontalMovement();
             return;
         }
+
 
         //플레이어가 있는 방향으로 계속 달리기
         float direction = Mathf.Sign(distanceX);

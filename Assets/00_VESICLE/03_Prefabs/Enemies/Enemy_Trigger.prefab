@@ -235,7 +235,7 @@ MonoBehaviour:
   attackIntervalMin: 1.5
   attackIntervalMax: 3
   chargeDuration: 0.3
-  dashDuration: 0.45
+  dashDuration: 0.85
   stopFrameDuration: 0.08
 --- !u!114 &9152340845159216219
 MonoBehaviour:

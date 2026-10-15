@@ -194,10 +194,10 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheckRadius: 0.15
-  jumpSpeed: 20
+  jumpSpeed: 25
   jumpCooldown: 0.9
   minPlayerHeight: 0.9
-  maxJumpTargetDistance: 3.5
+  maxJumpTargetDistance: 6
   obstacleCheckDistance: 0.6
   obstacleCheckOffset: {x: 0, y: 0.5}
 --- !u!114 &6570861605097580997
