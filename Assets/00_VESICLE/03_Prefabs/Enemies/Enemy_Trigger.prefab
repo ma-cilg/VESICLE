@@ -257,7 +257,7 @@ MonoBehaviour:
     m_Bits: 64
   groundCheckRadius: 0.15
   normalGravityScale: 3
-  chaseSpeed: 7
+  chaseSpeed: 5.5
   dashSpeed: 30
   chaseStopDistance: 0.15
 --- !u!114 &3275364439785349455

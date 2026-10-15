@@ -14,14 +14,14 @@ public class EnemyJump : MonoBehaviour
     [SerializeField] private PlayerHealth playerHealth;
     [SerializeField] private Transform playerTarget;
     [SerializeField] private Rigidbody2D rb;
-    [SerializeField] private Transform groundCheck;
 
     [Header("Ground")]
+    [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField, Min(0.01f)] private float groundCheckRadius = 0.15f;
 
     [Header("Jump")]
-    [SerializeField, Min(0f)] private float jumpSpeed = 10f;
+    [SerializeField, Min(0f)] private float jumpSpeed = 20f;
     [SerializeField, Min(0f)] private float jumpCooldown = 0.9f;
 
     [Header("Jump Conditions")]

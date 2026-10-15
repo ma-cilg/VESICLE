@@ -15,10 +15,27 @@ public class EnemyChase : MonoBehaviour
     [SerializeField] private Rigidbody2D rb;
 
     [Header("Movement")]
-    [SerializeField, Min(0f)] private float moveSpeed = 4f;
+    [SerializeField, Min(0f)] private float moveSpeed = 5.5f;
 
     //플레이어 중심에서 좌우로 떨리는 현상 방지
-    [SerializeField, Min(0f)] private float stopDistance = 0.1f;
+    [SerializeField, Min(0f)] private float stopDistance = 0.8f;
+
+
+    [Header("Spawn Landing")]
+    [SerializeField] private bool waitForFirstLanding;
+    [SerializeField] private Transform groundCheck;
+    [SerializeField] private LayerMask groundLayer;
+    [SerializeField, Min(0.01f)]
+    private float groundCheckRadius = 0.15f;
+
+    private bool hasLanded;
+
+    private void OnEnable()
+    {
+        //기존 사용처는 기본값 false이므로 영향 없음
+        hasLanded = !waitForFirstLanding;
+    }
+
 
     private void Awake()
     {
@@ -35,6 +52,22 @@ public class EnemyChase : MonoBehaviour
             StopHorizontalMovement();
             return;
         }
+
+
+        //공중 소환된 적 첫 착지 전까지 수직 낙하
+        if (!hasLanded)
+        {
+            bool grounded = groundCheck != null && Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
+
+            if (!grounded)
+            {
+                StopHorizontalMovement();
+                return;
+            }
+
+            hasLanded = true;
+        }
+
 
         //플레이어까지의 좌우 거리
         float distanceX = playerTarget.position.x - rb.position.x;
