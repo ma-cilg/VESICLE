@@ -20,6 +20,7 @@ public class TitleMenuController : MonoBehaviour
 
     [Header("Options")]
     [SerializeField] private Button backButton;
+    [SerializeField] private PauseMenuController pauseMenu;
 
     [Header("Tutorial Start")]
     [SerializeField] private TutorialStartController tutorialStart;
@@ -57,7 +58,7 @@ public class TitleMenuController : MonoBehaviour
         continueButton.onClick.AddListener(HandleContinue);
         optionsButton.onClick.AddListener(ShowOptions);
         exitButton.onClick.AddListener(ExitGame);
-        backButton.onClick.AddListener(ShowTitle);
+        backButton.onClick.AddListener(HandleOptionsBack);
     }
 
     private void OnDisable()
@@ -66,7 +67,7 @@ public class TitleMenuController : MonoBehaviour
         continueButton.onClick.RemoveListener(HandleContinue);
         optionsButton.onClick.RemoveListener(ShowOptions);
         exitButton.onClick.RemoveListener(ExitGame);
-        backButton.onClick.RemoveListener(ShowTitle);
+        backButton.onClick.RemoveListener(HandleOptionsBack);
 
         titleCanvasGroup.DOKill();
         continueFadeCanvasGroup?.DOKill();                      //이어하기 암전 Tween 정리
@@ -90,6 +91,20 @@ public class TitleMenuController : MonoBehaviour
     private void RefreshContinueButton()
     {
         continueButton.interactable = SaveManager.Instance != null && SaveManager.Instance.HasSave;
+    }
+
+    //*OPTIONS의 BACK 버튼*
+    private void HandleOptionsBack()
+    {
+        //게임 중 ESC로 연 OPTIONS라면 게임 재개
+        if (pauseMenu != null && pauseMenu.IsPaused)
+        {
+            pauseMenu.ResumeGame();
+            return;
+        }
+
+        //타이틀에서 OPTIONS를 열었다면 기존 타이틀 복귀
+        ShowTitle();
     }
 
     //*메인 메뉴 표시*

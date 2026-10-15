@@ -1,4 +1,4 @@
-//**플레이어 이동 공격 게이지 관리**
+//**플레이어 공격 게이지 관리**
 //책임: 공격 게이지 보유 → 공격 비용 사용 → 자동 회복 → 변경 이벤트 전달
 using System;       //Action 이벤트 사용
 using UnityEngine;
@@ -7,7 +7,7 @@ public class PlayerAttackGauge : MonoBehaviour
 {
     [SerializeField, Min(1f)] private float maxGauge = 100f;                    //최대 공격 게이지
     [SerializeField, Min(0f)] private float attackCost = 70f;                   //이동 공격 1회 사용량
-    [SerializeField, Min(0f)] private float regenerationPerSecond = 70f;        //초당 자동 회복량
+    [SerializeField, Min(0f)] private float regenerationPerSecond = 50f;        //초당 자동 회복량
 
     public float CurrentGauge { get; private set; }                             //현재 공격 게이지
     public float MaxGauge => maxGauge;                                          //최대 게이지 외부 제공
@@ -32,14 +32,25 @@ public class PlayerAttackGauge : MonoBehaviour
     //*이동 공격 게이지 사용 시도*
     public bool TryUseAttack()
     {
-        //공격 1회분의 게이지가 없다면 공격 실패
-        if (!CanAttack)
+        return TryUseGauge(attackCost);                                         //기존 좌클릭 공격 비용 70 유지
+    }
+
+    //*공통 공격 게이지 소비*
+    public bool TryUseGauge(float cost)
+    {
+        if (cost < 0f) return false;
+
+        //게이지 부족하면 공격 실패
+        if (CurrentGauge < cost)
         {
-            OnAttackFailed?.Invoke();    //UI 흔들림 및 효과음
+            OnAttackFailed?.Invoke();
             return false;
         }
-        CurrentGauge = Mathf.Max(0f, CurrentGauge - attackCost);                //이동 공격 1회 비용 차감
-        OnGaugeChanged?.Invoke(CurrentGauge, maxGauge);                         //UI 등 외부 시스템에 변경 알림
+
+        CurrentGauge = Mathf.Max(0f, CurrentGauge - cost);                      //지정된 비용만큼 게이지 차감
+
+        OnGaugeChanged?.Invoke(CurrentGauge, maxGauge);                         //기존 UI 시스템에 게이지 변경 알림
+
         return true;
     }
 

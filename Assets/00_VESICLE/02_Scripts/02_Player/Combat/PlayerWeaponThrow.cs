@@ -10,6 +10,11 @@ public class PlayerWeaponThrow : MonoBehaviour
     [SerializeField] private Transform throwPoint;                          //검이 생성되어 날아가기 시작할 위치
     [SerializeField] private ThrownSwordProjectile swordPrefab;             //투척검 Prefab
     [SerializeField] private PlayerHealth playerHealth;                     //플레이어 사망 시 투척검 초기화
+    [SerializeField] private PlayerAttackGauge attackGauge;                 //기존 공격 게이지 참조
+
+    [Header("Throw Gauge")]
+    [SerializeField, Min(0f)] private float throwGaugeCost = 50f;           //검 투척 1회 코스트
+
 
     private Camera mainCamera;                                              //마우스 화면 좌표 → 월드 좌표 변환
     private ThrownSwordProjectile swordInstance;                            //게임 중 하나만 생성해서 재사용
@@ -63,6 +68,7 @@ public class PlayerWeaponThrow : MonoBehaviour
         if (mainCamera == null) return;
         if (swordInstance == null) return;
         if (throwPoint == null) return;
+        if (attackGauge == null) return;
 
         //마우스 화면 좌표
         Vector2 mouseScreenPosition = inputReader.AimPosition;
@@ -77,9 +83,14 @@ public class PlayerWeaponThrow : MonoBehaviour
         Vector2 direction = (Vector2)mouseWorldPosition - startPosition;
 
         if (direction.sqrMagnitude <= 0.001f) return;
-        
+
+
         Vector2 throwDirection = direction.normalized;
 
+        //검 투척 게이지 소비
+        if (!attackGauge.TryUseGauge(throwGaugeCost)) return;
+
+        //게이지 소비에 성공한 경우에만 검 발사
         swordInstance.Launch(startPosition, throwDirection);
     }
 

@@ -1173,6 +1173,8 @@ MonoBehaviour:
   throwPoint: {fileID: 6736527562231027768}
   swordPrefab: {fileID: 6225504458629514088, guid: 725be30a93ba98a4b9dba80ff4f617e9, type: 3}
   playerHealth: {fileID: 6509203233265092523}
+  attackGauge: {fileID: 6501459573328138349}
+  throwGaugeCost: 50
 --- !u!114 &6501459573328138349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -1187,7 +1189,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAttackGauge
   maxGauge: 100
   attackCost: 70
-  regenerationPerSecond: 70
+  regenerationPerSecond: 50
 --- !u!114 &8486472436016157597
 MonoBehaviour:
   m_ObjectHideFlags: 0

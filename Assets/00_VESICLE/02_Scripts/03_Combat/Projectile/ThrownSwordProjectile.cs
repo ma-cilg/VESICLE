@@ -147,6 +147,15 @@ public class ThrownSwordProjectile : MonoBehaviour
 
         if (hitReceiver == null || enemyMark == null) return;
 
+        //일반 적의 투척검 피격 무효화
+        if (enemyMark.MarkType == EnemyMarkType.Normal)
+        {
+            //피격 이벤트를 보내지 않으므로 데미지 / Mark가 발생하지 않음
+            //벽에 박힌 것처럼 멈춘 후 자연스럽게 투명해짐
+            EmbedIntoEnvironment(other);
+            return;
+        }
+
         //적에게 "투척검으로 맞았다"는 정보 전달
         EnemyHitInfo hitInfo = new EnemyHitInfo(EnemyHitType.ThrownSword, flightDirection);
 
@@ -159,7 +168,7 @@ public class ThrownSwordProjectile : MonoBehaviour
             return;
         }
 
-        //Normal 적은 검이 몸에 남지 않고 비행 종료
+        //Trigger 박힘 조건을 만족하지 못했다면 비행 종료
         EndFlight();
     }
 
