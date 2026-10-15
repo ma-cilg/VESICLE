@@ -17,20 +17,13 @@ public class EnemyChase : MonoBehaviour
     [Header("Movement")]
     [SerializeField, Min(0f)] private float moveSpeed = 5.5f;
 
-    //플레이어 중심에서 좌우로 떨리는 현상 방지
-    [SerializeField, Min(0f)] private float stopDistance = 0.8f;
-
+    [SerializeField, Min(0f)] private float stopDistance = 0.8f;        //플레이어 중심에서 좌우로 떨리는 현상 방지
 
     [Header("Spawn Landing")]
     [SerializeField] private bool waitForFirstLanding;
     [SerializeField] private Transform groundCheck;
     [SerializeField] private LayerMask groundLayer;
     [SerializeField, Min(0.01f)] private float groundCheckRadius = 0.15f;
-
-
-    [Header("Wall Grab Target")]
-    [SerializeField, Min(0f)] private float wallApproachOffset = 0.3f;
-    [SerializeField, Min(0f)] private float wallStopDistance = 0.08f;
 
     private bool hasLanded;
 
@@ -47,13 +40,14 @@ public class EnemyChase : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //방 전투 중이 아니거나 추적할 수 없다면 정지
         if (!CanChase())
         {
             StopHorizontalMovement();
             return;
         }
 
-        //공중 소환된 적 첫 착지 전까지 수직 낙하
+        //공중에서 소환된 적은 첫 착지 전까지 수직 낙하
         if (!hasLanded)
         {
             bool grounded = groundCheck != null && Physics2D.OverlapCircle(groundCheck.position, groundCheckRadius, groundLayer) != null;
@@ -67,21 +61,17 @@ public class EnemyChase : MonoBehaviour
             hasLanded = true;
         }
 
-        float targetX = playerTarget.position.x;
+        //플레이어와의 좌우 거리 계산
+        float distanceX = playerTarget.position.x - rb.position.x;
 
-
-        float distanceX = targetX - rb.position.x;
-
-        //벽잡기 중에는 별도의 근접 정지 거리 사용
-        float currentStopDistance = isTargetWallGrabbing ? wallStopDistance : stopDistance;
-
-        if (Mathf.Abs(distanceX) <= currentStopDistance)
+        //설정된 거리 안에 들어오면 좌우 이동 정지
+        if (Mathf.Abs(distanceX) <= stopDistance)
         {
             StopHorizontalMovement();
             return;
         }
 
-        //플레이어가 있는 방향으로 계속 달리기
+        //플레이어 방향으로 추적
         float direction = Mathf.Sign(distanceX);
 
         rb.linearVelocity = new Vector2(direction * moveSpeed, rb.linearVelocity.y);

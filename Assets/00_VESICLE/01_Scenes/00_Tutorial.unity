@@ -251,11 +251,6 @@ Transform:
   m_Children: []
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!1 &24864682 stripped
-GameObject:
-  m_CorrespondingSourceObject: {fileID: 6342449836396030624, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
-  m_PrefabInstance: {fileID: 1190004646}
-  m_PrefabAsset: {fileID: 0}
 --- !u!1 &33652604
 GameObject:
   m_ObjectHideFlags: 0
@@ -27771,17 +27766,14 @@ PrefabInstance:
     m_RemovedComponents: []
     m_RemovedGameObjects: []
     m_AddedGameObjects: []
-    m_AddedComponents:
-    - targetCorrespondingSourceObject: {fileID: 6342449836396030624, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
-      insertIndex: -1
-      addedObject: {fileID: 1190004711}
+    m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
 --- !u!114 &1190004647 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 1909164100341221498, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
   m_PrefabInstance: {fileID: 1190004646}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 24864682}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 960d5711ac359f0459bc0470fa6a9985, type: 3}
@@ -27792,7 +27784,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6509203233265092523, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
   m_PrefabInstance: {fileID: 1190004646}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 24864682}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: a0611101da7b9454bb7e327801efdae0, type: 3}
@@ -27808,7 +27800,7 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 6275188774622283942, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
   m_PrefabInstance: {fileID: 1190004646}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 24864682}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 01adbcf0121919c46b884988dcf4b735, type: 3}
@@ -27824,28 +27816,12 @@ MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 7601062269765792390, guid: 506faa1c7d5d1fa4abec8844964c6647, type: 3}
   m_PrefabInstance: {fileID: 1190004646}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 24864682}
+  m_GameObject: {fileID: 0}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: f3812b12ce7914d4cb9a278e12679ebf, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimation
---- !u!114 &1190004711
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 24864682}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab438fb61a602d44384ccf1f3212547e, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::PlayerWallGrabFeedback
-  visualRoot: {fileID: 1190004649}
-  shakeDuration: 0.12
-  shakeStrength: 0.05
-  shakeVibrato: 14
 --- !u!1 &1202654025
 GameObject:
   m_ObjectHideFlags: 0
