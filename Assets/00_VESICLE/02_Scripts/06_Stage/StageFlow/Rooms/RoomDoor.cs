@@ -42,7 +42,6 @@ public class RoomDoor : MonoBehaviour
     }
 
     //*문 열기*
-    [ContextMenu("Test Open Door")]
     public void OpenDoor()
     {
         if (isOpen) return;
@@ -80,7 +79,6 @@ public class RoomDoor : MonoBehaviour
     }
 
     //*문 닫기*
-    [ContextMenu("Test Close Door")]
     public void CloseDoor()
     {
         if (!isOpen) return;

@@ -23,7 +23,7 @@ public class PlayerHealth : MonoBehaviour
         CurrentHealth = maxHealth;
     }
 
-#if UNITY_EDITOR
+#if UNITY_EDITOR && VESICLE_DEV_CHEATS
     private void Update()
     {
         //개발 중 체크포인트 / 사망 연출 테스트용
@@ -99,6 +99,8 @@ public class PlayerHealth : MonoBehaviour
         OnDied?.Invoke();
     }
 
+#if UNITY_EDITOR && VESICLE_DEV_CHEATS
+
     //*체크포인트 Respawn 테스트용 강제 사망*
     [ContextMenu("Test Kill Player")]
     private void TestKillPlayer()
@@ -108,4 +110,6 @@ public class PlayerHealth : MonoBehaviour
         //무적 여부와 관계없이 현재 체력 전부 감소
         TakeForcedDamage(CurrentHealth, Vector2.zero);
     }
+
+#endif
 }

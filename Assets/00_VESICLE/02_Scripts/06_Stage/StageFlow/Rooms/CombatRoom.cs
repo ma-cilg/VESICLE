@@ -96,7 +96,6 @@ public class CombatRoom : MonoBehaviour
     }
 
     //*방 클리어 시작*
-    [ContextMenu("Test Clear Room")]
     public void ClearRoom()
     {
         if (isCleared) return;
@@ -171,8 +170,6 @@ public class CombatRoom : MonoBehaviour
         isStarted = true;
         isCleared = true;
         remainingEnemyCount = 0;
-
-        roomFrame.localScale = originalFrameScale;      //방 크기 원상복구
 
         roomFrame.localScale = originalFrameScale;      //방 크기 원상복구
 
