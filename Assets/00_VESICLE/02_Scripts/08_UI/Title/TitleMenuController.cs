@@ -144,6 +144,9 @@ public class TitleMenuController : MonoBehaviour
         //기존 진행도 덮어쓰기 → Stage 0 / Room 0 저장
         SaveManager.Instance.StartNewGame();
 
+        //NEW GAME 시작 시 일반 전투 BGM으로 전환
+        GameAudioController.Instance?.PlayNormalBgm();
+
         //연출 중 버튼 중복 입력 방지
         titleCanvasGroup.interactable = false;
         titleCanvasGroup.blocksRaycasts = false;
@@ -225,6 +228,20 @@ public class TitleMenuController : MonoBehaviour
 
         //튜토리얼 첫 방이라면 출구 문이 완전히 열릴 때까지 대기
         GameSaveData saveData = SaveManager.Instance.CurrentSaveData;
+
+        //CONTINUE 시 저장된 방에 맞는 BGM 선택
+        if (saveData != null &&
+            saveData.stageIndex == 0 &&
+            saveData.roomIndex == 4)
+        {
+            //보스방에서 이어하기
+            GameAudioController.Instance?.PlayBossBgm();
+        }
+        else
+        {
+            //Room_01~04에서 이어하기
+            GameAudioController.Instance?.PlayNormalBgm();
+        }
 
         if (saveData != null &&
             saveData.stageIndex == 0 &&

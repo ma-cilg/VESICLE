@@ -26,6 +26,7 @@ public class RoomDoor : MonoBehaviour
 
     public event Action OnOpened;                                                   //완전히 열렸을 때
     public event Action OnClosed;                                                   //완전히 닫혔을 때
+    public event Action OnOpening;                                                  //문 열림 연출 시작 알림
 
     private void Awake()
     {
@@ -48,6 +49,9 @@ public class RoomDoor : MonoBehaviour
         if (isMoving) return;
 
         isMoving = true;
+
+        //문 진동과 상승 연출이 시작되는 순간 알림
+        OnOpening?.Invoke();
 
         //문 진동 + 상승 시간 동안 카메라도 같이 흔들림
         CameraHitShake.Instance?.PlayDoorOpenShake(shakeDuration + moveDuration);

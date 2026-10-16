@@ -141,6 +141,9 @@ public class PauseMenuController : MonoBehaviour
     {
         isReturningToTitle = true;
 
+        //타이틀 복귀 암전과 동시에 BGM 전환 시작
+        GameAudioController.Instance?.PlayTitleBgm();
+
         //기존 암전 UI를 투명한 상태에서 시작
         returnFadeGroup.alpha = 0f;
         returnFadeGroup.blocksRaycasts = true;

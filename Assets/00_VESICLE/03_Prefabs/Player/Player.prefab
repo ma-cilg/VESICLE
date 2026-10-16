@@ -489,6 +489,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerAnimationEventRelay
   runFeedback: {fileID: 779866339041980435}
   playerAttack: {fileID: 6275188774622283942}
+  runSfx: {fileID: 7461913084342342718}
 --- !u!1 &4814156837969031615
 GameObject:
   m_ObjectHideFlags: 0
@@ -807,6 +808,10 @@ GameObject:
   - component: {fileID: 8029509012077699730}
   - component: {fileID: 3110349077220638592}
   - component: {fileID: 2853687680133456133}
+  - component: {fileID: 5439280497780492312}
+  - component: {fileID: 3851147101543216212}
+  - component: {fileID: 7461913084342342718}
+  - component: {fileID: 2361269622930326351}
   m_Layer: 8
   m_Name: Player
   m_TagString: Untagged
@@ -1279,6 +1284,70 @@ MonoBehaviour:
   blinkAlpha: 0.25
   blinkDuration: 0.08
   blinkCount: 3
+--- !u!114 &5439280497780492312
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342449836396030624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f2b41320fbf3d8d4ea2d70158409c209, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerJumpSfx
+  jumpSfx: {fileID: 8300000, guid: c6b97952a93669e4f8cc28c794358952, type: 3}
+  doubleJumpSfx: {fileID: 8300000, guid: af7f64344104a0e4c9ab37236ed22c07, type: 3}
+  landSfx: {fileID: 8300000, guid: 98e8456cf3536c24189c247ee3613af1, type: 3}
+  jumpVolume: 0.5
+  doubleJumpVolume: 0.6
+  landVolume: 0.4
+--- !u!114 &3851147101543216212
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342449836396030624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0d09c2777796c364e942f9d7670ef9c3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerAttackSfx
+  slashSfx: {fileID: 8300000, guid: ae34b3f1cfa4e1e4c9d1aad3ede9d4c3, type: 3}
+  slashVolume: 0.6
+--- !u!114 &7461913084342342718
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342449836396030624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 40b46c76f1c679e40b4d0ba83c2812e3, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerRunSfx
+  backStepSfx: {fileID: 8300000, guid: 3ababba3a51ed054fa525b77d8793da1, type: 3}
+  frontStepSfx: {fileID: 8300000, guid: 6fd16e65d5915e446be2104ab0d8c5eb, type: 3}
+  footstepVolume: 0.2
+  minHorizontalSpeed: 0.5
+--- !u!114 &2361269622930326351
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6342449836396030624}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 48720c5c8bb155041a24d900fe9ca7a7, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealthSfx
+  hitSfx: {fileID: 8300000, guid: ded19b2f8bada794597343724628f51f, type: 3}
+  deathSfx: {fileID: 8300000, guid: 73d8e95564319904580700d79acbe45c, type: 3}
+  hitVolume: 0.8
+  deathVolume: 0.9
 --- !u!1 &7346853274365916244
 GameObject:
   m_ObjectHideFlags: 0

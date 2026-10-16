@@ -102,6 +102,9 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4308807048257774170, guid: 091cb2cf642339446ab876e93252d3a7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 6570861605097580997}
+    - targetCorrespondingSourceObject: {fileID: 4308807048257774170, guid: 091cb2cf642339446ab876e93252d3a7, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 2737181098785168331}
     - targetCorrespondingSourceObject: {fileID: 6304356565784007206, guid: 091cb2cf642339446ab876e93252d3a7, type: 3}
       insertIndex: -1
       addedObject: {fileID: 2133092142322998960}
@@ -170,8 +173,6 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 64
   groundCheckRadius: 0.15
-  wallApproachOffset: 0.3
-  wallStopDistance: 0.2
 --- !u!114 &6107426142635547831
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -251,6 +252,20 @@ MonoBehaviour:
   - {fileID: 21300000, guid: 511671a6f7aadb34eb1582432ec6920e, type: 3}
   landFrameDuration: 0.08
   groundCheckRadius: 0.15
+--- !u!114 &2737181098785168331
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1687546226946870479}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 29abd983e6491b64dbdbb089a72ec690, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyJumpSfx
+  jumpSfx: {fileID: 8300000, guid: 25728f57329bf6b4db613e8d5d9ce613, type: 3}
+  jumpVolume: 0.2
 --- !u!114 &1827308947419515939 stripped
 MonoBehaviour:
   m_CorrespondingSourceObject: {fileID: 3889787065918284470, guid: 091cb2cf642339446ab876e93252d3a7, type: 3}

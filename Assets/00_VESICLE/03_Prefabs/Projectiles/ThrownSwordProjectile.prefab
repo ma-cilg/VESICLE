@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 5539440774667254505}
   - component: {fileID: 3739867769366385381}
   - component: {fileID: 6225504458629514088}
+  - component: {fileID: 2990018005513600471}
   m_Layer: 0
   m_Name: ThrownSwordProjectile
   m_TagString: Untagged
@@ -135,6 +136,24 @@ MonoBehaviour:
   obstacleLayer:
     serializedVersion: 2
     m_Bits: 64
+--- !u!114 &2990018005513600471
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 9933274015485111}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 1d5c1d176ba4ae343b6fbbc426d3c95c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::ThrownSwordSfx
+  throwSfx: {fileID: 8300000, guid: cc8affb1351da164d95a1f87695bb17c, type: 3}
+  environmentEmbedSfx: {fileID: 8300000, guid: 56d9fc5e3d4d7434fbea6244bed29064, type: 3}
+  triggerEmbedSfx: {fileID: 8300000, guid: 0a0a1281f9428d848adbaaa972c1fd4e, type: 3}
+  throwVolume: 0.6
+  environmentEmbedVolume: 0.6
+  triggerEmbedVolume: 0.7
 --- !u!1 &4512853408167131315
 GameObject:
   m_ObjectHideFlags: 0

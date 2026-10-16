@@ -1,5 +1,6 @@
 //**방 사이 이동 전환 처리**
 //책임: 플레이어 통과 감지 → 공격 중단 → 조작 잠금 → 플레이어/카메라 다음 방 이동 → 양쪽 문 닫기 → 조작 복구
+using System;
 using UnityEngine;
 
 public class RoomTransitionTrigger : MonoBehaviour
@@ -42,6 +43,8 @@ public class RoomTransitionTrigger : MonoBehaviour
     private CapsuleCollider2D playerBodyCollider;                   //플레이어 실제 충돌 영역
     private bool cameraMoveStarted;                                 //카메라 이동 시작 여부
 
+    public event Action OnCameraMoveStarted;                        //카메라가 다음 방으로 이동하기 시작하는 순간 알림
+
     private void Awake()
     {
         transitionCollider = GetComponent<BoxCollider2D>();                     //현재 통로 Trigger
@@ -52,7 +55,6 @@ public class RoomTransitionTrigger : MonoBehaviour
         Debug.LogError("RoomTransitionTrigger: 통로 또는 Player Collider를 찾을 수 없습니다.", this);
         enabled = false;
     }
-
 
     //*플레이어가 방 전환 영역에 처음 진입했을 때*
     private void OnTriggerEnter2D(Collider2D other)
@@ -87,8 +89,6 @@ public class RoomTransitionTrigger : MonoBehaviour
         StartRoomTransition();
     }
 
-
-
     //*방 전환 중 플레이어 자동 이동*
     private void FixedUpdate()
     {
@@ -105,11 +105,15 @@ public class RoomTransitionTrigger : MonoBehaviour
             return;
         }
 
-        //안전하게 통과할 수 있을 때 카메라 이동 시작
+        //카메라가 실제로 다음 방으로 이동하는 순간
         if (!cameraMoveStarted)
         {
             cameraMoveStarted = true;
+
             roomCamera.MoveToRoom(nextRoomCameraPoint);
+
+            //카메라 이동 시작 이벤트 발생
+            OnCameraMoveStarted?.Invoke();
         }
 
         float remainingDistance = playerTargetX - playerRigidbody.position.x;
@@ -135,7 +139,6 @@ public class RoomTransitionTrigger : MonoBehaviour
         //중력에 의한 수직 이동을 유지하면서 다음 방으로 이동
         playerRigidbody.linearVelocity = new Vector2(direction * playerAutoMoveSpeed, playerRigidbody.linearVelocity.y);
     }
-
 
     //*다음 방 전환 시작*
     private void StartRoomTransition()
@@ -213,7 +216,6 @@ public class RoomTransitionTrigger : MonoBehaviour
         nextEntryDoor.CloseDoor();
     }
 
-
     //*문 하나가 완전히 닫혔을 때*
     private void HandleDoorClosed()
     {
@@ -236,7 +238,6 @@ public class RoomTransitionTrigger : MonoBehaviour
         //방이 시작된 뒤 플레이어 조작 복구
         ReleaseTransitionControls();
     }
-
 
     //*방 전환 동안 플레이어 전체 조작 잠금*
     private void LockTransitionControls()

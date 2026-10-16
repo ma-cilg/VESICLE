@@ -6,11 +6,14 @@ public class PlayerAnimationEventRelay : MonoBehaviour
 {
     [SerializeField] private PlayerRunFeedback runFeedback;
     [SerializeField] private PlayerAttack playerAttack;
+    [SerializeField] private PlayerRunSfx runSfx;
 
     //*Run 0 - 첫 번째 발 착지*
     public void OnRunBackContact()
     {
         runFeedback.PlayBackContact();
+
+        runSfx?.PlayBackStep();                     //기존 먼지 FX와 동시에 발소리 재생
     }
 
     //*Run 2 - 첫 번째 발 떼기*
@@ -23,6 +26,8 @@ public class PlayerAnimationEventRelay : MonoBehaviour
     public void OnRunFrontContact()
     {
         runFeedback.PlayFrontContact();
+
+        runSfx?.PlayFrontStep();                    //기존 먼지 FX와 동시에 발소리 재생
     }
 
     //*Run 6 - 반대쪽 발 떼기*

@@ -1,6 +1,7 @@
 //**트리거몹 공격 패턴 제어**
 //책임: 랜덤 추적 대기 → 차징 조준 → 돌진 → 4프레임 정지 → 낙하 → 재추적
 //물리 이동, Sprite/Shake, 잔상은 각각 전용 컴포넌트에 위임
+using System;
 using System.Collections;
 using UnityEngine;
 
@@ -37,6 +38,10 @@ public class EnemyDashAttack : MonoBehaviour
     private Coroutine attackRoutine;
     private bool combatStarted;
     private float nextAttackTime;
+
+    //**Trigger 공격 상태 이벤트**
+    public event Action OnChargeStarted;    //돌진 준비 시작
+    public event Action OnDashStarted;      //실제 돌진 시작
 
     private void Awake()
     {
@@ -138,6 +143,8 @@ public class EnemyDashAttack : MonoBehaviour
         visual.Face(direction.x);
         visual.BeginCharge(chargeDuration);
 
+        OnChargeStarted?.Invoke();
+
         yield return new WaitForSeconds(chargeDuration);
         if (!CanAct()) { CancelAttack(); yield break; }
 
@@ -145,6 +152,9 @@ public class EnemyDashAttack : MonoBehaviour
         visual.SetMotion(EnemyTriggerVisual.Motion.Dash);
         movement.SetMode(EnemyTriggerMovement.MoveMode.Dash);
         afterimage.StartTrail();
+
+        OnDashStarted?.Invoke();
+
         yield return new WaitForSeconds(dashDuration);
         afterimage.StopTrail();
         if (!CanAct()) { CancelAttack(); yield break; }
@@ -168,7 +178,7 @@ public class EnemyDashAttack : MonoBehaviour
     {
         float a = first ? startDelayMin : attackIntervalMin;
         float b = first ? startDelayMax : attackIntervalMax;
-        nextAttackTime = Time.time + Random.Range(Mathf.Min(a, b), Mathf.Max(a, b));
+        nextAttackTime = Time.time + UnityEngine.Random.Range(Mathf.Min(a, b), Mathf.Max(a, b));
     }
 
     private void HandleDeath() => StopCombat();

@@ -49,6 +49,8 @@ GameObject:
   - component: {fileID: 3928263594562564078}
   - component: {fileID: 2284323131310765036}
   - component: {fileID: 5810081850717484045}
+  - component: {fileID: 3177232276407951594}
+  - component: {fileID: 5238294932582758119}
   m_Layer: 9
   m_Name: Enemy_Normal
   m_TagString: Untagged
@@ -239,6 +241,34 @@ MonoBehaviour:
   shrinkDuration: 0.12
   shrinkHoldDuration: 0.025
   debrisRestoreDuration: 0.09
+--- !u!114 &3177232276407951594
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261907694249390848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 78768514ad019e84d8b65155aef4a3ab, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyHitSfx
+  meleeHitSfx: {fileID: 8300000, guid: 0a0a1281f9428d848adbaaa972c1fd4e, type: 3}
+  meleeHitVolume: 0.7
+--- !u!114 &5238294932582758119
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1261907694249390848}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 18b741a0520ac9647ad228bf54f4ca6d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDeathSfx
+  deathSfx: {fileID: 8300000, guid: 89c5ed9e0a1caa64ab8a41e379b72fa5, type: 3}
+  deathVolume: 0.7
 --- !u!1 &5807650750901774085
 GameObject:
   m_ObjectHideFlags: 0

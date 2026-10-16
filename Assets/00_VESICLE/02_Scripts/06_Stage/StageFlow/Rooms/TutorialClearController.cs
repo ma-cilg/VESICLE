@@ -21,6 +21,9 @@ public class TutorialClearController : MonoBehaviour
     [SerializeField] private CanvasGroup clearGroup;
     [SerializeField] private CanvasGroup blackFadeGroup;
 
+    [Header("Audio")]
+    [SerializeField] private AudioClip victorySfx;
+
     [Header("Text")]
     [SerializeField, TextArea(2, 3)]
     private string clearMessage = "TUTORIAL\nCLEAR";
@@ -41,6 +44,7 @@ public class TutorialClearController : MonoBehaviour
     private bool physicsFrozen;
     private RigidbodyConstraints2D originalConstraints;
     private Coroutine clearRoutine;
+    private float victorySfxEndTime;
 
     private void Awake()
     {
@@ -98,8 +102,28 @@ public class TutorialClearController : MonoBehaviour
             return;
         }
 
+
         isClearing = true;
 
+        //**승리 오디오 처리**
+        GameAudioController audio = GameAudioController.Instance;
+
+        if (audio != null)
+        {
+            //승리 연출 중 보스 BGM을 20%로 낮춰 유지
+            audio.LowerBgmForVictory();
+
+            //승리 전용 SFX는 한 번만 재생
+            if (victorySfx != null)
+            {
+                audio.PlaySfx(victorySfx);
+
+                //CLEAR 연출보다 효과음이 길 경우를 대비
+                victorySfxEndTime = Time.realtimeSinceStartup + victorySfx.length;
+            }
+        }
+
+        //기존 플레이어 잠금 및 클리어 연출 유지
         LockPlayer();
         clearRoutine = StartCoroutine(PlayClearRoutine());
     }
@@ -157,9 +181,19 @@ public class TutorialClearController : MonoBehaviour
             yield return new WaitForSecondsRealtime(letterInterval);
         }
 
+        //CLEAR 글자 연출이 끝났어도 승리 SFX가 재생 중이라면 효과음이 끝난 뒤 암전 시작
+        float remainingSfxTime = victorySfxEndTime - Time.realtimeSinceStartup;
+
+        if (remainingSfxTime > 0f)
+        {
+            yield return new WaitForSecondsRealtime(remainingSfxTime);
+        }
+
+        //암전이 진행되는 동안 남은 보스 BGM도 서서히 종료
+        GameAudioController.Instance?.FadeOutVictoryBgm(blackFadeDuration);
+
         //모든 글자가 사라진 뒤 검은 화면으로 암전
         blackFadeGroup.blocksRaycasts = true;
-
 
         Tween fadeTween = blackFadeGroup
             .DOFade(1f, blackFadeDuration)
@@ -169,7 +203,10 @@ public class TutorialClearController : MonoBehaviour
 
         Time.timeScale = 1f;
 
-        //지금은 타이틀, 나중에는 다음 스테이지로 변경 가능
+        //화면이 완전히 검어진 뒤 타이틀 BGM 시작
+        GameAudioController.Instance?.PlayTitleBgmImmediately();
+
+        //기존 타이틀 씬으로 복귀
         SceneManager.LoadScene(nextSceneName);
     }
 

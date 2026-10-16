@@ -1,5 +1,6 @@
 //**플레이어 투척검 Projectile**
 //책임: 발사 → 비행 → 적/장애물 충돌 → Trigger 적에 박힘 → 비행 종료
+using System;
 using DG.Tweening;
 using UnityEngine;
 
@@ -40,6 +41,11 @@ public class ThrownSwordProjectile : MonoBehaviour
     public bool IsEmbedded => isEmbedded;
     public bool IsEnvironmentEmbedded => isEnvironmentEmbedded;
     public EnemyMark EmbeddedEnemy { get; private set; }                //현재 검이 박힌 Trigger 적
+
+    //**투척검 상태 변화 이벤트**
+    public event Action OnLaunched;                                     //검 발사 완료
+    public event Action OnEnvironmentEmbedded;                          //벽·바닥·일반 적에 박힘
+    public event Action OnTriggerEmbedded;                              //Trigger 적에 박힘
 
     private void Update()
     {
@@ -118,6 +124,7 @@ public class ThrownSwordProjectile : MonoBehaviour
         hitCollider.enabled = true;
 
         rb.linearVelocity = flightDirection * moveSpeed;
+        OnLaunched?.Invoke();                                           //실제로 검이 발사된 순간 효과음 요청
     }
 
     //*Trigger Collider와 충돌했을 때*
@@ -187,6 +194,7 @@ public class ThrownSwordProjectile : MonoBehaviour
         hitCollider.enabled = false;
         animator.Play(EmbedStateHash, 0, 0f);                   //검 박히는 애니메이션 재생
         transform.SetParent(enemyMark.DeathVisualRoot, true);   //Trigger 죽을 때 몸이랑 검이 같은 중심으로 수축
+        OnTriggerEmbedded?.Invoke();                            //Trigger 적에게 검이 정상적으로 박힌 순간
     }
 
     //*Ground / Wall에 검 고정*
@@ -214,6 +222,9 @@ public class ThrownSwordProjectile : MonoBehaviour
 
         //적에게 박혔을 때와 같은 박힘 애니메이션 사용
         animator.Play(EmbedStateHash, 0, 0f);
+
+        //벽·바닥 또는 Normal/Weak 적에 박힌 순간
+        OnEnvironmentEmbedded?.Invoke();
 
         environmentFadeTween?.Kill();
 

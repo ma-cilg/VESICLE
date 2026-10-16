@@ -136,6 +136,12 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 301082800521467476}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 3598499169916402348}
+    - targetCorrespondingSourceObject: {fileID: 1261907694249390848, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 531505045376395141}
     - targetCorrespondingSourceObject: {fileID: 9022211538940756860, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
       insertIndex: -1
       addedObject: {fileID: 5052542951656320746}
@@ -323,6 +329,36 @@ MonoBehaviour:
   spawnInterval: 0.04
   lifetime: 0.2
   alpha: 0.45
+--- !u!114 &3598499169916402348
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6812ee66ed3a8fe44930e7c83f876b33, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyTriggerBlockSfx
+  blockSfx: {fileID: 8300000, guid: 587c5eb096a66f34e8ddd382189a0675, type: 3}
+  blockVolume: 0.7
+--- !u!114 &531505045376395141
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3058951088342267606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: eba399b6ad004b647a48e60094f3ac04, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::EnemyDashAttackSfx
+  chargeSfx: {fileID: 8300000, guid: 079ec5695e5f9e94990243b8848dc1ec, type: 3}
+  dashSfx: {fileID: 8300000, guid: 1aa86cc4908385f4ba43c08d056e4391, type: 3}
+  chargeVolume: 0.3
+  dashVolume: 0.45
 --- !u!212 &3540111190721828235 stripped
 SpriteRenderer:
   m_CorrespondingSourceObject: {fileID: 779582113537216605, guid: e3707f86c8964d94d9929cd62f8f8b88, type: 3}
